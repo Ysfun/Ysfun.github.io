@@ -4,30 +4,30 @@
   <meta charset="utf-8">
   
   
-  <title>MySQL:总算把B+树搞明白了 | Hexo</title>
+  <title>MySQL:总算把B+树搞明白了 | Ysfun&#39;s blog</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="1. MySQL索引为何使用B+树MySQL索引是提升数据库查询效率的最强武器，那么为何索引能够提升数据库查询速度？为何MySQL采用B+树来实现索引？ 1. 为何索引能提升查询性能？第一个问题可以用一个比较通俗的说法来回答，数据库索引相当于给一本书加了一个目录。 问题来了，为什么有了”目录“就能提升数据库查询效率呢？">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL:总算把B+树搞明白了">
-<meta property="og:url" content="http://example.com/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/index.html">
-<meta property="og:site_name" content="Hexo">
+<meta property="og:url" content="https://www.ysfun.cn/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/index.html">
+<meta property="og:site_name" content="Ysfun&#39;s blog">
 <meta property="og:description" content="1. MySQL索引为何使用B+树MySQL索引是提升数据库查询效率的最强武器，那么为何索引能够提升数据库查询速度？为何MySQL采用B+树来实现索引？ 1. 为何索引能提升查询性能？第一个问题可以用一个比较通俗的说法来回答，数据库索引相当于给一本书加了一个目录。 问题来了，为什么有了”目录“就能提升数据库查询效率呢？">
-<meta property="og:locale" content="en_US">
-<meta property="og:image" content="http://example.com/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223121145.png">
-<meta property="og:image" content="http://example.com/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221149949.png">
-<meta property="og:image" content="http://example.com/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221347217.png">
-<meta property="og:image" content="http://example.com/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221521045.png">
-<meta property="og:image" content="http://example.com/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223718982.png">
-<meta property="og:image" content="http://example.com/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517235249221.png">
-<meta property="og:image" content="http://example.com/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517235825563.png">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223121145.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221149949.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221347217.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221521045.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223718982.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517235249221.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517235825563.png">
 <meta property="article:published_time" content="2022-05-17T04:48:52.000Z">
 <meta property="article:modified_time" content="2022-05-30T07:29:21.610Z">
-<meta property="article:author" content="John Doe">
+<meta property="article:author" content="Ysfun">
 <meta property="article:tag" content="MySQL">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="http://example.com/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223121145.png">
+<meta name="twitter:image" content="https://www.ysfun.cn/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223121145.png">
   
-    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+    <link rel="alternate" href="/atom.xml" title="Ysfun's blog" type="application/atom+xml">
   
   
     <link rel="shortcut icon" href="/favicon.png">
@@ -55,7 +55,7 @@
   <div id="header-outer" class="outer">
     <div id="header-title" class="inner">
       <h1 id="logo-wrap">
-        <a href="/" id="logo">Hexo</a>
+        <a href="/" id="logo">Ysfun&#39;s blog</a>
       </h1>
       
     </div>
@@ -70,21 +70,21 @@
       </nav>
       <nav id="sub-nav">
         
-          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS 订阅"></a>
         
-        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
       </nav>
       <div id="search-form-wrap">
-        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="搜索"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="https://www.ysfun.cn"></form>
       </div>
     </div>
   </div>
 </header>
 
       <div class="outer">
-        <section id="main"><article id="post-2022/05/MySQL-总算把B-树搞明白了" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+        <section id="main"><article id="post-MySQL-总算把B-树搞明白了" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
   <div class="article-meta">
-    <a href="/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/" class="article-date">
+    <a href="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/" class="article-date">
   <time class="dt-published" datetime="2022-05-17T04:48:52.000Z" itemprop="datePublished">2022-05-17</time>
 </a>
     
@@ -134,17 +134,17 @@
 </blockquote>
 <p>磁盘读写的最小单位是<strong>扇区</strong>，扇区的大小只有 <code>512B</code> 大小，操作系统一次会读写多个扇区，所以<strong>操作系统的最小读写单位是块（Block）。Linux 中的块大小为 <code>4KB</code><strong>，也就是一次磁盘  I&#x2F;O 操作会直接读写 8 个扇区。同样的，MySQL保存的记录是以「行」为单位的，但是数据库的读取并不以「行」为单位，否则一次读取（也就是一次 I&#x2F;O 操作）只能处理一行数据，效率会非常低。</strong>InnoDB 的数据是按「数据页」为单位来读写的</strong>，也就是说，当需要读一条记录的时候，并不是将这个记录本身从磁盘读出来，而是以页为单位，将其整体读入内存。</p>
 <p><code>InnoDB</code>保存的数据文件是后缀为<code>.ibd</code>的文件，其含义是<code>InnoDB data</code>文件，又叫<code>表空间</code>。虽然在数据表里，它们看起来是挨在一起的。但实际上在<code>xx.ibd</code>里他们被分成很多小份的<strong>数据页</strong>，每份默认大小为<code>16kB</code>。类似如下结构：</p>
-<img src="/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223121145.png" style="zoom:60%">
+<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223121145.png" style="zoom:60%">
 
 <p>数据库<code>I/O</code>操作的最小单位是<strong>页</strong>，<strong>InnoDB 数据页的默认大小是 16KB</strong>，意味着数据库每次读写都是以 16KB 为单位的，一次最少从磁盘中读取 16K 的内容到内存中，一次最少把内存中的 16K 内容刷新到磁盘中。</p>
 <p>数据页主要包括七个部分，<strong>数据页结构图</strong><a id="2"></a>如下：</p>
-<img src="/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221149949.png" style="zoom:40%">
+<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221149949.png" style="zoom:40%">
 
 <p>各部分的作用：</p>
-<img src="/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221347217.png" style="zoom:50%">
+<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221347217.png" style="zoom:50%">
 
 <p>在 File Header 中有两个指针，分别指向上一个数据页和下一个数据页，连接起来的页相当于一个双向的链表，如下图所示：</p>
-<img src="/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221521045.png" style="zoom:60%">
+<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221521045.png" style="zoom:60%">
 
 <blockquote>
 <p>采用链表的结构是让数据页之间不需要是物理上的连续的，而是逻辑上的连续。</p>
@@ -153,7 +153,7 @@
 <p>因此，数据页中有一个<strong>页目录</strong>，起到记录的索引作用，就像我们书那样，针对书中内容的每个章节设立了一个目录，想看某个章节的时候，可以查看目录，快速找到对应的章节的页数，而数据页中的页目录就是为了能快速找到记录。通过<strong>页目录</strong>可以使数据页内查询记录的时间复杂度从<code>o(n)</code>变为<code>o(log n)</code>，提升页内查询效率。</p>
 <h2 id="3-B-树是如何进行查询的？"><a href="#3-B-树是如何进行查询的？" class="headerlink" title="3. B+树是如何进行查询的？"></a>3. <code>B+</code>树是如何进行查询的？</h2><p>在<code>InnoDB</code>中一个<strong>数据页</strong>默认的大小为<code>16 kB</code>，当面对大数据量时，需要多个数据页共同存放数据，如何建立合适的索引，才能快速的定位到记录所在的页。因此，<code>MySQL</code>采用<code>B+</code>树作为索引。</p>
 <p>InnoDB 里的 B+ 树中的<strong>每个节点都是一个数据页</strong>，结构示意图如下：</p>
-<img src="/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223718982.png" style="zoom:80%">
+<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223718982.png" style="zoom:80%">
 
 <p>通过上图，我们看出  B+ 树的特点：</p>
 <ul>
@@ -185,7 +185,7 @@
 </blockquote>
 <h2 id="5-一颗B-树可以存放多少行数据？"><a href="#5-一颗B-树可以存放多少行数据？" class="headerlink" title="5. 一颗B+树可以存放多少行数据？"></a>5. 一颗<code>B+</code>树可以存放多少行数据？</h2><p>前面提到，<code>B+</code>树的每个节点是一个<strong>数据页</strong>，默认大小<code>16kB</code>。前面<a href="#2"> 数据页结构图</a>已经介绍了每个数据页的结构，除去页头页尾及其它描述信息，真正存放用户记录的<code>User Records</code>部分还不足<code>16kB</code>。</p>
 <h3 id="1-叶子节点和非叶子节点分别存放多少数据？"><a href="#1-叶子节点和非叶子节点分别存放多少数据？" class="headerlink" title="1. 叶子节点和非叶子节点分别存放多少数据？"></a>1. 叶子节点和非叶子节点分别存放多少数据？</h3><p>B+树的<strong>最末级叶子结点</strong>里放了record数据。而<strong>非叶子结点</strong>里则放了用来加速查询的索引数据。</p>
-<p><img src="/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517235249221.png" alt="三层B+树"></p>
+<p><img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517235249221.png" alt="三层B+树"></p>
 <p>同样一个16kB的页，非叶子节点里每一条数据都指向一个新的页，而新的页有两种可能。</p>
 <ul>
 <li>如果是末级叶子节点的话，那么里面放的就是一行行record数据。</li>
@@ -199,7 +199,7 @@
 </ul>
 <p>那这棵B+树放的<strong>行数据总量</strong>等于 <code>(x ^ (z-1)) * y</code>。</p>
 <p><strong><code>x</code>怎么算？</strong></p>
-<p><img src="/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517235825563.png" alt="数据页的结构"></p>
+<p><img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517235825563.png" alt="数据页的结构"></p>
 <p>非叶子节点里主要放索引查询相关的数据，放的是主键和指向页号。</p>
 <p>主键假设是<code>bigint（8Byte）</code>，而页号在源码里叫<code>FIL_PAGE_OFFSET（4Byte）</code>，那么非叶子节点里的一条数据是<code>12Byte</code>左右。</p>
 <p>整个数据页<code>16k</code>， 页头页尾那部分数据全加起来大概<code>128Byte</code>，加上页目录毛估占<code>1k</code>吧。那剩下的<code>15kB</code>除以<code>12Byte</code>，等于<code>1280</code>，也就是可以指向<strong>x&#x3D;1280页</strong>。</p>
@@ -233,7 +233,7 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://example.com/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/" data-id="cl3sz87f80027kazh7lv77ak4" data-title="MySQL:总算把B+树搞明白了" class="article-share-link">Share</a>
+      <a data-url="https://www.ysfun.cn/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/" data-id="cl3szlx2c002loezheyh9afba" data-title="MySQL:总算把B+树搞明白了" class="article-share-link">分享</a>
       
       
       
@@ -245,8 +245,8 @@
     
 <nav id="article-nav">
   
-    <a href="/2022/05/18/2022/05/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/" id="article-nav-newer" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Newer</strong>
+    <a href="/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">前一篇</strong>
       <div class="article-nav-title">
         
           Markdown如何实现页内跳转？
@@ -255,8 +255,8 @@
     </a>
   
   
-    <a href="/2022/05/13/2022/05/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/" id="article-nav-older" class="article-nav-link-wrap">
-      <strong class="article-nav-caption">Older</strong>
+    <a href="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">后一篇</strong>
       <div class="article-nav-title">MySQL:InnoDB存储引擎和MyISAM的区别？</div>
     </a>
   
@@ -272,7 +272,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Categories</h3>
+    <h3 class="widget-title">分类</h3>
     <div class="widget">
       <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%99%E7%A8%8B/">教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AE%97%E6%B3%95%E9%A2%98/">算法题</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a></li></ul>
     </div>
@@ -282,7 +282,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tags</h3>
+    <h3 class="widget-title">标签</h3>
     <div class="widget">
       <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mac/" rel="tag">Mac</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Markdown/" rel="tag">Markdown</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/" rel="tag">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Typora/" rel="tag">Typora</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/" rel="tag">vim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%99%E7%A8%8B/" rel="tag">教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" rel="tag">算法题</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li></ul>
     </div>
@@ -292,7 +292,7 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Tag Cloud</h3>
+    <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
       <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Git/" style="font-size: 12.5px;">Git</a> <a href="/tags/Hexo/" style="font-size: 15px;">Hexo</a> <a href="/tags/Java/" style="font-size: 17.5px;">Java</a> <a href="/tags/Mac/" style="font-size: 10px;">Mac</a> <a href="/tags/Markdown/" style="font-size: 10px;">Markdown</a> <a href="/tags/MyBatis/" style="font-size: 10px;">MyBatis</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/Redis/" style="font-size: 10px;">Redis</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/Typora/" style="font-size: 10px;">Typora</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">操作系统</a> <a href="/tags/%E6%95%99%E7%A8%8B/" style="font-size: 20px;">教程</a> <a href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" style="font-size: 10px;">算法题</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">计算机网络</a>
     </div>
@@ -301,9 +301,9 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Archives</h3>
+    <h3 class="widget-title">归档</h3>
     <div class="widget">
-      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">December 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">November 2021</a></li></ul>
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">五月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">十二月 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">十一月 2021</a></li></ul>
     </div>
   </div>
 
@@ -311,12 +311,12 @@
   
     
   <div class="widget-wrap">
-    <h3 class="widget-title">Recent Posts</h3>
+    <h3 class="widget-title">最新文章</h3>
     <div class="widget">
       <ul>
         
           <li>
-            <a href="/2022/05/30/2022/05/MySQL-%E4%BA%8B%E5%8A%A1/">MySQL:事务</a>
+            <a href="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/">MySQL:事务</a>
           </li>
         
           <li>
@@ -332,7 +332,7 @@
           </li>
         
           <li>
-            <a href="/2022/05/18/2022/05/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/">Markdown如何实现页内跳转？</a>
+            <a href="/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/">Markdown如何实现页内跳转？</a>
           </li>
         
       </ul>
@@ -348,7 +348,7 @@
   <div class="outer">
     <div id="footer-info" class="inner">
       
-      &copy; 2022 John Doe<br>
+      &copy; 2022 Ysfun<br>
       Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
     </div>
   </div>

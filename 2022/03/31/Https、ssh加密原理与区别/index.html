@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>Https、ssh加密原理 | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="1. Https与Http区别相比于Http，Https采用了加密传输方式，可以有效防止网络攻击。可以近似理解为Https &#x3D; Http + SSL证书。 Http默认端口为8080，Https默认端口为443。 2. Https加密原理">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Https、ssh加密原理">
+<meta property="og:url" content="http://example.com/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="1. Https与Http区别相比于Http，Https采用了加密传输方式，可以有效防止网络攻击。可以近似理解为Https &#x3D; Http + SSL证书。 Http默认端口为8080，Https默认端口为443。 2. Https加密原理">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/Https%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png">
+<meta property="og:image" content="http://example.com/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png">
+<meta property="og:image" content="http://example.com/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E8%A2%AB%E6%94%BB%E5%87%BB.png">
+<meta property="article:published_time" content="2022-03-31T11:17:44.000Z">
+<meta property="article:modified_time" content="2022-05-27T08:21:20.313Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="计算机网络">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/Https%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-Https、ssh加密原理与区别" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/" class="article-date">
+  <time class="dt-published" datetime="2022-03-31T11:17:44.000Z" itemprop="datePublished">2022-03-31</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      Https、ssh加密原理
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <h2 id="1-Https与Http区别"><a href="#1-Https与Http区别" class="headerlink" title="1. Https与Http区别"></a>1. Https与Http区别</h2><p>相比于Http，Https采用了加密传输方式，可以有效防止网络攻击。可以近似理解为Https &#x3D; Http + SSL证书。</p>
+<p>Http默认端口为8080，Https默认端口为443。</p>
+<h2 id="2-Https加密原理"><a href="#2-Https加密原理" class="headerlink" title="2. Https加密原理"></a>2. Https加密原理</h2><p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/Https%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png"></p>
+<span id="more"></span>
+
+<ol>
+<li>客户端（浏览器）向服务端发起请求</li>
+<li>服务端接收请求，并明文传输公钥A给客户端，为了证实服务端的身份，服务端会将CA证书一同传输给客户端（这个步骤是与ssh建立连接的区别所在）</li>
+<li>客户端接收到公钥A，并用公钥A加密自己本地随机生成的对称加密密钥X</li>
+<li>公钥A加密的信息只有通过私钥才能解密，因此只有服务端才能解密并获取对称密钥X</li>
+<li>至此，服务端和客户端双方都持有对称密钥X，且第三方无法窃取，此后通过密钥X加密传输数据</li>
+</ol>
+<h2 id="3-SSH加密原理"><a href="#3-SSH加密原理" class="headerlink" title="3. SSH加密原理"></a>3. SSH加密原理</h2><p>SSH是一种网络协议，用于计算机之间的加密登录。如果一个用户从本地计算机，使用SSH协议登录另一台远程计算机，我们就可以认为，这种登录是安全的，即使被中途截获，密码也不会泄露。</p>
+<p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png"></p>
+<p>SSH加密原理与https基本相同，唯一的区别在于ssh没有CA证书，容易收到中间人攻击（Man-in-the-middle attack）。客户端无法验证公钥有没有被篡改过，如果有人截取数据，并返回篡改后的假公钥给客户端，客户端通过假公钥加密后的密码信息被截取并解密，就会导致客户端密码信息泄漏。</p>
+<ul>
+<li>下图展示了SSH被攻击的情况</li>
+</ul>
+<p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E8%A2%AB%E6%94%BB%E5%87%BB.png"></p>
+<p>问题在于客户端无法验证公钥A是不是来自服务端真实的公钥，Https采用CA证书来验证服务端的身份，而SSH则没有。</p>
+<h2 id="4-SSH解决中间人攻击的办法"><a href="#4-SSH解决中间人攻击的办法" class="headerlink" title="4. SSH解决中间人攻击的办法"></a>4. SSH解决中间人攻击的办法</h2><p>SSH的publish key和private key都是自己生成的，没法公证。只能通过Client端自己对公钥进行确认。</p>
+<p>通常在第一次登录的时候，系统会出现下面提示信息：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ssh user@host</span></span><br><span class="line">The authenticity of host &#x27;host (12.18.429.21)&#x27; can&#x27;t be established.</span><br><span class="line">RSA key fingerprint is 98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d.</span><br><span class="line">Are you sure you want to continue connecting (yes/no)?</span><br></pre></td></tr></table></figure>
+
+<p>上面信息的意思是：无法确认主机host(12.18.429.21)的真实性，不过知道它的公钥指纹，询问你是否继续连接？</p>
+<p>所谓”公钥指纹”，是指公钥长度较长（这里采用RSA算法，长达1024位），很难比对，所以对其进行MD5计算，将它变成一个128位的指纹。上例中是98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d，再进行比较，就容易多了。</p>
+<p>之所以用fingerprint代替key，主要是key过于长（RSA算法生成的公钥有1024位），很难直接比较。所以，对公钥进行hash生成一个128位的指纹，这样就方便比较了。</p>
+<p>很自然的一个问题就是，用户怎么知道远程主机的公钥指纹应该是多少？</p>
+<p>回答是没有好办法，远程主机必须在自己的网站上贴出公钥指纹，以便用户自行核对，或者自己甄别host地址是否正确。</p>
+<p>假定经过风险衡量以后（一般用户直接就选择yes吧），用户决定接受这个远程主机的公钥。<br>　　Are you sure you want to continue connecting (yes&#x2F;no)? yes<br>系统会出现一句提示，表示host主机已经得到认可。<br>　　Warning: Permanently added ‘host,12.18.429.21’ (RSA) to the list of known hosts.<br>然后，会要求输入密码。<br>　　Password: (enter password)<br>如果密码正确，就可以登录了。</p>
+<p>当远程主机的公钥被接受以后，它就会被保存在文件$HOME&#x2F;.ssh&#x2F;known_hosts之中。下次再连接这台主机，系统就会认出它的公钥已经保存在本地了，从而跳过警告部分，直接提示输入密码。<br>每个SSH用户都有自己的known_hosts文件，此外系统也有一个这样的文件，通常是&#x2F;etc&#x2F;ssh&#x2F;ssh_known_hosts，保存一些对所有用户都可信赖的远程主机的公钥。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/" data-id="cl3sz87f1000kkazh96su7ms7" data-title="Https、ssh加密原理" class="article-share-link">Share</a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2022/05/10/2022/05/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgit-ssh/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          如何配置git ssh
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">mac上使用SublimeText</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%99%E7%A8%8B/">教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AE%97%E6%B3%95%E9%A2%98/">算法题</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mac/" rel="tag">Mac</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Markdown/" rel="tag">Markdown</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/" rel="tag">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Typora/" rel="tag">Typora</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/" rel="tag">vim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%99%E7%A8%8B/" rel="tag">教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" rel="tag">算法题</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Git/" style="font-size: 12.5px;">Git</a> <a href="/tags/Hexo/" style="font-size: 15px;">Hexo</a> <a href="/tags/Java/" style="font-size: 17.5px;">Java</a> <a href="/tags/Mac/" style="font-size: 10px;">Mac</a> <a href="/tags/Markdown/" style="font-size: 10px;">Markdown</a> <a href="/tags/MyBatis/" style="font-size: 10px;">MyBatis</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/Redis/" style="font-size: 10px;">Redis</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/Typora/" style="font-size: 10px;">Typora</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">操作系统</a> <a href="/tags/%E6%95%99%E7%A8%8B/" style="font-size: 20px;">教程</a> <a href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" style="font-size: 10px;">算法题</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">计算机网络</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">December 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">November 2021</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2022/05/30/2022/05/MySQL-%E4%BA%8B%E5%8A%A1/">MySQL:事务</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/25/%E5%AD%A4%E5%84%BF%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%83%B5%E5%B0%B8%E8%BF%9B%E7%A8%8B/">孤儿进程和僵尸进程</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/">刷题分享：LeetCode139.单词拆分【字典树，动态规划】</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/">将hexo博客部署到个人服务器</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/18/2022/05/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/">Markdown如何实现页内跳转？</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2022 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

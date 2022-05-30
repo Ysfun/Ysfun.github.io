@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  
+  <title>MySQL:InnoDB存储引擎和MyISAM的区别？ | Hexo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="本文从事务，外键，索引， 存储文件，日志，count行数，锁，主键八个方面系统地对比了在MySQL中InnoDB存储引擎和MyISAM存储引擎的区别。 1. 事务 InnoDB：支持事务。  MyISAM：不支持事务，强调的是性能，每次查询具有原子性，一般情况下其查询数度比InnoDB更快，但是不提供事务支持。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL:InnoDB存储引擎和MyISAM的区别？">
+<meta property="og:url" content="http://example.com/2022/05/13/2022/05/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="本文从事务，外键，索引， 存储文件，日志，count行数，锁，主键八个方面系统地对比了在MySQL中InnoDB存储引擎和MyISAM存储引擎的区别。 1. 事务 InnoDB：支持事务。  MyISAM：不支持事务，强调的是性能，每次查询具有原子性，一般情况下其查询数度比InnoDB更快，但是不提供事务支持。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2022/05/13/2022/05/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png">
+<meta property="og:image" content="http://example.com/2022/05/13/2022/05/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130322302.png">
+<meta property="article:published_time" content="2022-05-13T04:30:50.000Z">
+<meta property="article:modified_time" content="2022-05-30T07:29:40.111Z">
+<meta property="article:author" content="John Doe">
+<meta property="article:tag" content="MySQL">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2022/05/13/2022/05/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png">
+  
+    <link rel="alternate" href="/atom.xml" title="Hexo" type="application/atom+xml">
+  
+  
+    <link rel="shortcut icon" href="/favicon.png">
+  
+  
+    
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/typeface-source-code-pro@0.0.71/index.min.css">
+
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+    
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.min.css">
+
+  
+<meta name="generator" content="Hexo 6.2.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Hexo</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="Search"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://example.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+
+      <div class="outer">
+        <section id="main"><article id="post-2022/05/MySQL-Innodb存储引擎和Myisam的区别？" class="h-entry article article-type-post" itemprop="blogPost" itemscope itemtype="https://schema.org/BlogPosting">
+  <div class="article-meta">
+    <a href="/2022/05/13/2022/05/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/" class="article-date">
+  <time class="dt-published" datetime="2022-05-13T04:30:50.000Z" itemprop="datePublished">2022-05-13</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="p-name article-title" itemprop="headline name">
+      MySQL:InnoDB存储引擎和MyISAM的区别？
+    </h1>
+  
+
+      </header>
+    
+    <div class="e-content article-entry" itemprop="articleBody">
+      
+        <p>本文从<strong>事务</strong>，<strong>外键</strong>，<strong>索引</strong>， <strong>存储文件</strong>，<strong>日志</strong>，<strong>count行数</strong>，<strong>锁</strong>，<strong>主键</strong>八个方面系统地对比了在<code>MySQL</code>中<code>InnoDB</code>存储引擎和<code>MyISAM</code>存储引擎的区别。</p>
+<h3 id="1-事务"><a href="#1-事务" class="headerlink" title="1. 事务"></a>1. 事务</h3><ul>
+<li><p><code>InnoDB</code>：支持事务。</p>
+</li>
+<li><p><code>MyISAM</code>：不支持事务，强调的是性能，每次查询具有原子性，一般情况下其查询数度比<code>InnoDB</code>更快，但是不提供事务支持。</p>
+</li>
+</ul>
+<span id="more"></span>
+
+<blockquote>
+<p>一般情况下<code>MyISAM</code>查询速度比<code>InnoDB</code>快的原因：</p>
+<p>答：在查询的时候，InnoDB要维护的东西比MyISAM多很多，具体以下几点：</p>
+<ul>
+<li>InnoDB缓存数据块，MyISAM只缓存索引块， 这中间还有换进换出的减少；</li>
+<li>InnoDB寻址要映射到块，再到行，MyISAM记录的直接是文件的OFFSET，定位比InnoDB要快 </li>
+<li>InnoDB还需要维护MVCC一致； 虽然你的场景没有，但他还是需要去检查和维护</li>
+</ul>
+</blockquote>
+<h3 id="2-外键"><a href="#2-外键" class="headerlink" title="2. 外键"></a>2. 外键</h3><ul>
+<li><code>InnoDB</code>：支持外键</li>
+<li><code>MyISAM</code>：不支持外键，对一个包含外键的InnoDB表转为MyISAM会失败</li>
+</ul>
+<h3 id="3-索引"><a href="#3-索引" class="headerlink" title="3. 索引"></a>3. 索引</h3><ul>
+<li><code>InnoDB</code>：聚集索引，数据文件和索引存储在一起，必须要有主键，通过主键查询效率很高，一次查询即可得到完整的行数据。辅助索引存储的数据是对应的主键索引的值，通过辅助索引查询需要两次查询，根据辅助索引查询到对应的主键索引，再根据主键索引查询到对应的行数据（这一过程称之为<strong>回表</strong>）。</li>
+<li><code>MyISAM</code>：非聚集索引，索引和数据文件分开保存，索引保存的是数据文件的指针。主键索引和辅助索引相互独立。</li>
+</ul>
+<blockquote>
+<p>InnoDB的B+树主键索引的叶子节点就是数据文件，辅助索引的叶子节点是主键的值；而MyISAM的B+树主键索引和辅助索引的叶子节点都是数据文件的地址指针。</p>
+</blockquote>
+<p><img src="/2022/05/13/2022/05/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png"></p>
+<p><img src="/2022/05/13/2022/05/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130322302.png"></p>
+<h3 id="4-存储文件"><a href="#4-存储文件" class="headerlink" title="4. 存储文件"></a>4. 存储文件</h3><ul>
+<li><code>InnoDB</code>：存储文件有<strong>frm、ibd</strong>，<strong>frm</strong>是表定义文件，<strong>ibd</strong>是数据文件。</li>
+<li><code>MyISAM</code>：存储文件有<strong>frm、myd、myi</strong>，<strong>frm</strong>是表定义文件，<strong>myd</strong>是数据文件，<strong>myi</strong>是索引文件。</li>
+</ul>
+<h3 id="5-日志"><a href="#5-日志" class="headerlink" title="5. 日志"></a>5. 日志</h3><ul>
+<li><code>InnoDB</code>：有<code>redo log</code>，使用 InnoDB 的数据库在异常崩溃后，数据库重新启动的时候会保证数据库恢复到崩溃前的状态，这个恢复的过程依赖于 <code>redo log</code> 。 <code>redo log</code> 保证事务的持久性， <code>undo log</code> 保证事务的原子性。</li>
+<li><code>MyISAM</code>：没有<code>redo log</code>，不支持数据库异常崩溃后的安全恢复。</li>
+</ul>
+<h3 id="6-count"><a href="#6-count" class="headerlink" title="6. count"></a>6. count</h3><ul>
+<li><code>InnoDB</code>：不保存表的具体行数，如果使用<code>select count(*) from table</code>，就会遍历整个表，消耗相当大，但是在加了<code>where</code>条件后，myisam和innodb处理的方式都一样。</li>
+<li><code>MyISAM</code>：使用一个变量保存整个表的行数，如果使用<code>select count(*) from table</code>，会直接读取该变量。</li>
+</ul>
+<blockquote>
+<p> 因为InnoDB的事务特性，在同一时刻表中的行数对于不同的事务而言是不一样的，因此count统计会计算对于当前事务而言可以统计到的行数，而不是将总行数储存起来方便快速查询。</p>
+</blockquote>
+<h3 id="7-锁"><a href="#7-锁" class="headerlink" title="7. 锁"></a>7. 锁</h3><ul>
+<li><code>InnoDB</code>：支持行级锁和表锁。行锁是基于索引实现的，如果没有命中索引，也无法使用行锁，会退化到表锁。</li>
+<li><code>MyISAM</code>：仅支持表锁，不支持行锁。</li>
+</ul>
+<h3 id="8-主键"><a href="#8-主键" class="headerlink" title="8. 主键"></a>8. 主键</h3><ul>
+<li><code>InnoDB</code>：如果没有设定主键，会自动生成一个6字节的隐藏主键（用户不可见），数据保存在主键索引的叶子节点上。</li>
+<li><code>MyISAM</code>：允许不含有主键。</li>
+</ul>
+<blockquote>
+<p>删除部分自增主键后，二者的区别？</p>
+<ol>
+<li>不重启服务器</li>
+</ol>
+<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，插入一行新的数据，无论是<code>InnoDB</code>还是<code>MyISAM</code>都会从<code>6</code>开始插入。</p>
+<ol start="2">
+<li>重启服务器</li>
+</ol>
+<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，重启服务器，再插入一行新的数据，<code>InnoDB</code>主键会从<code>4</code>开始插入，而<code>MyISAM</code>会从<code>6</code>开始插入。</p>
+<blockquote>
+<p>原因：Innodb表把自增主键的最大ID记录到内存中，重启数据库后，都会导致最大自增ID重置；MyISAM表会把自增主键的最大ID记录到数据文件里，重启MySQL自增主键的最大ID也不会丢失。</p>
+</blockquote>
+<p><strong>说明：mysql8.0版本，重启数据库后，不会导致最大自增ID重置</strong></p>
+<p><strong>原因：</strong>在 MySQL 8.0 中，<code>AUTO_INCREMENT</code>计数器的逻辑变了，每当计数器的值有变，InnoDB 会将其写入 redo log，保存到引擎专用的系统表中。MySQL 正常关闭后重启：从系统表中获取计数器的值。MySQL 故障后重启：从系统表中获取计数器的值；从最后一个检查点开始扫描 redo log 中记录的计数器值；取这两者的最大值作为新值。</p>
+</blockquote>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://example.com/2022/05/13/2022/05/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/" data-id="cl3sz87f80024kazh6yjfbcmq" data-title="MySQL:InnoDB存储引擎和MyISAM的区别？" class="article-share-link">Share</a>
+      
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2022/05/17/2022/05/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          MySQL:总算把B+树搞明白了
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2022/05/12/2022/05/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Categories</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8A%80%E6%9C%AF/">技术</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%95%99%E7%A8%8B/">教程</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%AE%97%E6%B3%95%E9%A2%98/">算法题</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E5%9F%BA%E7%A1%80/">计算机基础</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tags</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Docker/" rel="tag">Docker</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Mac/" rel="tag">Mac</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Markdown/" rel="tag">Markdown</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MyBatis/" rel="tag">MyBatis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/MySQL/" rel="tag">MySQL</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Redis/" rel="tag">Redis</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Spring/" rel="tag">Spring</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Typora/" rel="tag">Typora</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vim/" rel="tag">vim</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" rel="tag">操作系统</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%95%99%E7%A8%8B/" rel="tag">教程</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" rel="tag">算法题</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" rel="tag">计算机网络</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Tag Cloud</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Docker/" style="font-size: 10px;">Docker</a> <a href="/tags/Git/" style="font-size: 12.5px;">Git</a> <a href="/tags/Hexo/" style="font-size: 15px;">Hexo</a> <a href="/tags/Java/" style="font-size: 17.5px;">Java</a> <a href="/tags/Mac/" style="font-size: 10px;">Mac</a> <a href="/tags/Markdown/" style="font-size: 10px;">Markdown</a> <a href="/tags/MyBatis/" style="font-size: 10px;">MyBatis</a> <a href="/tags/MySQL/" style="font-size: 15px;">MySQL</a> <a href="/tags/Redis/" style="font-size: 10px;">Redis</a> <a href="/tags/Spring/" style="font-size: 10px;">Spring</a> <a href="/tags/Typora/" style="font-size: 10px;">Typora</a> <a href="/tags/vim/" style="font-size: 10px;">vim</a> <a href="/tags/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F/" style="font-size: 10px;">操作系统</a> <a href="/tags/%E6%95%99%E7%A8%8B/" style="font-size: 20px;">教程</a> <a href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" style="font-size: 10px;">算法题</a> <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C/" style="font-size: 10px;">计算机网络</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Archives</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/05/">May 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">March 2022</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">December 2021</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/11/">November 2021</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">Recent Posts</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2022/05/30/2022/05/MySQL-%E4%BA%8B%E5%8A%A1/">MySQL:事务</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/25/%E5%AD%A4%E5%84%BF%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%83%B5%E5%B0%B8%E8%BF%9B%E7%A8%8B/">孤儿进程和僵尸进程</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/">刷题分享：LeetCode139.单词拆分【字典树，动态规划】</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/">将hexo博客部署到个人服务器</a>
+          </li>
+        
+          <li>
+            <a href="/2022/05/18/2022/05/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/">Markdown如何实现页内跳转？</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      
+      &copy; 2022 John Doe<br>
+      Powered by <a href="https://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+
+<script src="/js/jquery-3.4.1.min.js"></script>
+
+
+
+  
+<script src="/fancybox/jquery.fancybox.min.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+
+
+
+  </div>
+</body>
+</html>

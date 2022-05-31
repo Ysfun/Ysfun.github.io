@@ -268,6 +268,11 @@
     </span>
 
   
+    <span class="post-meta-item">
+        <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
+    </span>
+
+  
     <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
       <span class="post-meta-item-icon">
         <i class="far fa-eye"></i>
@@ -282,6 +287,7 @@
       <span class="post-meta-item-text">本文字数：</span>
       <span>863</span>
     </span>
+
 </div>
 
         </div>
@@ -360,41 +366,18 @@
     <li class="popular-posts-item">
         <div class="popular-posts-date">2022-05-11</div>
       <div class="popular-posts-title"><a href="2022/05/11/Java小知识/" rel="bookmark">Java小知识</a></div>
-        <div class="popular-posts-excerpt"><p><ol>
-<li>使用<code>String.split(expr)</code>方法时，要注意<code>expr</code>是否是正则表达式的通配符，如 <code>.</code>, <code>$</code>等，要使用双反斜杠进行转译<code>\\</code>，<code>\</code>要使用<code>\\\\</code>进行转译</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;abc.def.ghi&quot;</span>;</span><br><span class="line">String[] split = s.split(<span class="string">&quot;\\.&quot;</span>);</span><br><span class="line">System.out.println(Arrays.toString(split));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行结果</span></span><br><span class="line">[abc, def, ghi]</span><br></pre></td></tr></table></figure></p></div>
     </li>
     <li class="popular-posts-item">
         <div class="popular-posts-date">2022-05-12</div>
       <div class="popular-posts-title"><a href="2022/05/12/Java异常：Exception与Error，checkedException与unCheckedException/" rel="bookmark">Java异常：Exception与Error，checkedException与unCheckedException</a></div>
-        <div class="popular-posts-excerpt"><p><h3 id="1-Java异常类层级结构图"><a href="#1-Java异常类层级结构图" class="headerlink" title="1. Java异常类层级结构图"></a>1. Java异常类层级结构图</h3><p><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512152121807.png"></p>
-<p><code>java.lang.Throwable</code>是Java异常的顶级接口，<code>Exception</code>和<code>Error</code>均继承自<code>Throwable</code>。</p></p></div>
     </li>
     <li class="popular-posts-item">
         <div class="popular-posts-date">2021-11-24</div>
       <div class="popular-posts-title"><a href="2021/11/24/mac上使用Homebrew安装mysql/" rel="bookmark">mac上使用Homebrew安装mysql</a></div>
-        <div class="popular-posts-excerpt"><p><p>注意⚠️：本教程是采用Homebrew安装mysql，引用官方的一句话：Homebrew是Mac OS 不可或缺的套件管理器。执行一下命令即可安装Homebrew：</p>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装Homebrew</span></span><br><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://cdn.jsdelivr.net/gh/ineo6/homebrew-install/install)&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看版本信息</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew -v</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">出现下面版本信息，则表明安装成功</span></span><br><span class="line">Homebrew 3.3.4</span><br><span class="line">Homebrew/homebrew-core (git revision 4605f7a940f; last commit 2021-11-21)</span><br></pre></td></tr></table></figure>
-
-<h2 id="安装mysql"><a href="#安装mysql" class="headerlink" title="安装mysql"></a>安装mysql</h2><blockquote>
-<ol>
-<li>使用Homebrew搜索mysql版本</li>
-</ol>
-</blockquote></p></div>
     </li>
     <li class="popular-posts-item">
         <div class="popular-posts-date">2022-05-10</div>
       <div class="popular-posts-title"><a href="2022/05/10/Git常用命令/" rel="bookmark">Git常用命令</a></div>
-        <div class="popular-posts-excerpt"><p><h2 id="Git基础命令"><a href="#Git基础命令" class="headerlink" title="Git基础命令"></a>Git基础命令</h2><ol>
-<li>克隆代码</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git clone xxx</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">克隆指定分支</span></span><br><span class="line">git clone -b branchName xxx</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>拉取（更新）代码</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">git pull origin</span><br><span class="line">git pull origin branchName</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">变基</span></span><br><span class="line">git pull --rebase origin branchName</span><br></pre></td></tr></table></figure></p></div>
     </li>
   </ul>
 
@@ -464,7 +447,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">47k</span>
+    <span title="站点总字数">48k</span>
   </span>
 </div>
 <div class="busuanzi-count">

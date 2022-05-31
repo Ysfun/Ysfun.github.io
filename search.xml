@@ -182,92 +182,6 @@
       </tags>
   </entry>
   <entry>
-    <title>mac上使用Homebrew安装mysql</title>
-    <url>/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/</url>
-    <content><![CDATA[<p>注意⚠️：本教程是采用Homebrew安装mysql，引用官方的一句话：Homebrew是Mac OS 不可或缺的套件管理器。执行一下命令即可安装Homebrew：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装Homebrew</span></span><br><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://cdn.jsdelivr.net/gh/ineo6/homebrew-install/install)&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看版本信息</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew -v</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">出现下面版本信息，则表明安装成功</span></span><br><span class="line">Homebrew 3.3.4</span><br><span class="line">Homebrew/homebrew-core (git revision 4605f7a940f; last commit 2021-11-21)</span><br></pre></td></tr></table></figure>
-
-<h2 id="安装mysql"><a href="#安装mysql" class="headerlink" title="安装mysql"></a>安装mysql</h2><blockquote>
-<ol>
-<li>使用Homebrew搜索mysql版本</li>
-</ol>
-</blockquote>
-<span id="more"></span>
-
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew search mysql</span></span><br><span class="line"></span><br><span class="line">==&gt; Formulae</span><br><span class="line">automysqlbackup          mysql-client             mysql-sandbox            mysql@5.7</span><br><span class="line">mysql                    mysql-client@5.7         mysql-search-replace     mysqltuner</span><br><span class="line">mysql++                  mysql-connector-c++      mysql@5.6                qt-mysql</span><br><span class="line"></span><br><span class="line">==&gt; Casks</span><br><span class="line">homebrew/cask/mysql-connector-python               homebrew/cask/navicat-for-mysql</span><br><span class="line">homebrew/cask/mysql-shell                          homebrew/cask/sqlpro-for-mysql</span><br><span class="line">homebrew/cask/mysql-utilities</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<ol start="2">
-<li>安装<a href="mailto:&#x6d;&#x79;&#x73;&#113;&#108;&#64;&#53;&#x2e;&#55;">&#x6d;&#x79;&#x73;&#113;&#108;&#64;&#53;&#x2e;&#55;</a></li>
-</ol>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew install mysql@5.7</span></span><br><span class="line"></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/manifests/5.7.36</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/blobs/sha256:e23df0f6e8bfc83fe2e982ec60e8</span><br><span class="line">==&gt; Downloading from https://pkg-containers.githubusercontent.com/ghcr1/blobs/sha256:e23df0f6e8bfc83</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Pouring mysql@5.7--5.7.36.arm64_big_sur.bottle.tar.gz</span><br><span class="line">==&gt; /opt/homebrew/Cellar/mysql@5.7/5.7.36/bin/mysqld --initialize-insecure --user=hyunmin --basedir=</span><br><span class="line">==&gt; Caveats</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<ol start="3">
-<li>配置环境变量</li>
-</ol>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1. bash shell</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">vim ~/.bash_profile</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2. zsh shell</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">vim ~/.zshrc</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在配置文件中加入</span></span><br><span class="line">export PATH=&quot;/opt/homebrew/opt/mysql@5.7/bin:$PATH&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash"><span class="built_in">source</span> ~/.bash_profile</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">或</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash"><span class="built_in">source</span> ~/.zshrc</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124170144671.png" alt="image-20211124170144671"></p>
-<blockquote>
-<ol start="4">
-<li>启动MySQL服务</li>
-</ol>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">mysql.server start</span></span><br><span class="line"></span><br><span class="line">Starting MySQL</span><br><span class="line">. SUCCESS! </span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<ol start="5">
-<li>MySQL初始化配置</li>
-</ol>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">mysql_secure_installation</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124204756469.png" alt="image-20211124204756469"></p>
-<blockquote>
-<ol start="6">
-<li>登陆测试</li>
-</ol>
-</blockquote>
-<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124204950548.png" alt="image-20211124204950548"></p>
-]]></content>
-      <tags>
-        <tag>教程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>mac上使用SublimeText</title>
-    <url>/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/</url>
-    <content><![CDATA[<blockquote>
-<p>官网地址：<a href="https://www.sublimetext.com/">Sublime Text</a></p>
-</blockquote>
-<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p><a href="https://www.sublimetext.com/download">官方下载地址</a></p>
-<p><a href="https://www.sublimetext.com/docs/index.html">Sublime Text文档</a></p>
-<span id="more"></span>
-
-<h2 id="使用技巧"><a href="#使用技巧" class="headerlink" title="使用技巧"></a>使用技巧</h2><h3 id="在Sublime-Text上运行Java程序"><a href="#在Sublime-Text上运行Java程序" class="headerlink" title="在Sublime Text上运行Java程序"></a>在Sublime Text上运行Java程序</h3><ol>
-<li>编译</li>
-</ol>
-<p><code>command+B</code></p>
-<ol start="2">
-<li>安装JDK环境</li>
-<li>打开 Sublime Text -&gt; Tools -&gt;Build System -&gt; New Build System…</li>
-<li>复制下面代码，并保存文件为java.sublime-build到默认的User文件夹即可</li>
-</ol>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;shell_cmd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;javac \&quot;$file\&quot; &amp;&amp; java \&quot;$file_base_name\&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;file_regex&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^(...*?):([0-9]*):?([0-9]*)&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;selector&quot;</span><span class="punctuation">:</span> <span class="string">&quot;source.java&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>选择Tools -&gt; Build System -&gt; java</li>
-</ol>
-<img src="/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/image-20211211145804287.png" style="zoom:50%;" align="left">
-]]></content>
-      <tags>
-        <tag>教程</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>hexo博客安装Icarus主题</title>
     <url>/2021/11/28/hexo%E5%8D%9A%E5%AE%A2%E5%AE%89%E8%A3%85Icarus%E4%B8%BB%E9%A2%98/</url>
     <content><![CDATA[<p><strong>官方链接：</strong><a href="https://ppoffice.github.io/hexo-theme-icarus/Configuration/icarus%E7%94%A8%E6%88%B7%E6%8C%87%E5%8D%97-%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE/">Icarus用户指南-主题配置</a></p>
@@ -344,6 +258,129 @@
       </tags>
   </entry>
   <entry>
+    <title>mac上使用SublimeText</title>
+    <url>/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/</url>
+    <content><![CDATA[<blockquote>
+<p>官网地址：<a href="https://www.sublimetext.com/">Sublime Text</a></p>
+</blockquote>
+<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p><a href="https://www.sublimetext.com/download">官方下载地址</a></p>
+<p><a href="https://www.sublimetext.com/docs/index.html">Sublime Text文档</a></p>
+<span id="more"></span>
+
+<h2 id="使用技巧"><a href="#使用技巧" class="headerlink" title="使用技巧"></a>使用技巧</h2><h3 id="在Sublime-Text上运行Java程序"><a href="#在Sublime-Text上运行Java程序" class="headerlink" title="在Sublime Text上运行Java程序"></a>在Sublime Text上运行Java程序</h3><ol>
+<li>编译</li>
+</ol>
+<p><code>command+B</code></p>
+<ol start="2">
+<li>安装JDK环境</li>
+<li>打开 Sublime Text -&gt; Tools -&gt;Build System -&gt; New Build System…</li>
+<li>复制下面代码，并保存文件为java.sublime-build到默认的User文件夹即可</li>
+</ol>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;shell_cmd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;javac \&quot;$file\&quot; &amp;&amp; java \&quot;$file_base_name\&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;file_regex&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^(...*?):([0-9]*):?([0-9]*)&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;selector&quot;</span><span class="punctuation">:</span> <span class="string">&quot;source.java&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>选择Tools -&gt; Build System -&gt; java</li>
+</ol>
+<img src="/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/image-20211211145804287.png" style="zoom:50%;" align="left">
+]]></content>
+      <tags>
+        <tag>教程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mac上使用Homebrew安装mysql</title>
+    <url>/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/</url>
+    <content><![CDATA[<p>注意⚠️：本教程是采用Homebrew安装mysql，引用官方的一句话：Homebrew是Mac OS 不可或缺的套件管理器。执行一下命令即可安装Homebrew：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装Homebrew</span></span><br><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://cdn.jsdelivr.net/gh/ineo6/homebrew-install/install)&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看版本信息</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew -v</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">出现下面版本信息，则表明安装成功</span></span><br><span class="line">Homebrew 3.3.4</span><br><span class="line">Homebrew/homebrew-core (git revision 4605f7a940f; last commit 2021-11-21)</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装mysql"><a href="#安装mysql" class="headerlink" title="安装mysql"></a>安装mysql</h2><blockquote>
+<ol>
+<li>使用Homebrew搜索mysql版本</li>
+</ol>
+</blockquote>
+<span id="more"></span>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew search mysql</span></span><br><span class="line"></span><br><span class="line">==&gt; Formulae</span><br><span class="line">automysqlbackup          mysql-client             mysql-sandbox            mysql@5.7</span><br><span class="line">mysql                    mysql-client@5.7         mysql-search-replace     mysqltuner</span><br><span class="line">mysql++                  mysql-connector-c++      mysql@5.6                qt-mysql</span><br><span class="line"></span><br><span class="line">==&gt; Casks</span><br><span class="line">homebrew/cask/mysql-connector-python               homebrew/cask/navicat-for-mysql</span><br><span class="line">homebrew/cask/mysql-shell                          homebrew/cask/sqlpro-for-mysql</span><br><span class="line">homebrew/cask/mysql-utilities</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ol start="2">
+<li>安装<a href="mailto:&#x6d;&#x79;&#x73;&#x71;&#108;&#x40;&#53;&#x2e;&#55;">&#x6d;&#x79;&#x73;&#x71;&#108;&#x40;&#53;&#x2e;&#55;</a></li>
+</ol>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew install mysql@5.7</span></span><br><span class="line"></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/manifests/5.7.36</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/blobs/sha256:e23df0f6e8bfc83fe2e982ec60e8</span><br><span class="line">==&gt; Downloading from https://pkg-containers.githubusercontent.com/ghcr1/blobs/sha256:e23df0f6e8bfc83</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Pouring mysql@5.7--5.7.36.arm64_big_sur.bottle.tar.gz</span><br><span class="line">==&gt; /opt/homebrew/Cellar/mysql@5.7/5.7.36/bin/mysqld --initialize-insecure --user=hyunmin --basedir=</span><br><span class="line">==&gt; Caveats</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ol start="3">
+<li>配置环境变量</li>
+</ol>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1. bash shell</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">vim ~/.bash_profile</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2. zsh shell</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">vim ~/.zshrc</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在配置文件中加入</span></span><br><span class="line">export PATH=&quot;/opt/homebrew/opt/mysql@5.7/bin:$PATH&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash"><span class="built_in">source</span> ~/.bash_profile</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">或</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash"><span class="built_in">source</span> ~/.zshrc</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124170144671.png" alt="image-20211124170144671"></p>
+<blockquote>
+<ol start="4">
+<li>启动MySQL服务</li>
+</ol>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">mysql.server start</span></span><br><span class="line"></span><br><span class="line">Starting MySQL</span><br><span class="line">. SUCCESS! </span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ol start="5">
+<li>MySQL初始化配置</li>
+</ol>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">mysql_secure_installation</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124204756469.png" alt="image-20211124204756469"></p>
+<blockquote>
+<ol start="6">
+<li>登陆测试</li>
+</ol>
+</blockquote>
+<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124204950548.png" alt="image-20211124204950548"></p>
+]]></content>
+      <tags>
+        <tag>教程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mac上安装halo</title>
+    <url>/2021/11/22/mac%E4%B8%8A%E5%AE%89%E8%A3%85halo/</url>
+    <content><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><ul>
+<li>操作系统：macOS</li>
+<li>java环境：openjdk 11</li>
+<li>halo版本：1.4.13</li>
+</ul>
+<h2 id="2-下载并安装"><a href="#2-下载并安装" class="headerlink" title="2. 下载并安装"></a>2. 下载并安装</h2><p>halo首页地址：<a href="https://halo.run/">halo首页</a><br>halo Github地址：<a href="https://github.com/halo-dev/halo">halo github地址</a></p>
+<span id="more"></span>
+
+<h3 id="2-1-安装brew"><a href="#2-1-安装brew" class="headerlink" title="2.1 安装brew"></a>2.1 安装brew</h3><p>Homebrew是 mac的包管理器，仅需执行相应的命令,就能下载安装需要的软件包，可以省掉自己去下载、解压、拖拽(安装)等繁琐的步骤。 比如安装服务器 nginx，打开终端执行以下命令即可安装:</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">brew install nginx</span><br></pre></td></tr></table></figure>
+
+<p>mac终端运行下面命令安装brew，镜像地址下载安装，速度快</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://cdn.jsdelivr.net/gh/ineo6/homebrew-install/install)&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-安装wget"><a href="#2-2-安装wget" class="headerlink" title="2.2 安装wget"></a>2.2 安装wget</h3><p>mac终端运行下面命令</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">brew install wget</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-下载安装halo"><a href="#2-3-下载安装halo" class="headerlink" title="2.3 下载安装halo"></a>2.3 下载安装halo</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">wget https://dl.halo.run/release/halo-1.4.13.jar</span><br><span class="line">java -jar halo-1.4.13.jar</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-访问halo"><a href="#2-4-访问halo" class="headerlink" title="2.4 访问halo"></a>2.4 访问halo</h3><ul>
+<li>注意⚠️：在访问halo期间，运行halo程序的终端不能关闭</li>
+</ul>
+<p>查看halo web页面，浏览器访问：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1:8090</span><br></pre></td></tr></table></figure>
+
+<p>查看halo管理页面，浏览器访问：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1:8090/admin</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-5-说明"><a href="#2-5-说明" class="headerlink" title="2.5 说明"></a>2.5 说明</h3><p>初次运行halo程序，会在 ~ 目录下创建一个.halo的文件夹，里面包含了博客内容以及账号信息，切记不要轻易删除此文件夹，否则账号信息以及博客内容都会被删除。</p>
+]]></content>
+      <tags>
+        <tag>教程</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>mac使用技巧</title>
     <url>/2021/12/02/mac%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/</url>
     <content><![CDATA[<h3 id="1-Mac终端"><a href="#1-Mac终端" class="headerlink" title="1. Mac终端"></a>1. Mac终端</h3><p><a href="https://support.apple.com/zh-cn/HT208050">Mac终端官方文档</a></p>
@@ -403,6 +440,27 @@
       </tags>
   </entry>
   <entry>
+    <title>typora图片左对齐</title>
+    <url>/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/</url>
+    <content><![CDATA[<p>typora图片默认是剧中对齐的方式：</p>
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128142529931.png"> </p>
+<p>但很多情况下我们其实更倾向于图片左对齐，网上很多办法都更改typora的默认对齐方式，即更改github.css文件，但这种方式会让我们所有的图片都变成左对齐的方式，实际情况下我们有的时候只需要一张图片左对齐。其实在typora中实现图片左对齐的方法非常简单，只需要<strong>在图片链接后加一个空格即可</strong>：</p>
+<span id="more"></span>
+
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128143120575.png"></p>
+<hr>
+<h3 id="设置任意对齐方式"><a href="#设置任意对齐方式" class="headerlink" title="设置任意对齐方式"></a>设置任意对齐方式</h3><p>在<code>typora</code>中图片的默认格式为<code>![图片标题](图片url)</code></p>
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128151604005.png"></p>
+<p>实际上markdown是兼容<code>&lt;img src=&quot;&quot;&gt;</code>图片格式的，采用img标签就可以利用<code>align</code>属性设置图片对齐方式。</p>
+<p>下面介绍一种可以快速将图片格式从<code>![图片标题](图片url)</code>变为<code>&lt;img src=&quot;&quot;&gt;</code>格式，选中图片，右键，选择缩放图片，任意选择一个不是100%缩放比例（如果选择100%不会有任何变化，如果不想改变图片大小，设置<code>zoom:100</code>即可，即<code>style=&quot;zoom:100%;&quot;</code>），缩放完毕就可以发现图片格式进行自动转换，在<code>img标签中</code>添加<code>align</code>属性即可。</p>
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128152513094.png"></p>
+]]></content>
+      <tags>
+        <tag>教程</tag>
+        <tag>Typora</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>springBoot2中-Configuration注解新增的proxyBeanMehtods属性详解</title>
     <url>/2021/11/22/springBoot2%E4%B8%AD-Configuration%E6%B3%A8%E8%A7%A3%E6%96%B0%E5%A2%9E%E7%9A%84proxyBeanMehtods%E5%B1%9E%E6%80%A7%E8%AF%A6%E8%A7%A3/</url>
     <content><![CDATA[<h2 id="Configuration-proxyBeanMethods-x3D-true-x2F-false"><a href="#Configuration-proxyBeanMethods-x3D-true-x2F-false" class="headerlink" title="@Configuration(proxyBeanMethods &#x3D; true&#x2F;false)"></a>@Configuration(proxyBeanMethods &#x3D; true&#x2F;false)</h2><h3 id="1、Full模式（proxyBeanMethods-x3D-true）"><a href="#1、Full模式（proxyBeanMethods-x3D-true）" class="headerlink" title="1、Full模式（proxyBeanMethods&#x3D;true）"></a>1、Full模式（proxyBeanMethods&#x3D;true）</h3><p>proxyBeanMethods&#x3D;true 为Full模式（默认为true），此时在spring IOC容器中的<strong>此配置类是一个CGLIB代理类</strong>，并且调用此配置类的@Bean方法产生的bean是单例的，即<strong>每次调用标有@Bean注解方法都会检查IOC容器中是否有该bean组件</strong>，如果没有则调用方法创建，否则就直接从IOC容器中获取。</p>
@@ -448,97 +506,6 @@
       </tags>
   </entry>
   <entry>
-    <title>mac上安装halo</title>
-    <url>/2021/11/22/mac%E4%B8%8A%E5%AE%89%E8%A3%85halo/</url>
-    <content><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><ul>
-<li>操作系统：macOS</li>
-<li>java环境：openjdk 11</li>
-<li>halo版本：1.4.13</li>
-</ul>
-<h2 id="2-下载并安装"><a href="#2-下载并安装" class="headerlink" title="2. 下载并安装"></a>2. 下载并安装</h2><p>halo首页地址：<a href="https://halo.run/">halo首页</a><br>halo Github地址：<a href="https://github.com/halo-dev/halo">halo github地址</a></p>
-<span id="more"></span>
-
-<h3 id="2-1-安装brew"><a href="#2-1-安装brew" class="headerlink" title="2.1 安装brew"></a>2.1 安装brew</h3><p>Homebrew是 mac的包管理器，仅需执行相应的命令,就能下载安装需要的软件包，可以省掉自己去下载、解压、拖拽(安装)等繁琐的步骤。 比如安装服务器 nginx，打开终端执行以下命令即可安装:</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">brew install nginx</span><br></pre></td></tr></table></figure>
-
-<p>mac终端运行下面命令安装brew，镜像地址下载安装，速度快</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://cdn.jsdelivr.net/gh/ineo6/homebrew-install/install)&quot;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-2-安装wget"><a href="#2-2-安装wget" class="headerlink" title="2.2 安装wget"></a>2.2 安装wget</h3><p>mac终端运行下面命令</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">brew install wget</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-3-下载安装halo"><a href="#2-3-下载安装halo" class="headerlink" title="2.3 下载安装halo"></a>2.3 下载安装halo</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">wget https://dl.halo.run/release/halo-1.4.13.jar</span><br><span class="line">java -jar halo-1.4.13.jar</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-4-访问halo"><a href="#2-4-访问halo" class="headerlink" title="2.4 访问halo"></a>2.4 访问halo</h3><ul>
-<li>注意⚠️：在访问halo期间，运行halo程序的终端不能关闭</li>
-</ul>
-<p>查看halo web页面，浏览器访问：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1:8090</span><br></pre></td></tr></table></figure>
-
-<p>查看halo管理页面，浏览器访问：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1:8090/admin</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-5-说明"><a href="#2-5-说明" class="headerlink" title="2.5 说明"></a>2.5 说明</h3><p>初次运行halo程序，会在 ~ 目录下创建一个.halo的文件夹，里面包含了博客内容以及账号信息，切记不要轻易删除此文件夹，否则账号信息以及博客内容都会被删除。</p>
-]]></content>
-      <tags>
-        <tag>教程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>vim常用命令</title>
-    <url>/2021/11/28/vim%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<h2 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h2><ol>
-<li>查找命令</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查找命令</span></span><br><span class="line">/xxx</span><br><span class="line">n  # 下一个</span><br><span class="line">N  # 上一个</span><br><span class="line">:set hls  # 高亮查找</span><br><span class="line">:set nohls  # 关闭高亮查找</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>显示行号</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">:set nu		# 显示行号</span><br><span class="line">:set nonu		# 取消显示行号</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<ol start="3">
-<li>跳转命令</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">跳转行尾</span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash"></span></span><br><span class="line"><span class="language-bash"><span class="comment"># 跳转行首</span></span></span><br><span class="line">0</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">光标行尾编辑</span></span><br><span class="line">A</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">光标行首编辑</span></span><br><span class="line">I</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">下一行编辑</span></span><br><span class="line">o</span><br></pre></td></tr></table></figure>
-
-<ol start="4">
-<li>高亮显示</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">:syntax on	# 开启高亮</span><br><span class="line">:syntax off		# 关闭高亮</span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>代码块注释</li>
-</ol>
-<blockquote>
-<p>行首添加注释</p>
-</blockquote>
-<p>ctrl+v 进入列编辑模式,向下或向上移动光标,把需要注释的行的开头标记起来,然后按大写的I,再插入注释符,比如”#”,再按Esc,就会全部注释。</p>
-<blockquote>
-<p>行首删除注释符号</p>
-</blockquote>
-<p>先按v,进入visual模式,横向选中列的个数(如单个”#”注释符号),再按Esc,再按ctrl+v 进入列编辑模式,向下或向上移动光标,选中注释部分,然后按d, 就会删除注释符号（#）。</p>
-<p>个人理解就是按v的时候，横向确定代码块宽度（列数），C-v的时候纵向确定了代码块长度（行首）</p>
-<ol start="6">
-<li>缩进</li>
-</ol>
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line"># 设置Tab键的宽度为4</span><br><span class="line">:set tabstop=4</span><br><span class="line"># 自动缩进</span><br><span class="line">set autoindent</span><br></pre></td></tr></table></figure>
-
-<ol start="7">
-<li>复制粘贴</li>
-</ol>
-<h2 id="修改默认设置"><a href="#修改默认设置" class="headerlink" title="修改默认设置"></a>修改默认设置</h2><p>在当前用户<code>home</code>目录下创建一个.<code>vimrc</code>文件</p>
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">&#x27;&#x27; 语法高亮</span><br><span class="line">syntax on</span><br><span class="line">&#x27;&#x27; 显示行号</span><br><span class="line">set nu</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <tags>
-        <tag>教程</tag>
-        <tag>vim</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>孤儿进程和僵尸进程</title>
     <url>/2022/05/25/%E5%AD%A4%E5%84%BF%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%83%B5%E5%B0%B8%E8%BF%9B%E7%A8%8B/</url>
     <content><![CDATA[<p><img src="/2022/05/25/%E5%AD%A4%E5%84%BF%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%83%B5%E5%B0%B8%E8%BF%9B%E7%A8%8B/linux-1.jpg"></p>
@@ -577,121 +544,6 @@
       </categories>
       <tags>
         <tag>操作系统</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>解决hexo搭建博客图片不显示问题</title>
-    <url>/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<h2 id="1-问题描述"><a href="#1-问题描述" class="headerlink" title="1. 问题描述"></a>1. 问题描述</h2><p>最近使用hexo搭建博客时，使用typora编辑完博客，在hexo上部署时发现图片都不能正常显示。图片采用复制粘贴的方式插入到.md文件中，图片格式：</p>
-<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128140607589.png"></p>
-<h2 id="2-初步探索"><a href="#2-初步探索" class="headerlink" title="2. 初步探索"></a>2. 初步探索</h2><ol>
-<li>更改typora设置</li>
-</ol>
-<p>按照网上的教程，先修改typora图片插入设置，打开typora设置 -&gt; 图像，按照下面方法设置。</p>
-<span id="more"></span>
-
-<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128141320644.png"> </p>
-<ol start="2">
-<li>修改配置文件，打开资源文件管理功能</li>
-</ol>
-<p>把博客根目录下的_config.yml中的<code>post_asset_folder</code>: 设置为<code>true</code></p>
-<p>Hexo将会在你每一次通过 <code>hexo new [layout] &lt;title&gt;</code> 命令创建新文章时自动创建一个文件夹。这个资源文件夹将会有与这个文章文件一样的名字。将所有与你的文章有关的资源放在这个关联文件夹中之后，你可以通过相对路径来引用它们，这样你就得到了一个更简单而且方便得多的工作流。</p>
-<ol start="3">
-<li>安装图片路径转换插件</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">**注意：插件不能安装最新的，安装老版本的**</span></span><br><span class="line">npm install https://github.com/EricGerry/hexo-asset-image-0.0.5.git --save</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">采用以下语句安装会出错</span></span><br><span class="line">npm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20220531012440436.png"></p>
-<p><strong>注意：按照<code>npm install https://github.com/EricGerry/hexo-asset-image-0.0.5.git --save</code>语句安装完成后无需进行后面的步骤！！！</strong></p>
-<br>
-
-<hr>
-<p>执行完上述操作，按照网上大多数的说法都是可以正常显示图片的，但很无奈，经过这番配置后，重新部署仍出现这样的结果：</p>
-<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128145011881.png"></p>
-<p>当场崩溃！！！ </p>
-<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/038556f2580ddb0fc0ca3edb83219601.jpeg"></p>
-<h2 id="3-大功告成"><a href="#3-大功告成" class="headerlink" title="3. 大功告成"></a>3. 大功告成</h2><p>经过一大番折腾，在网上查阅各种大佬的帖子，最后发现是是这个图片路径转换插件<code>hexo-asset-image</code>有问题，需要进行修改。把文件<code>/node_modules/hexo-asset-image/index.js</code>中的内容全部替换成下面的内容，其中<code>/</code>为博客根目录 。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="meta">&#x27;use strict&#x27;</span>;</span><br><span class="line"><span class="keyword">var</span> cheerio = <span class="built_in">require</span>(<span class="string">&#x27;cheerio&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// http://stackoverflow.com/questions/14480345/how-to-get-the-nth-occurrence-in-a-string</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getPosition</span>(<span class="params">str, m, i</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> str.<span class="title function_">split</span>(m, i).<span class="title function_">join</span>(m).<span class="property">length</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> version = <span class="title class_">String</span>(hexo.<span class="property">version</span>).<span class="title function_">split</span>(<span class="string">&#x27;.&#x27;</span>);</span><br><span class="line">hexo.<span class="property">extend</span>.<span class="property">filter</span>.<span class="title function_">register</span>(<span class="string">&#x27;after_post_render&#x27;</span>, <span class="keyword">function</span>(<span class="params">data</span>)&#123;</span><br><span class="line">  <span class="keyword">var</span> config = hexo.<span class="property">config</span>;</span><br><span class="line">  <span class="keyword">if</span>(config.<span class="property">post_asset_folder</span>)&#123;</span><br><span class="line">    	<span class="keyword">var</span> link = data.<span class="property">permalink</span>;</span><br><span class="line">	<span class="keyword">if</span>(version.<span class="property">length</span> &gt; <span class="number">0</span> &amp;&amp; <span class="title class_">Number</span>(version[<span class="number">0</span>]) == <span class="number">3</span>)</span><br><span class="line">	   <span class="keyword">var</span> beginPos = <span class="title function_">getPosition</span>(link, <span class="string">&#x27;/&#x27;</span>, <span class="number">1</span>) + <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	   <span class="keyword">var</span> beginPos = <span class="title function_">getPosition</span>(link, <span class="string">&#x27;/&#x27;</span>, <span class="number">3</span>) + <span class="number">1</span>;</span><br><span class="line">	<span class="comment">// In hexo 3.1.1, the permalink of &quot;about&quot; page is like &quot;.../about/index.html&quot;.</span></span><br><span class="line">	<span class="keyword">var</span> endPos = link.<span class="title function_">lastIndexOf</span>(<span class="string">&#x27;/&#x27;</span>) + <span class="number">1</span>;</span><br><span class="line">    link = link.<span class="title function_">substring</span>(beginPos, endPos);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> toprocess = [<span class="string">&#x27;excerpt&#x27;</span>, <span class="string">&#x27;more&#x27;</span>, <span class="string">&#x27;content&#x27;</span>];</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; toprocess.<span class="property">length</span>; i++)&#123;</span><br><span class="line">      <span class="keyword">var</span> key = toprocess[i];</span><br><span class="line"> </span><br><span class="line">      <span class="keyword">var</span> $ = cheerio.<span class="title function_">load</span>(data[key], &#123;</span><br><span class="line">        <span class="attr">ignoreWhitespace</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">xmlMode</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">lowerCaseTags</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">decodeEntities</span>: <span class="literal">false</span></span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">      $(<span class="string">&#x27;img&#x27;</span>).<span class="title function_">each</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">		<span class="keyword">if</span> ($(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>))&#123;</span><br><span class="line">			<span class="comment">// For windows style path, we replace &#x27;\&#x27; to &#x27;/&#x27;.</span></span><br><span class="line">			<span class="keyword">var</span> src = $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>).<span class="title function_">replace</span>(<span class="string">&#x27;\\&#x27;</span>, <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">			<span class="keyword">if</span>(!<span class="regexp">/http[s]*.*|\/\/.*/</span>.<span class="title function_">test</span>(src) &amp;&amp;</span><br><span class="line">			   !<span class="regexp">/^\s*\//</span>.<span class="title function_">test</span>(src)) &#123;</span><br><span class="line">			  <span class="comment">// For &quot;about&quot; page, the first part of &quot;src&quot; can&#x27;t be removed.</span></span><br><span class="line">			  <span class="comment">// In addition, to support multi-level local directory.</span></span><br><span class="line">			  <span class="keyword">var</span> linkArray = link.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">				<span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">			  &#125;);</span><br><span class="line">			  <span class="keyword">var</span> srcArray = src.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">				<span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span> &amp;&amp; elem != <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">			  &#125;);</span><br><span class="line">			  <span class="keyword">if</span>(srcArray.<span class="property">length</span> &gt; <span class="number">1</span>)</span><br><span class="line">				srcArray.<span class="title function_">shift</span>();</span><br><span class="line">			  src = srcArray.<span class="title function_">join</span>(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">			  $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, config.<span class="property">root</span> + link + src);</span><br><span class="line">			  <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+config.<span class="property">root</span> + link + src);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">			<span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;no src attr, skipped...&quot;</span>);</span><br><span class="line">			<span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>($(<span class="variable language_">this</span>));</span><br><span class="line">		&#125;</span><br><span class="line">      &#125;);</span><br><span class="line">      data[key] = $.<span class="title function_">html</span>();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-
-<p>重新部署！图片正常显示！！！完美</p>
- <img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128150713000.png" style="zoom:67%;">
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>教程</tag>
-        <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？</title>
-    <url>/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/</url>
-    <content><![CDATA[<h3 id="问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数"><a href="#问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数" class="headerlink" title="问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数"></a>问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数</h3><p>解法：采用BitMap，每个整数分配2个bit</p>
-<blockquote>
-<p>00	&#x3D;&gt; 0	表示没出现过</p>
-<p>01	&#x3D;&gt; 1	表示出现过1次</p>
-<p>10	&#x3D;&gt;2	表示出现过多次</p>
-<p>11	&#x3D;&gt;3	表示无效数据。</p>
-</blockquote>
-<span id="more"></span>
-
-<ul>
-<li>内存分析</li>
-</ul>
-<p>每个无符号整数的取值范围为0~2^32-1，BitMap空间复杂度取决于MAX_VALUE，因此需要一个长度为2 ^ 32的BitMap，总占用空间为2^32 * 2bit &#x3D; 1 GB。</p>
-<h3 id="使用Java程序进行实现："><a href="#使用Java程序进行实现：" class="headerlink" title="使用Java程序进行实现："></a>使用Java程序进行实现：</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BitMapTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 00 没出现过</span></span><br><span class="line"><span class="comment">     * 01 出现过1次</span></span><br><span class="line"><span class="comment">     * 10 出现过多次</span></span><br><span class="line"><span class="comment">     * 11 无效表示</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 1 byte = 8 bit，可分配四个数字，长度为1000可覆盖4000个数字，因此我们设置输入整数不超过4000</span></span><br><span class="line"><span class="comment">     * 真实情况下该数组的长度应该为 2.5亿/4，才能覆盖所有无符号整数，此处测试用较小数字进行</span></span><br><span class="line"><span class="comment">     * flags默认初始值都为0</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |3 2 1 0| flag[0] 例如：10000100 表示3出现过多次, 2, 0都没有出现过，1出现过一次</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |7 6 5 4| flag[1]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="type">byte</span>[] flags = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1000</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] nums = <span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">2000</span>];  <span class="comment">// 2000个测试输入数据</span></span><br><span class="line">        <span class="comment">// 验证结果的正确性</span></span><br><span class="line">        Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(nums.length);</span><br><span class="line">        <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">        System.out.println(<span class="string">&quot;原始数据：&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="comment">// 填充随机数输入进行验证</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> random.nextInt(flags.length * <span class="number">4</span>);  <span class="comment">// flags长度为1000，整数最大只能为4000</span></span><br><span class="line">            nums[i] = num;</span><br><span class="line">            System.out.print(num + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            map.put(num, map.getOrDefault(num, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            setVal(num);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();</span><br><span class="line">        System.out.println(<span class="string">&quot;-------------------&quot;</span>);</span><br><span class="line">        List&lt;Integer&gt; bitMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        List&lt;Integer&gt; hashMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (getVal(nums[i]) == <span class="number">1</span>) &#123;</span><br><span class="line">                bitMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (map.getOrDefault(nums[i], <span class="number">0</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">                hashMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;只出现过一次的数据：&quot;</span>);</span><br><span class="line">        System.out.println(bitMapAns);</span><br><span class="line">        System.out.println(<span class="string">&quot;bitMapAns 是否和 hashMapAns相同：&quot;</span> + bitMapAns.equals(hashMapAns));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> getVal(idx);</span><br><span class="line">        <span class="keyword">if</span> (val &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="comment">// 11 或 10 表示出现过多次，保持不变即可</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        ~(3&lt;&lt;loc) =&gt; 11001111 即让2bit对应位置为0，其他都为1</span></span><br><span class="line"><span class="comment">        (flags[pos] &amp; ~(3&lt;&lt;loc)) =&gt; 效果就是让2bit对应位置置为00，其他为保持不变</span></span><br><span class="line"><span class="comment">        | ((val + 1) &lt;&lt; loc) =&gt; 效果就是让val+1的值填充2bit的位置</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">newVal</span> <span class="operator">=</span> (flags[pos] &amp; ~(<span class="number">3</span> &lt;&lt; (loc * <span class="number">2</span>))) | ((val + <span class="number">1</span>) &lt;&lt; (loc * <span class="number">2</span>));</span><br><span class="line">        flags[pos] = (<span class="type">byte</span>) newVal;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">getVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        flags[pos] &gt;&gt; (loc * 2)  =&gt; 00001001  (左边自动补0) 这个操作的效果是让2这个整数在bitmap中对应的两个bit移动到最右端</span></span><br><span class="line"><span class="comment">        拿上面的结果  (0b00001001) &amp; (byte)3  =&gt; (0b00001001) &amp; (0b00000011) =&gt; (0b00000001) 即可得到目标的两个bit对应的数字</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> (flags[pos] &gt;&gt; (loc * <span class="number">2</span>)) &amp; (<span class="type">byte</span>) <span class="number">3</span>;</span><br><span class="line">        <span class="keyword">return</span> val;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>运行结果：</p>
-<p><img src="/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/image-20220512221937915.png"></p>
-<p>上述通过<code>HashMap</code>的方案可以检验<code>BitMap</code>的答案是正确的，并且成功节省了内存空间。</p>
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Git常用命令</title>
-    <url>/2022/05/10/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<h2 id="Git基础命令"><a href="#Git基础命令" class="headerlink" title="Git基础命令"></a>Git基础命令</h2><ol>
-<li>克隆代码</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone xxx</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">克隆指定分支</span></span><br><span class="line">git clone -b branchName xxx</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>拉取（更新）代码</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git pull origin</span><br><span class="line">git pull origin branchName</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">变基</span></span><br><span class="line">git pull --rebase origin branchName</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<ol start="3">
-<li>提交代码</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit &quot;message&quot;</span><br></pre></td></tr></table></figure>
-
-<ol start="4">
-<li>推送远程分支</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git push origin head:branchName</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">强制推送</span></span><br><span class="line">git push -f origin head:branchName</span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>合并提交记录</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">合并近k条提交记录</span></span><br><span class="line">git rebase -i head~k</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">一般pick第一条，后面都squash</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-<p><img src="/2022/05/10/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20220510193114486.png"></p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Git</tag>
       </tags>
   </entry>
   <entry>
@@ -762,6 +614,60 @@
       </tags>
   </entry>
   <entry>
+    <title>vim常用命令</title>
+    <url>/2021/11/28/vim%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h2 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h2><ol>
+<li>查找命令</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查找命令</span></span><br><span class="line">/xxx</span><br><span class="line">n  # 下一个</span><br><span class="line">N  # 上一个</span><br><span class="line">:set hls  # 高亮查找</span><br><span class="line">:set nohls  # 关闭高亮查找</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>显示行号</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">:set nu		# 显示行号</span><br><span class="line">:set nonu		# 取消显示行号</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<ol start="3">
+<li>跳转命令</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">跳转行尾</span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash"></span></span><br><span class="line"><span class="language-bash"><span class="comment"># 跳转行首</span></span></span><br><span class="line">0</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">光标行尾编辑</span></span><br><span class="line">A</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">光标行首编辑</span></span><br><span class="line">I</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">下一行编辑</span></span><br><span class="line">o</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>高亮显示</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">:syntax on	# 开启高亮</span><br><span class="line">:syntax off		# 关闭高亮</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>代码块注释</li>
+</ol>
+<blockquote>
+<p>行首添加注释</p>
+</blockquote>
+<p>ctrl+v 进入列编辑模式,向下或向上移动光标,把需要注释的行的开头标记起来,然后按大写的I,再插入注释符,比如”#”,再按Esc,就会全部注释。</p>
+<blockquote>
+<p>行首删除注释符号</p>
+</blockquote>
+<p>先按v,进入visual模式,横向选中列的个数(如单个”#”注释符号),再按Esc,再按ctrl+v 进入列编辑模式,向下或向上移动光标,选中注释部分,然后按d, 就会删除注释符号（#）。</p>
+<p>个人理解就是按v的时候，横向确定代码块宽度（列数），C-v的时候纵向确定了代码块长度（行首）</p>
+<ol start="6">
+<li>缩进</li>
+</ol>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line"># 设置Tab键的宽度为4</span><br><span class="line">:set tabstop=4</span><br><span class="line"># 自动缩进</span><br><span class="line">set autoindent</span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li>复制粘贴</li>
+</ol>
+<h2 id="修改默认设置"><a href="#修改默认设置" class="headerlink" title="修改默认设置"></a>修改默认设置</h2><p>在当前用户<code>home</code>目录下创建一个.<code>vimrc</code>文件</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">&#x27;&#x27; 语法高亮</span><br><span class="line">syntax on</span><br><span class="line">&#x27;&#x27; 显示行号</span><br><span class="line">set nu</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>教程</tag>
+        <tag>vim</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>刷题分享：LeetCode139.单词拆分【字典树，动态规划】</title>
     <url>/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/</url>
     <content><![CDATA[<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/leetcode-1.jpg"></p>
@@ -788,6 +694,53 @@
       </categories>
       <tags>
         <tag>算法题</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>解决hexo搭建博客图片不显示问题</title>
+    <url>/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h2 id="1-问题描述"><a href="#1-问题描述" class="headerlink" title="1. 问题描述"></a>1. 问题描述</h2><p>最近使用hexo搭建博客时，使用typora编辑完博客，在hexo上部署时发现图片都不能正常显示。图片采用复制粘贴的方式插入到.md文件中，图片格式：</p>
+<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128140607589.png"></p>
+<h2 id="2-初步探索"><a href="#2-初步探索" class="headerlink" title="2. 初步探索"></a>2. 初步探索</h2><ol>
+<li>更改typora设置</li>
+</ol>
+<p>按照网上的教程，先修改typora图片插入设置，打开typora设置 -&gt; 图像，按照下面方法设置。</p>
+<span id="more"></span>
+
+<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128141320644.png"> </p>
+<ol start="2">
+<li>修改配置文件，打开资源文件管理功能</li>
+</ol>
+<p>把博客根目录下的_config.yml中的<code>post_asset_folder</code>: 设置为<code>true</code></p>
+<p>Hexo将会在你每一次通过 <code>hexo new [layout] &lt;title&gt;</code> 命令创建新文章时自动创建一个文件夹。这个资源文件夹将会有与这个文章文件一样的名字。将所有与你的文章有关的资源放在这个关联文件夹中之后，你可以通过相对路径来引用它们，这样你就得到了一个更简单而且方便得多的工作流。</p>
+<ol start="3">
+<li>安装图片路径转换插件</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">**注意：插件不能安装最新的，安装老版本的**</span></span><br><span class="line">npm install https://github.com/EricGerry/hexo-asset-image-0.0.5.git --save</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">采用以下语句安装会出错</span></span><br><span class="line">npm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20220531012440436.png"></p>
+<p><strong>注意：按照<code>npm install https://github.com/EricGerry/hexo-asset-image-0.0.5.git --save</code>语句安装完成后无需进行后面的步骤！！！</strong></p>
+<br>
+
+<hr>
+<p>执行完上述操作，按照网上大多数的说法都是可以正常显示图片的，但很无奈，经过这番配置后，重新部署仍出现这样的结果：</p>
+<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128145011881.png"></p>
+<p>当场崩溃！！！ </p>
+<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/038556f2580ddb0fc0ca3edb83219601.jpeg"></p>
+<h2 id="3-大功告成"><a href="#3-大功告成" class="headerlink" title="3. 大功告成"></a>3. 大功告成</h2><p>经过一大番折腾，在网上查阅各种大佬的帖子，最后发现是是这个图片路径转换插件<code>hexo-asset-image</code>有问题，需要进行修改。把文件<code>/node_modules/hexo-asset-image/index.js</code>中的内容全部替换成下面的内容，其中<code>/</code>为博客根目录 。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="meta">&#x27;use strict&#x27;</span>;</span><br><span class="line"><span class="keyword">var</span> cheerio = <span class="built_in">require</span>(<span class="string">&#x27;cheerio&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// http://stackoverflow.com/questions/14480345/how-to-get-the-nth-occurrence-in-a-string</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getPosition</span>(<span class="params">str, m, i</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> str.<span class="title function_">split</span>(m, i).<span class="title function_">join</span>(m).<span class="property">length</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> version = <span class="title class_">String</span>(hexo.<span class="property">version</span>).<span class="title function_">split</span>(<span class="string">&#x27;.&#x27;</span>);</span><br><span class="line">hexo.<span class="property">extend</span>.<span class="property">filter</span>.<span class="title function_">register</span>(<span class="string">&#x27;after_post_render&#x27;</span>, <span class="keyword">function</span>(<span class="params">data</span>)&#123;</span><br><span class="line">  <span class="keyword">var</span> config = hexo.<span class="property">config</span>;</span><br><span class="line">  <span class="keyword">if</span>(config.<span class="property">post_asset_folder</span>)&#123;</span><br><span class="line">    	<span class="keyword">var</span> link = data.<span class="property">permalink</span>;</span><br><span class="line">	<span class="keyword">if</span>(version.<span class="property">length</span> &gt; <span class="number">0</span> &amp;&amp; <span class="title class_">Number</span>(version[<span class="number">0</span>]) == <span class="number">3</span>)</span><br><span class="line">	   <span class="keyword">var</span> beginPos = <span class="title function_">getPosition</span>(link, <span class="string">&#x27;/&#x27;</span>, <span class="number">1</span>) + <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	   <span class="keyword">var</span> beginPos = <span class="title function_">getPosition</span>(link, <span class="string">&#x27;/&#x27;</span>, <span class="number">3</span>) + <span class="number">1</span>;</span><br><span class="line">	<span class="comment">// In hexo 3.1.1, the permalink of &quot;about&quot; page is like &quot;.../about/index.html&quot;.</span></span><br><span class="line">	<span class="keyword">var</span> endPos = link.<span class="title function_">lastIndexOf</span>(<span class="string">&#x27;/&#x27;</span>) + <span class="number">1</span>;</span><br><span class="line">    link = link.<span class="title function_">substring</span>(beginPos, endPos);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> toprocess = [<span class="string">&#x27;excerpt&#x27;</span>, <span class="string">&#x27;more&#x27;</span>, <span class="string">&#x27;content&#x27;</span>];</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; toprocess.<span class="property">length</span>; i++)&#123;</span><br><span class="line">      <span class="keyword">var</span> key = toprocess[i];</span><br><span class="line"> </span><br><span class="line">      <span class="keyword">var</span> $ = cheerio.<span class="title function_">load</span>(data[key], &#123;</span><br><span class="line">        <span class="attr">ignoreWhitespace</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">xmlMode</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">lowerCaseTags</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">decodeEntities</span>: <span class="literal">false</span></span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">      $(<span class="string">&#x27;img&#x27;</span>).<span class="title function_">each</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">		<span class="keyword">if</span> ($(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>))&#123;</span><br><span class="line">			<span class="comment">// For windows style path, we replace &#x27;\&#x27; to &#x27;/&#x27;.</span></span><br><span class="line">			<span class="keyword">var</span> src = $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>).<span class="title function_">replace</span>(<span class="string">&#x27;\\&#x27;</span>, <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">			<span class="keyword">if</span>(!<span class="regexp">/http[s]*.*|\/\/.*/</span>.<span class="title function_">test</span>(src) &amp;&amp;</span><br><span class="line">			   !<span class="regexp">/^\s*\//</span>.<span class="title function_">test</span>(src)) &#123;</span><br><span class="line">			  <span class="comment">// For &quot;about&quot; page, the first part of &quot;src&quot; can&#x27;t be removed.</span></span><br><span class="line">			  <span class="comment">// In addition, to support multi-level local directory.</span></span><br><span class="line">			  <span class="keyword">var</span> linkArray = link.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">				<span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">			  &#125;);</span><br><span class="line">			  <span class="keyword">var</span> srcArray = src.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">				<span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span> &amp;&amp; elem != <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">			  &#125;);</span><br><span class="line">			  <span class="keyword">if</span>(srcArray.<span class="property">length</span> &gt; <span class="number">1</span>)</span><br><span class="line">				srcArray.<span class="title function_">shift</span>();</span><br><span class="line">			  src = srcArray.<span class="title function_">join</span>(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">			  $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, config.<span class="property">root</span> + link + src);</span><br><span class="line">			  <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+config.<span class="property">root</span> + link + src);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">			<span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;no src attr, skipped...&quot;</span>);</span><br><span class="line">			<span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>($(<span class="variable language_">this</span>));</span><br><span class="line">		&#125;</span><br><span class="line">      &#125;);</span><br><span class="line">      data[key] = $.<span class="title function_">html</span>();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>重新部署！图片正常显示！！！完美</p>
+ <img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128150713000.png" style="zoom:67%;">
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>教程</tag>
+        <tag>Hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -931,6 +884,12 @@
 <h3 id="8-版权声明"><a href="#8-版权声明" class="headerlink" title="8. 版权声明"></a>8. 版权声明</h3><p>NexT 内置了文章末尾增加版权声明，只需手动开启即可</p>
 <figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Creative Commons 4.0 International License.</span></span><br><span class="line"><span class="comment"># See: https://creativecommons.org/about/cclicenses/</span></span><br><span class="line"><span class="attr">creative_commons:</span></span><br><span class="line">  <span class="comment"># Available values: by | by-nc | by-nc-nd | by-nc-sa | by-nd | by-sa | cc-zero</span></span><br><span class="line">  <span class="attr">license:</span> <span class="string">by-nc-sa</span></span><br><span class="line">  <span class="comment"># Available values: big | small</span></span><br><span class="line">  <span class="attr">size:</span> <span class="string">small</span></span><br><span class="line">  <span class="attr">sidebar:</span> <span class="literal">false</span></span><br><span class="line">  <span class="attr">post:</span> <span class="literal">true</span>  <span class="comment"># 将此处置为true即可</span></span><br><span class="line">  <span class="comment"># You can set a language value if you prefer a translated version of CC license, e.g. deed.zh</span></span><br><span class="line">  <span class="comment"># CC licenses are available in 39 languages, you can find the specific and correct abbreviation you need on https://creativecommons.org</span></span><br><span class="line">  <span class="attr">language:</span></span><br></pre></td></tr></table></figure>
 
+<h3 id="9-置顶"><a href="#9-置顶" class="headerlink" title="9. 置顶"></a>9. 置顶</h3><p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220531182846937.png"></p>
+<p>文章<code>header</code>添加<code>sticky</code>，将会按照sticky值从大到小排序展示，默认为0</p>
+<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220531183020834.png"></p>
+<h3 id="10-更改字体"><a href="#10-更改字体" class="headerlink" title="10. 更改字体"></a>10. 更改字体</h3><p><code>_config.next.yml</code>中<code>font</code>配置</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ---------------------------------------------------------------</span></span><br><span class="line"><span class="comment"># Font Settings</span></span><br><span class="line"><span class="comment"># ---------------------------------------------------------------</span></span><br><span class="line"><span class="comment"># Find fonts on Google Fonts (https://fonts.google.com)</span></span><br><span class="line"><span class="comment"># All fonts set here will have the following styles:</span></span><br><span class="line"><span class="comment">#   light | light italic | normal | normal italic | bold | bold italic</span></span><br><span class="line"><span class="comment"># Be aware that setting too much fonts will cause site running slowly</span></span><br><span class="line"><span class="comment"># ---------------------------------------------------------------</span></span><br><span class="line"><span class="comment"># Web Safe fonts are recommended for `global` (and `title`):</span></span><br><span class="line"><span class="comment"># Arial | Tahoma | Helvetica | Times New Roman | Courier New | Verdana | Georgia | Palatino | Garamond | Comic Sans MS | Trebuchet MS</span></span><br><span class="line"><span class="comment"># ---------------------------------------------------------------</span></span><br><span class="line"></span><br><span class="line"><span class="attr">font:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Uri of fonts host, e.g. https://fonts.googleapis.com (Default).</span></span><br><span class="line">  <span class="attr">host:</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Font options:</span></span><br><span class="line">  <span class="comment"># `external: true` will load this font family from `host` above.</span></span><br><span class="line">  <span class="comment"># `family: Times New Roman`. Without any quotes.</span></span><br><span class="line">  <span class="comment"># `size: x.x`. Use `em` as unit. Default: 1 (16px)</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Global font settings used for all elements inside &lt;body&gt;.</span></span><br><span class="line">  <span class="attr">global:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">family:</span> <span class="string">Noto</span> <span class="string">Serif</span> <span class="string">SC</span></span><br><span class="line">    <span class="comment">#family: Lato</span></span><br><span class="line">    <span class="attr">size:</span> <span class="number">0.8</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Font settings for site title (.site-title).</span></span><br><span class="line">  <span class="attr">title:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">family:</span></span><br><span class="line">    <span class="attr">size:</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Font settings for headlines (&lt;h1&gt; to &lt;h6&gt;).</span></span><br><span class="line">  <span class="attr">headings:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">family:</span></span><br><span class="line">    <span class="attr">size:</span></span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
         <category>教程</category>
@@ -971,27 +930,6 @@
       </categories>
       <tags>
         <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>typora图片左对齐</title>
-    <url>/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/</url>
-    <content><![CDATA[<p>typora图片默认是剧中对齐的方式：</p>
-<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128142529931.png"> </p>
-<p>但很多情况下我们其实更倾向于图片左对齐，网上很多办法都更改typora的默认对齐方式，即更改github.css文件，但这种方式会让我们所有的图片都变成左对齐的方式，实际情况下我们有的时候只需要一张图片左对齐。其实在typora中实现图片左对齐的方法非常简单，只需要<strong>在图片链接后加一个空格即可</strong>：</p>
-<span id="more"></span>
-
-<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128143120575.png"></p>
-<hr>
-<h3 id="设置任意对齐方式"><a href="#设置任意对齐方式" class="headerlink" title="设置任意对齐方式"></a>设置任意对齐方式</h3><p>在<code>typora</code>中图片的默认格式为<code>![图片标题](图片url)</code></p>
-<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128151604005.png"></p>
-<p>实际上markdown是兼容<code>&lt;img src=&quot;&quot;&gt;</code>图片格式的，采用img标签就可以利用<code>align</code>属性设置图片对齐方式。</p>
-<p>下面介绍一种可以快速将图片格式从<code>![图片标题](图片url)</code>变为<code>&lt;img src=&quot;&quot;&gt;</code>格式，选中图片，右键，选择缩放图片，任意选择一个不是100%缩放比例（如果选择100%不会有任何变化，如果不想改变图片大小，设置<code>zoom:100</code>即可，即<code>style=&quot;zoom:100%;&quot;</code>），缩放完毕就可以发现图片格式进行自动转换，在<code>img标签中</code>添加<code>align</code>属性即可。</p>
-<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128152513094.png"></p>
-]]></content>
-      <tags>
-        <tag>教程</tag>
-        <tag>Typora</tag>
       </tags>
   </entry>
   <entry>
@@ -1046,6 +984,74 @@
 ]]></content>
       <categories>
         <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git常用命令</title>
+    <url>/2022/05/10/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h2 id="Git基础命令"><a href="#Git基础命令" class="headerlink" title="Git基础命令"></a>Git基础命令</h2><ol>
+<li>克隆代码</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone xxx</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">克隆指定分支</span></span><br><span class="line">git clone -b branchName xxx</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>拉取（更新）代码</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git pull origin</span><br><span class="line">git pull origin branchName</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">变基</span></span><br><span class="line">git pull --rebase origin branchName</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<ol start="3">
+<li>提交代码</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit &quot;message&quot;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>推送远程分支</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git push origin head:branchName</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">强制推送</span></span><br><span class="line">git push -f origin head:branchName</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>合并提交记录</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">合并近k条提交记录</span></span><br><span class="line">git rebase -i head~k</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">一般pick第一条，后面都squash</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/10/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20220510193114486.png"></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？</title>
+    <url>/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/</url>
+    <content><![CDATA[<h3 id="问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数"><a href="#问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数" class="headerlink" title="问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数"></a>问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数</h3><p>解法：采用BitMap，每个整数分配2个bit</p>
+<blockquote>
+<p>00	&#x3D;&gt; 0	表示没出现过</p>
+<p>01	&#x3D;&gt; 1	表示出现过1次</p>
+<p>10	&#x3D;&gt;2	表示出现过多次</p>
+<p>11	&#x3D;&gt;3	表示无效数据。</p>
+</blockquote>
+<span id="more"></span>
+
+<ul>
+<li>内存分析</li>
+</ul>
+<p>每个无符号整数的取值范围为0~2^32-1，BitMap空间复杂度取决于MAX_VALUE，因此需要一个长度为2 ^ 32的BitMap，总占用空间为2^32 * 2bit &#x3D; 1 GB。</p>
+<h3 id="使用Java程序进行实现："><a href="#使用Java程序进行实现：" class="headerlink" title="使用Java程序进行实现："></a>使用Java程序进行实现：</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BitMapTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 00 没出现过</span></span><br><span class="line"><span class="comment">     * 01 出现过1次</span></span><br><span class="line"><span class="comment">     * 10 出现过多次</span></span><br><span class="line"><span class="comment">     * 11 无效表示</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 1 byte = 8 bit，可分配四个数字，长度为1000可覆盖4000个数字，因此我们设置输入整数不超过4000</span></span><br><span class="line"><span class="comment">     * 真实情况下该数组的长度应该为 2.5亿/4，才能覆盖所有无符号整数，此处测试用较小数字进行</span></span><br><span class="line"><span class="comment">     * flags默认初始值都为0</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |3 2 1 0| flag[0] 例如：10000100 表示3出现过多次, 2, 0都没有出现过，1出现过一次</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |7 6 5 4| flag[1]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="type">byte</span>[] flags = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1000</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] nums = <span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">2000</span>];  <span class="comment">// 2000个测试输入数据</span></span><br><span class="line">        <span class="comment">// 验证结果的正确性</span></span><br><span class="line">        Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(nums.length);</span><br><span class="line">        <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">        System.out.println(<span class="string">&quot;原始数据：&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="comment">// 填充随机数输入进行验证</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> random.nextInt(flags.length * <span class="number">4</span>);  <span class="comment">// flags长度为1000，整数最大只能为4000</span></span><br><span class="line">            nums[i] = num;</span><br><span class="line">            System.out.print(num + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            map.put(num, map.getOrDefault(num, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            setVal(num);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();</span><br><span class="line">        System.out.println(<span class="string">&quot;-------------------&quot;</span>);</span><br><span class="line">        List&lt;Integer&gt; bitMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        List&lt;Integer&gt; hashMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (getVal(nums[i]) == <span class="number">1</span>) &#123;</span><br><span class="line">                bitMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (map.getOrDefault(nums[i], <span class="number">0</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">                hashMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;只出现过一次的数据：&quot;</span>);</span><br><span class="line">        System.out.println(bitMapAns);</span><br><span class="line">        System.out.println(<span class="string">&quot;bitMapAns 是否和 hashMapAns相同：&quot;</span> + bitMapAns.equals(hashMapAns));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> getVal(idx);</span><br><span class="line">        <span class="keyword">if</span> (val &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="comment">// 11 或 10 表示出现过多次，保持不变即可</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        ~(3&lt;&lt;loc) =&gt; 11001111 即让2bit对应位置为0，其他都为1</span></span><br><span class="line"><span class="comment">        (flags[pos] &amp; ~(3&lt;&lt;loc)) =&gt; 效果就是让2bit对应位置置为00，其他为保持不变</span></span><br><span class="line"><span class="comment">        | ((val + 1) &lt;&lt; loc) =&gt; 效果就是让val+1的值填充2bit的位置</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">newVal</span> <span class="operator">=</span> (flags[pos] &amp; ~(<span class="number">3</span> &lt;&lt; (loc * <span class="number">2</span>))) | ((val + <span class="number">1</span>) &lt;&lt; (loc * <span class="number">2</span>));</span><br><span class="line">        flags[pos] = (<span class="type">byte</span>) newVal;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">getVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        flags[pos] &gt;&gt; (loc * 2)  =&gt; 00001001  (左边自动补0) 这个操作的效果是让2这个整数在bitmap中对应的两个bit移动到最右端</span></span><br><span class="line"><span class="comment">        拿上面的结果  (0b00001001) &amp; (byte)3  =&gt; (0b00001001) &amp; (0b00000011) =&gt; (0b00000001) 即可得到目标的两个bit对应的数字</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> (flags[pos] &gt;&gt; (loc * <span class="number">2</span>)) &amp; (<span class="type">byte</span>) <span class="number">3</span>;</span><br><span class="line">        <span class="keyword">return</span> val;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p><img src="/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/image-20220512221937915.png"></p>
+<p>上述通过<code>HashMap</code>的方案可以检验<code>BitMap</code>的答案是正确的，并且成功节省了内存空间。</p>
+]]></content>
+      <categories>
+        <category>技术</category>
       </categories>
       <tags>
         <tag>Java</tag>
@@ -1135,11 +1141,12 @@
   <entry>
     <title>MySQL:总算把B+树搞明白了</title>
     <url>/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/</url>
-    <content><![CDATA[<h2 id="1-MySQL索引为何使用B-树"><a href="#1-MySQL索引为何使用B-树" class="headerlink" title="1. MySQL索引为何使用B+树"></a>1. MySQL索引为何使用B+树</h2><p><code>MySQL</code>索引是提升数据库查询效率的最强武器，那么为何索引能够提升数据库查询速度？为何<code>MySQL</code>采用<code>B+树</code>来实现索引？</p>
-<h3 id="1-为何索引能提升查询性能？"><a href="#1-为何索引能提升查询性能？" class="headerlink" title="1. 为何索引能提升查询性能？"></a>1. 为何索引能提升查询性能？</h3><p>第一个问题可以用一个比较通俗的说法来回答，数据库索引相当于给一本书加了一个目录。</p>
-<p>问题来了，为什么有了”目录“就能提升数据库查询效率呢？</p>
+    <content><![CDATA[<p><img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/mysql-logo-800-400.jpg"></p>
+<h2 id="1-MySQL索引为何使用B-树"><a href="#1-MySQL索引为何使用B-树" class="headerlink" title="1. MySQL索引为何使用B+树"></a>1. MySQL索引为何使用B+树</h2><p><code>MySQL</code>索引是提升数据库查询效率的最强武器，那么为何索引能够提升数据库查询速度？为何<code>MySQL</code>采用<code>B+树</code>来实现索引？</p>
 <span id="more"></span>
 
+<h3 id="1-为何索引能提升查询性能？"><a href="#1-为何索引能提升查询性能？" class="headerlink" title="1. 为何索引能提升查询性能？"></a>1. 为何索引能提升查询性能？</h3><p>第一个问题可以用一个比较通俗的说法来回答，数据库索引相当于给一本书加了一个目录。</p>
+<p>问题来了，为什么有了”目录“就能提升数据库查询效率呢？</p>
 <p>比较简单的解释，通过目录查找的过程可以近似理解为<code>二分查找</code>查找的过程，我们知道<code>二分查找</code>可以将遍历查询的时间复杂度从<code>o(n)</code>降为<code>o(log n)</code>。</p>
 <p>数据库利用索引查询数据的具体过程，后文会进行详细描述。</p>
 <h3 id="2-为何MySQL不用二叉树来实现索引？"><a href="#2-为何MySQL不用二叉树来实现索引？" class="headerlink" title="2. 为何MySQL不用二叉树来实现索引？"></a>2. 为何<code>MySQL</code>不用<code>二叉树</code>来实现索引？</h3><p>我们知道通过排序二叉树（也叫二分查找树）可以实现<code>o(log n)</code>的时间复杂度进行查询，相比于<code>o(n)</code>的时间复杂度已经有了极大的提升。</p>
@@ -1265,81 +1272,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Redis过期key是否立马被删除？</title>
-    <url>/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/</url>
-    <content><![CDATA[<h3 id="Redis过期key是否立马被删除？"><a href="#Redis过期key是否立马被删除？" class="headerlink" title="Redis过期key是否立马被删除？"></a>Redis过期key是否立马被删除？</h3><p>答案是不会，Redis处理过期key主要有两种方式：</p>
-<ul>
-<li>惰性删除（客户端侧）</li>
-<li>定期随机删除（服务端侧）</li>
-</ul>
-<span id="more"></span>
-
-<h4 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h4><p>当客户端请求查询时，判断当前key已过期，则会删除该key，删除key的主动权交给每次访问的请求。</p>
-<p>弊端：只能处理还会访问的key，无法对一些不再会被访问的key进行删除。</p>
-<p>该实现通过<code>expiredIfNeeded</code>函数实现，源码路径：<code>src/db.c</code></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">expireIfNeeded</span><span class="params">(redisDb *db, robj *key, <span class="type">int</span> force_delete_expired)</span> &#123;</span><br><span class="line">   <span class="comment">// key 没有过期，return 0</span></span><br><span class="line">    <span class="keyword">if</span> (!keyIsExpired(db,key)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (server.masterhost != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (server.current_client == server.master) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (!force_delete_expired) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (checkClientPauseTimeoutAndReturnIfPaused()) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Delete the key */</span></span><br><span class="line">    deleteExpiredKeyAndPropagate(db,key);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h4><p>对于一些key过期后不再被访问，惰性删除永远无法对其进行删除，这会导致已过期的key不断积压，因此仅靠客户端侧的处理是不够的。</p>
-<ul>
-<li>如何让处理“占着茅坑不拉屎”的key?</li>
-</ul>
-<p>服务端进行定期删除，顾名思义就是Redis默认每100 ms 执行一次，随机抽取一些设置了过期时间的key，判断是否过期，如发现已过期就直接删除。</p>
-<blockquote>
-<p>注意：并不是检查所有key，而是随机抽取一定数量的key</p>
-</blockquote>
-<p>具体步骤如下：</p>
-<img src="/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/image-20220511000559696.png" style="zoom:70%">
-
-<p>该过程通过<code>activeExpireCycle</code>函数实现，源码路径：<code>src/expire.c</code></p>
-<ul>
-<li>为什么不检查所有设置过期时间的key？</li>
-</ul>
-<p>Redis中存放了数以万计的key，如果每隔100 ms 就要轮询检查所有设置过期时间的key，会非常耗费CPU</p>
-<ul>
-<li>删除如何做到主从同步？</li>
-</ul>
-<p>不论是惰性删除还是定期删除，当进行删除时，<code>master</code>会将删除指令记录到<code>AOF</code>和<code>slave</code>节点</p>
-<blockquote>
-<p><strong>如果过期数据太多，定时删除无法完全删除（每次删除完过期的key还是超过25%），同时这些key再也不会被客户端请求，即也无法通过惰性删除，该如何解决？</strong></p>
-<p>答：内存淘汰机制</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>Redis</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>如何配置git ssh</title>
-    <url>/2022/05/10/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgit-ssh/</url>
-    <content><![CDATA[<h3 id="1-检查用户名和邮箱"><a href="#1-检查用户名和邮箱" class="headerlink" title="1. 检查用户名和邮箱"></a>1. 检查用户名和邮箱</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看用户名</span></span><br><span class="line">git config user.name</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看邮箱</span></span><br><span class="line">git config user.email</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置用户名</span></span><br><span class="line">git config --global user.name &quot;xxx&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置邮箱</span></span><br><span class="line">git config --global user.email &quot;xxx&quot;</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<h3 id="2-查看是否配置过SSH-Key"><a href="#2-查看是否配置过SSH-Key" class="headerlink" title="2. 查看是否配置过SSH Key"></a>2. 查看是否配置过SSH Key</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ls ~/.ssh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">hyunmin@HyunmindeMacBook-Air .ssh % <span class="built_in">ls</span> ~/.ssh</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">id_rsa      id_rsa.pub  known_hosts</span></span><br></pre></td></tr></table></figure>
-
-<p>存在id_rsa      id_rsa.pub文件即证明已配置过SSH Key</p>
-<h3 id="3-生成SSH-Key（秘钥）"><a href="#3-生成SSH-Key（秘钥）" class="headerlink" title="3. 生成SSH Key（秘钥）"></a>3. 生成SSH Key（秘钥）</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t -rsa -C &quot;email&quot;</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-GitHub远程仓库添加公钥"><a href="#4-GitHub远程仓库添加公钥" class="headerlink" title="4. GitHub远程仓库添加公钥"></a>4. GitHub远程仓库添加公钥</h3><ol>
-<li><p>复制<code>~/.ssh/id_rsa.pub</code>文件内容，并粘贴到GitHub-&gt;settings-&gt;SSH and GPG keys</p>
-</li>
-<li><p>检查是否配置成功</p>
-</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示如下内容则表示配置成功</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Hi Ysfun! You<span class="string">&#x27;ve successfully authenticated, but GitHub does not provide shell access.</span></span></span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Git</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>String s=&quot;a&quot;+&quot;b&quot;+&quot;c&quot;到底创建了几个对象？</title>
     <url>/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/</url>
     <content><![CDATA[<p><strong>常量折叠技术</strong>：在编译期间，编译器会将<strong>编译器常</strong>的加减乘除运算过程在编译过程中折叠。编译器通过语法分析，将常量表达式计算求值，并用求出来的值替换表达式，而不必等到运行期间再进行运算处理，从而在运行期间节省处理器资源。</p>
@@ -1449,6 +1381,81 @@
       </categories>
       <tags>
         <tag>Markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Redis过期key是否立马被删除？</title>
+    <url>/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/</url>
+    <content><![CDATA[<h3 id="Redis过期key是否立马被删除？"><a href="#Redis过期key是否立马被删除？" class="headerlink" title="Redis过期key是否立马被删除？"></a>Redis过期key是否立马被删除？</h3><p>答案是不会，Redis处理过期key主要有两种方式：</p>
+<ul>
+<li>惰性删除（客户端侧）</li>
+<li>定期随机删除（服务端侧）</li>
+</ul>
+<span id="more"></span>
+
+<h4 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h4><p>当客户端请求查询时，判断当前key已过期，则会删除该key，删除key的主动权交给每次访问的请求。</p>
+<p>弊端：只能处理还会访问的key，无法对一些不再会被访问的key进行删除。</p>
+<p>该实现通过<code>expiredIfNeeded</code>函数实现，源码路径：<code>src/db.c</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">expireIfNeeded</span><span class="params">(redisDb *db, robj *key, <span class="type">int</span> force_delete_expired)</span> &#123;</span><br><span class="line">   <span class="comment">// key 没有过期，return 0</span></span><br><span class="line">    <span class="keyword">if</span> (!keyIsExpired(db,key)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (server.masterhost != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (server.current_client == server.master) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (!force_delete_expired) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (checkClientPauseTimeoutAndReturnIfPaused()) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Delete the key */</span></span><br><span class="line">    deleteExpiredKeyAndPropagate(db,key);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h4><p>对于一些key过期后不再被访问，惰性删除永远无法对其进行删除，这会导致已过期的key不断积压，因此仅靠客户端侧的处理是不够的。</p>
+<ul>
+<li>如何让处理“占着茅坑不拉屎”的key?</li>
+</ul>
+<p>服务端进行定期删除，顾名思义就是Redis默认每100 ms 执行一次，随机抽取一些设置了过期时间的key，判断是否过期，如发现已过期就直接删除。</p>
+<blockquote>
+<p>注意：并不是检查所有key，而是随机抽取一定数量的key</p>
+</blockquote>
+<p>具体步骤如下：</p>
+<img src="/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/image-20220511000559696.png" style="zoom:70%">
+
+<p>该过程通过<code>activeExpireCycle</code>函数实现，源码路径：<code>src/expire.c</code></p>
+<ul>
+<li>为什么不检查所有设置过期时间的key？</li>
+</ul>
+<p>Redis中存放了数以万计的key，如果每隔100 ms 就要轮询检查所有设置过期时间的key，会非常耗费CPU</p>
+<ul>
+<li>删除如何做到主从同步？</li>
+</ul>
+<p>不论是惰性删除还是定期删除，当进行删除时，<code>master</code>会将删除指令记录到<code>AOF</code>和<code>slave</code>节点</p>
+<blockquote>
+<p><strong>如果过期数据太多，定时删除无法完全删除（每次删除完过期的key还是超过25%），同时这些key再也不会被客户端请求，即也无法通过惰性删除，该如何解决？</strong></p>
+<p>答：内存淘汰机制</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何配置git ssh</title>
+    <url>/2022/05/10/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgit-ssh/</url>
+    <content><![CDATA[<h3 id="1-检查用户名和邮箱"><a href="#1-检查用户名和邮箱" class="headerlink" title="1. 检查用户名和邮箱"></a>1. 检查用户名和邮箱</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看用户名</span></span><br><span class="line">git config user.name</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看邮箱</span></span><br><span class="line">git config user.email</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置用户名</span></span><br><span class="line">git config --global user.name &quot;xxx&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置邮箱</span></span><br><span class="line">git config --global user.email &quot;xxx&quot;</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h3 id="2-查看是否配置过SSH-Key"><a href="#2-查看是否配置过SSH-Key" class="headerlink" title="2. 查看是否配置过SSH Key"></a>2. 查看是否配置过SSH Key</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ls ~/.ssh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">hyunmin@HyunmindeMacBook-Air .ssh % <span class="built_in">ls</span> ~/.ssh</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">id_rsa      id_rsa.pub  known_hosts</span></span><br></pre></td></tr></table></figure>
+
+<p>存在id_rsa      id_rsa.pub文件即证明已配置过SSH Key</p>
+<h3 id="3-生成SSH-Key（秘钥）"><a href="#3-生成SSH-Key（秘钥）" class="headerlink" title="3. 生成SSH Key（秘钥）"></a>3. 生成SSH Key（秘钥）</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t -rsa -C &quot;email&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-GitHub远程仓库添加公钥"><a href="#4-GitHub远程仓库添加公钥" class="headerlink" title="4. GitHub远程仓库添加公钥"></a>4. GitHub远程仓库添加公钥</h3><ol>
+<li><p>复制<code>~/.ssh/id_rsa.pub</code>文件内容，并粘贴到GitHub-&gt;settings-&gt;SSH and GPG keys</p>
+</li>
+<li><p>检查是否配置成功</p>
+</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示如下内容则表示配置成功</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Hi Ysfun! You<span class="string">&#x27;ve successfully authenticated, but GitHub does not provide shell access.</span></span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
       </tags>
   </entry>
   <entry>

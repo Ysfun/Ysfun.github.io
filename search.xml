@@ -1,0 +1,1474 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>Docker常用命令</title>
+    <url>/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h2 id="帮助命令"><a href="#帮助命令" class="headerlink" title="帮助命令"></a>帮助命令</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看版本信息</span></span><br><span class="line">docker version</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">信息</span></span><br><span class="line">docker info</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看命令帮助信息</span></span><br><span class="line">docker 命令 --help</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<blockquote>
+<p>Docker命令的帮助文档 <a href="https://docs.docker.com/reference/">Command-line-reference</a></p>
+</blockquote>
+<p><img src="/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/docker_command_diagram.jpeg"></p>
+<h2 id="镜像命令"><a href="#镜像命令" class="headerlink" title="镜像命令"></a>镜像命令</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker images</span></span><br><span class="line">REPOSITORY               TAG       IMAGE ID       CREATED       SIZE</span><br><span class="line">docker/getting-started   latest    b1bcd61774d8   10 days ago   27.2MB</span><br><span class="line">hello-world              latest    18e5af790473   8 weeks ago   9.14kB</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">解释</span></span><br><span class="line">REPOSITORY	镜像仓库源</span><br><span class="line">TAG					镜像的标签</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可选项</span></span><br><span class="line">  -a, --all             Show all images (default hides intermediate images)</span><br><span class="line">  -q, --quiet           Only show image IDs</span><br></pre></td></tr></table></figure>
+
+<p><strong>docker search：镜像搜索命令</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker search mysql</span></span><br><span class="line">NAME                              DESCRIPTION                                     STARS     OFFICIAL   AUTOMATED</span><br><span class="line">mysql                             MySQL is a widely used, open-source relation…   11712     [OK]       </span><br><span class="line">mariadb                           MariaDB Server is a high performing open sou…   4464      [OK]       </span><br><span class="line">mysql/mysql-server                Optimized MySQL Server Docker images. Create…   870                  [OK]</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可选项</span></span><br><span class="line">  -f, --filter filter   Filter output based on conditions provided</span><br><span class="line">      --format string   Pretty-print search using a Go template</span><br><span class="line">      --limit int       Max number of search results (default 25)</span><br><span class="line">      --no-trunc        Don&#x27;t truncate output</span><br><span class="line">例如：docker search mysql --filter=stars=3000  --&gt;  表示stars&gt;=3000的结果</span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker search mysql --filter=stars=3000</span></span><br><span class="line">NAME      DESCRIPTION                                     STARS     OFFICIAL   AUTOMATED</span><br><span class="line">mysql     MySQL is a widely used, open-source relation…   11712     [OK]       </span><br><span class="line">mariadb   MariaDB Server is a high performing open sou…   4464      [OK]   </span><br></pre></td></tr></table></figure>
+
+<p><strong>docker pull：下载镜像</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">下载镜像 docker pull 镜像名 [:tag]</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker pull mysql/mysql-server:5.7</span></span><br><span class="line"></span><br><span class="line">5.7: Pulling from mysql/mysql-server</span><br><span class="line">b8aa102ba20a: Pull complete </span><br><span class="line">2ff679d72626: Pull complete </span><br><span class="line">ea45979059fe: Pull complete </span><br><span class="line">526a484cb892: Pull complete </span><br><span class="line">4436dc023066: Pull complete </span><br><span class="line">98b382a658b6: Pull complete </span><br><span class="line">17d3acf6ac1e: Pull complete </span><br><span class="line">c5ce8d5cf40e: Pull complete </span><br><span class="line">Digest: sha256:32aac4632baa157d24e9eb3e20d2d62e775f0a2630afb8dabf5ee8c086b09c2a</span><br><span class="line">Status: Downloaded newer image for mysql/mysql-server:5.7</span><br><span class="line">docker.io/mysql/mysql-server:5.7</span><br></pre></td></tr></table></figure>
+
+<p><strong>docker rmi：删除镜像命令</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker rmi -f 镜像id 镜像id  # 删除多个镜像</span><br><span class="line">docker rmi -f $(docker images -qa)  # 删除全部镜像</span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker rmi -f 18e5af790473</span></span><br><span class="line"></span><br><span class="line">Untagged: hello-world:latest</span><br><span class="line">Untagged: hello-world@sha256:cc15c5b292d8525effc0f89cb299f1804f3a725c8d05e158653a563f15e4f685</span><br><span class="line">Deleted: sha256:18e5af7904737ba5ef7fbbd7d59de5ebe6c4437907bd7fc436bf9b3ef3149ea9</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可选项</span></span><br><span class="line">  -f, --force      Force removal of the image</span><br><span class="line">      --no-prune   Do not delete untagged parents</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="容器命令"><a href="#容器命令" class="headerlink" title="容器命令"></a>容器命令</h2><p><strong>docker run：新建容器并启动</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker run [可选参数] image</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">参数说明</span></span><br><span class="line">--name=&quot;Name&quot;			指定容器名字，用于区分容器</span><br><span class="line">-d								后台方式运行</span><br><span class="line">-it								使用交互方式运行，进入容器查看内容</span><br><span class="line">-p								指定容器的端口 - p 8080:8080</span><br><span class="line">		-p ip: 主机端口:容器端口</span><br><span class="line">		-p 主机端口:容器端口（常用）</span><br><span class="line">		-p 容器端口</span><br><span class="line">-P								随机指定端口</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">启动并进入容器</span></span><br><span class="line">hyunmin@HyunmindeMacBook-Air ~ % docker run -it centos /bin/bash</span><br><span class="line">[root@44e406af8256 /]# exit			# 退出容器</span><br></pre></td></tr></table></figure>
+
+<p><strong>docker ps：查看运行中的容器</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker ps</span></span><br><span class="line">CONTAINER ID   IMAGE           COMMAND       CREATED        STATUS        PORTS     NAMES</span><br><span class="line">77128abd1e9c   centos:latest   &quot;/bin/bash&quot;   15 hours ago   Up 15 hours             objective_hellman</span><br></pre></td></tr></table></figure>
+
+<p><strong>退出容器</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">退出并关闭容器</span></span><br><span class="line">exit</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">退出容器，不关闭，后台运行</span></span><br><span class="line">Ctrl+P+Q</span><br></pre></td></tr></table></figure>
+
+<p><strong>docker rm：删除容器</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker rm 容器id				# 删除指定容器，不能删除正在运行的容器，-f强制删除</span><br></pre></td></tr></table></figure>
+
+<p><strong>启动和停止容器操作</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker start 容器id 				# 启动容器</span><br><span class="line">docker restart 容器id				# 重启容器</span><br><span class="line">docker stop 	容器id				# 停止当前正在运行的容器</span><br><span class="line">docker kill 容器id					# 强制停止当前容器</span><br></pre></td></tr></table></figure>
+
+<h2 id="DockerFile"><a href="#DockerFile" class="headerlink" title="DockerFile"></a>DockerFile</h2><blockquote>
+<p><strong>DockerFile常用命令</strong></p>
+</blockquote>
+<p><img src="/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20211202100941535.png"> </p>
+<blockquote>
+<p> <strong>DockerFile构建流程</strong></p>
+</blockquote>
+<p><img src="/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20211202101420768.png"> </p>
+<blockquote>
+<p>Docker file创建一个自己的centos</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1. 编写一个自己的docker file</span></span><br><span class="line">FROM centos</span><br><span class="line">MAINTAINER hyunmin&lt;s_hyunmin@163.com&gt;</span><br><span class="line"></span><br><span class="line">ENV MY_PATH /usr/local</span><br><span class="line">WORKDIR $MY_PATH</span><br><span class="line"></span><br><span class="line">RUN yum -y install vim</span><br><span class="line">RUN yum -y install net-tools</span><br><span class="line"></span><br><span class="line">EXPOSE 80</span><br><span class="line"></span><br><span class="line">CMD echo $MY_PATH</span><br><span class="line">CMD echo &quot;----end----&quot;</span><br><span class="line">CMD /bin/bash</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2. build镜像文件</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">build命令</span></span><br><span class="line">docker build -f dockerfile文件路径 -t 镜像名:[tag] 文件目录(.)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3. 镜像本地变更历史</span></span><br><span class="line">docker history docker镜像id</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>Docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Https、ssh加密原理</title>
+    <url>/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<h2 id="1-Https与Http区别"><a href="#1-Https与Http区别" class="headerlink" title="1. Https与Http区别"></a>1. Https与Http区别</h2><p>相比于Http，Https采用了加密传输方式，可以有效防止网络攻击。可以近似理解为Https &#x3D; Http + SSL证书。</p>
+<p>Http默认端口为8080，Https默认端口为443。</p>
+<h2 id="2-Https加密原理"><a href="#2-Https加密原理" class="headerlink" title="2. Https加密原理"></a>2. Https加密原理</h2><p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/Https%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png"></p>
+<span id="more"></span>
+
+<ol>
+<li>客户端（浏览器）向服务端发起请求</li>
+<li>服务端接收请求，并明文传输公钥A给客户端，为了证实服务端的身份，服务端会将CA证书一同传输给客户端（这个步骤是与ssh建立连接的区别所在）</li>
+<li>客户端接收到公钥A，并用公钥A加密自己本地随机生成的对称加密密钥X</li>
+<li>公钥A加密的信息只有通过私钥才能解密，因此只有服务端才能解密并获取对称密钥X</li>
+<li>至此，服务端和客户端双方都持有对称密钥X，且第三方无法窃取，此后通过密钥X加密传输数据</li>
+</ol>
+<h2 id="3-SSH加密原理"><a href="#3-SSH加密原理" class="headerlink" title="3. SSH加密原理"></a>3. SSH加密原理</h2><p>SSH是一种网络协议，用于计算机之间的加密登录。如果一个用户从本地计算机，使用SSH协议登录另一台远程计算机，我们就可以认为，这种登录是安全的，即使被中途截获，密码也不会泄露。</p>
+<p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png"></p>
+<p>SSH加密原理与https基本相同，唯一的区别在于ssh没有CA证书，容易收到中间人攻击（Man-in-the-middle attack）。客户端无法验证公钥有没有被篡改过，如果有人截取数据，并返回篡改后的假公钥给客户端，客户端通过假公钥加密后的密码信息被截取并解密，就会导致客户端密码信息泄漏。</p>
+<ul>
+<li>下图展示了SSH被攻击的情况</li>
+</ul>
+<p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E8%A2%AB%E6%94%BB%E5%87%BB.png"></p>
+<p>问题在于客户端无法验证公钥A是不是来自服务端真实的公钥，Https采用CA证书来验证服务端的身份，而SSH则没有。</p>
+<h2 id="4-SSH解决中间人攻击的办法"><a href="#4-SSH解决中间人攻击的办法" class="headerlink" title="4. SSH解决中间人攻击的办法"></a>4. SSH解决中间人攻击的办法</h2><p>SSH的publish key和private key都是自己生成的，没法公证。只能通过Client端自己对公钥进行确认。</p>
+<p>通常在第一次登录的时候，系统会出现下面提示信息：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ssh user@host</span></span><br><span class="line">The authenticity of host &#x27;host (12.18.429.21)&#x27; can&#x27;t be established.</span><br><span class="line">RSA key fingerprint is 98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d.</span><br><span class="line">Are you sure you want to continue connecting (yes/no)?</span><br></pre></td></tr></table></figure>
+
+<p>上面信息的意思是：无法确认主机host(12.18.429.21)的真实性，不过知道它的公钥指纹，询问你是否继续连接？</p>
+<p>所谓”公钥指纹”，是指公钥长度较长（这里采用RSA算法，长达1024位），很难比对，所以对其进行MD5计算，将它变成一个128位的指纹。上例中是98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d，再进行比较，就容易多了。</p>
+<p>之所以用fingerprint代替key，主要是key过于长（RSA算法生成的公钥有1024位），很难直接比较。所以，对公钥进行hash生成一个128位的指纹，这样就方便比较了。</p>
+<p>很自然的一个问题就是，用户怎么知道远程主机的公钥指纹应该是多少？</p>
+<p>回答是没有好办法，远程主机必须在自己的网站上贴出公钥指纹，以便用户自行核对，或者自己甄别host地址是否正确。</p>
+<p>假定经过风险衡量以后（一般用户直接就选择yes吧），用户决定接受这个远程主机的公钥。<br>　　Are you sure you want to continue connecting (yes&#x2F;no)? yes<br>系统会出现一句提示，表示host主机已经得到认可。<br>　　Warning: Permanently added ‘host,12.18.429.21’ (RSA) to the list of known hosts.<br>然后，会要求输入密码。<br>　　Password: (enter password)<br>如果密码正确，就可以登录了。</p>
+<p>当远程主机的公钥被接受以后，它就会被保存在文件$HOME&#x2F;.ssh&#x2F;known_hosts之中。下次再连接这台主机，系统就会认出它的公钥已经保存在本地了，从而跳过警告部分，直接提示输入密码。<br>每个SSH用户都有自己的known_hosts文件，此外系统也有一个这样的文件，通常是&#x2F;etc&#x2F;ssh&#x2F;ssh_known_hosts，保存一些对所有用户都可信赖的远程主机的公钥。</p>
+]]></content>
+      <categories>
+        <category>计算机基础</category>
+      </categories>
+      <tags>
+        <tag>计算机网络</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MyBatis中SqlSession创建过程详解</title>
+    <url>/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/</url>
+    <content><![CDATA[<h2 id="1、SqlSession接口介绍"><a href="#1、SqlSession接口介绍" class="headerlink" title="1、SqlSession接口介绍"></a>1、SqlSession接口介绍</h2><p>SqlSession是MyBatis的主要Java接口，通过这个接口可以执行命令、获取mappers、进行事务管理。</p>
+<p>接口的主要方法有：</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505134423383.png">
+
+<p><strong>getMapper(Class<T>): T 规定了获取mapper的方法。</T></strong></p>
+<p>实现类：</p>
+ <img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505134944251.png">
+
+<span id="more"></span>
+
+<h2 id="2、SqlSessionFactory"><a href="#2、SqlSessionFactory" class="headerlink" title="2、SqlSessionFactory"></a>2、<code>SqlSessionFactory</code></h2><p>由<code>SqlSessionFactory</code>接口创建SqlSession，<code>SqlSessionFactory</code> 有一个唯一的必要属性：用于 JDBC 的 <code>DataSource</code>。这可以是任意的 <code>DataSource</code> 对象，它的配置方法和其它 Spring 数据库连接是一样的。</p>
+<p>在基础的 MyBatis 用法中，是通过 <code>SqlSessionFactoryBuilder</code> 来创建 <code>SqlSessionFactory</code> 的。而在 MyBatis-Spring 中，则使用 <code>SqlSessionFactoryBean</code> 来创建。</p>
+<p>示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyBatisConfig</span> &#123;</span><br><span class="line">  <span class="meta">@Bean</span></span><br><span class="line">  <span class="keyword">public</span> SqlSessionFactory <span class="title function_">sqlSessionFactory</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">SqlSessionFactoryBean</span> <span class="variable">factoryBean</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SqlSessionFactoryBean</span>();</span><br><span class="line">    factoryBean.setDataSource(dataSource());</span><br><span class="line">    <span class="keyword">return</span> factoryBean.getObject();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>SqlSessionFactoryBean</code>实现了Spring的<code>FactoryBean</code>接口。这意味着由Spring最终创建的bean并不是<code>SqlSessionFactoryBean</code>本身，而是工厂类(<code>SqlSessionFactoryBean</code>)的getObject()方法的返回结果。</p>
+ <img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505142305469.png">
+
+<h2 id="3、追踪mapper的创建过程"><a href="#3、追踪mapper的创建过程" class="headerlink" title="3、追踪mapper的创建过程"></a>3、追踪mapper的创建过程</h2><p>通过MapperFactoryBean创建mapper的bean对象</p>
+<p>在容器注入MapperSessionFactoryBean</p>
+<p>xml方式：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;userMapper&quot;</span> <span class="attr">class</span>=<span class="string">&quot;org.mybatis.spring.mapper.MapperFactoryBean&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;mapperInterface&quot;</span> <span class="attr">value</span>=<span class="string">&quot;org.mybatis.spring.sample.mapper.UserMapper&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;sqlSessionFactory&quot;</span> <span class="attr">ref</span>=<span class="string">&quot;sqlSessionFactory&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>注解方式：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> MapperFactoryBean <span class="title function_">mapperFactoryBean</span><span class="params">()</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">    <span class="type">MapperFactoryBean</span> <span class="variable">mapperFactoryBean</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MapperFactoryBean</span>(PersonMapper.class);</span><br><span class="line">    <span class="type">SqlSessionFactory</span> <span class="variable">sqlSessionFactory</span> <span class="operator">=</span> SqlSessionFactory();</span><br><span class="line">    mapperFactoryBean.setSqlSessionFactory(sqlSessionFactory);</span><br><span class="line">    <span class="keyword">return</span> mapperFactoryBean;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>获取mapper</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> UserMapper userMapper&#123;</span><br><span class="line">    <span class="keyword">return</span> (UserMapper)mapperFactoryBean.getObect();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="源码解析"><a href="#源码解析" class="headerlink" title="源码解析"></a>源码解析</h3><p><strong>MapperFactoryBean</strong>类：</p>
+<p>继承自<code>SqlSessionDaoSupport</code></p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505144810017.png">
+
+<p>通过构造器将<code>UserMapper</code>接口的类型赋给mapperInterface属性</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505144207877.png">
+
+<p>getObject()方法得到<code>UserMapper</code>接口的代理对象</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505143732511.png">
+
+<p>getSqlSession()方法是父类<code>SqlSessionDaoSupport</code>的方法</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505145007415.png">
+
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505145140277.png">
+
+<p>由上可知，<code>MapperFactoryBean.getObject()</code>方法的返回值等同于</p>
+<p><code>new SqlSessionTemplate(sqlSessionFactory).getMapper(mapperInterface)</code>的返回值</p>
+<p>注意：SqlSessionTemplate是SqlSession的实现类</p>
+<p>SqlSessionTemplate.getMapper(type)方法</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505153356044.png">
+
+<p>Configuration.getMapper(type, sqlSession)方法</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505153616988.png">
+
+<p>MapperRegistry.getMapper(type, sqlSession)方法</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505153935293.png">
+
+<p>MapperProxyFactory.newInstance(sqlSession)方法，Proxy.newProxyInstance()是JDK动态代理的方法</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505154127702.png">
+
+<p>由此可追踪到，mapper是实际上就是通过动态代理创建的代理对象。</p>
+<h2 id="3、mapper执行sql方法"><a href="#3、mapper执行sql方法" class="headerlink" title="3、mapper执行sql方法"></a>3、mapper执行sql方法</h2><p>MapperProxy.execute(sqlSession, args)方法</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505155455637.png">
+
+<p>上图中的<code>sqlSession</code>为<code>SqlSessionTemplate</code>，SqlSessionTemplate.insert(statement, parameter)方法：</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505155648618.png">
+
+<p>SqlSessionProxy的创建，SqlSessionProxy是SqlSession接口的代理对象：</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505160016131.png">
+
+<p>SqlSessionTemplate.SqlSessionInterceptor.invoke()方法中完成事务事务管理<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505160517366.png"></p>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>MyBatis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mac上使用Homebrew安装mysql</title>
+    <url>/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/</url>
+    <content><![CDATA[<p>注意⚠️：本教程是采用Homebrew安装mysql，引用官方的一句话：Homebrew是Mac OS 不可或缺的套件管理器。执行一下命令即可安装Homebrew：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装Homebrew</span></span><br><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://cdn.jsdelivr.net/gh/ineo6/homebrew-install/install)&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看版本信息</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew -v</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">出现下面版本信息，则表明安装成功</span></span><br><span class="line">Homebrew 3.3.4</span><br><span class="line">Homebrew/homebrew-core (git revision 4605f7a940f; last commit 2021-11-21)</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装mysql"><a href="#安装mysql" class="headerlink" title="安装mysql"></a>安装mysql</h2><blockquote>
+<ol>
+<li>使用Homebrew搜索mysql版本</li>
+</ol>
+</blockquote>
+<span id="more"></span>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew search mysql</span></span><br><span class="line"></span><br><span class="line">==&gt; Formulae</span><br><span class="line">automysqlbackup          mysql-client             mysql-sandbox            mysql@5.7</span><br><span class="line">mysql                    mysql-client@5.7         mysql-search-replace     mysqltuner</span><br><span class="line">mysql++                  mysql-connector-c++      mysql@5.6                qt-mysql</span><br><span class="line"></span><br><span class="line">==&gt; Casks</span><br><span class="line">homebrew/cask/mysql-connector-python               homebrew/cask/navicat-for-mysql</span><br><span class="line">homebrew/cask/mysql-shell                          homebrew/cask/sqlpro-for-mysql</span><br><span class="line">homebrew/cask/mysql-utilities</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ol start="2">
+<li>安装<a href="mailto:&#109;&#x79;&#115;&#x71;&#x6c;&#64;&#53;&#x2e;&#x37;">&#109;&#x79;&#115;&#x71;&#x6c;&#64;&#53;&#x2e;&#x37;</a></li>
+</ol>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew install mysql@5.7</span></span><br><span class="line"></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/manifests/5.7.36</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/blobs/sha256:e23df0f6e8bfc83fe2e982ec60e8</span><br><span class="line">==&gt; Downloading from https://pkg-containers.githubusercontent.com/ghcr1/blobs/sha256:e23df0f6e8bfc83</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Pouring mysql@5.7--5.7.36.arm64_big_sur.bottle.tar.gz</span><br><span class="line">==&gt; /opt/homebrew/Cellar/mysql@5.7/5.7.36/bin/mysqld --initialize-insecure --user=hyunmin --basedir=</span><br><span class="line">==&gt; Caveats</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ol start="3">
+<li>配置环境变量</li>
+</ol>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1. bash shell</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">vim ~/.bash_profile</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2. zsh shell</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">vim ~/.zshrc</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在配置文件中加入</span></span><br><span class="line">export PATH=&quot;/opt/homebrew/opt/mysql@5.7/bin:$PATH&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash"><span class="built_in">source</span> ~/.bash_profile</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">或</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash"><span class="built_in">source</span> ~/.zshrc</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124170144671.png" alt="image-20211124170144671"></p>
+<blockquote>
+<ol start="4">
+<li>启动MySQL服务</li>
+</ol>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">mysql.server start</span></span><br><span class="line"></span><br><span class="line">Starting MySQL</span><br><span class="line">. SUCCESS! </span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ol start="5">
+<li>MySQL初始化配置</li>
+</ol>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">mysql_secure_installation</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124204756469.png" alt="image-20211124204756469"></p>
+<blockquote>
+<ol start="6">
+<li>登陆测试</li>
+</ol>
+</blockquote>
+<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124204950548.png" alt="image-20211124204950548"></p>
+]]></content>
+      <tags>
+        <tag>教程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo博客安装Icarus主题</title>
+    <url>/2021/11/28/hexo%E5%8D%9A%E5%AE%A2%E5%AE%89%E8%A3%85Icarus%E4%B8%BB%E9%A2%98/</url>
+    <content><![CDATA[<p><strong>官方链接：</strong><a href="https://ppoffice.github.io/hexo-theme-icarus/Configuration/icarus%E7%94%A8%E6%88%B7%E6%8C%87%E5%8D%97-%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE/">Icarus用户指南-主题配置</a></p>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ol>
+<li>下载，在博客根目录下执行</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/ppoffice/hexo-theme-icarus.git themes/icarus --depth 1</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>修改博客根目录下的<code>_config.yml</code>文件，把主题设置为<code>icarus</code></li>
+</ol>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">icarus</span></span><br></pre></td></tr></table></figure>
+
+<p>或使用hexo命令修改主题为Icarus: </p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">hexo config theme icarus</span><br></pre></td></tr></table></figure>
+
+<p>最后，使用如下命令来启动Hexo本地测试服务器并开始创作。</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">hexo s</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<p>注意：这个时候，可能会报如下错误</p>
+<p><img src="/2021/11/28/hexo%E5%8D%9A%E5%AE%A2%E5%AE%89%E8%A3%85Icarus%E4%B8%BB%E9%A2%98/image-20211128153749506.png"></p>
+<p>这个错误原因就是有一些依赖插件没有安装，如果出现这个错误把下面的提示命令复制执行即可！</p>
+<p>第一次部署博客时可能会有创建配置文件（根目录下<code>_config.icarus.yml</code>为Icarus主题的配置文件）提示，按照提示执行即可。</p>
+<p>友情链接：<a href="https://ppoffice.github.io/hexo-theme-icarus/uncategorized/icarus%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B/#install-source">Icarus快速上手</a></p>
+<h2 id="主题配置"><a href="#主题配置" class="headerlink" title="主题配置"></a>主题配置</h2><h3 id="皮肤-amp-图标"><a href="#皮肤-amp-图标" class="headerlink" title="皮肤&amp;图标"></a>皮肤&amp;图标</h3><p>配置文件<code>_config.icarus.yml</code></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 主题皮肤</span></span><br><span class="line"><span class="attr">variant:</span> <span class="string">default</span>	<span class="comment"># default或cyberpunk</span></span><br><span class="line"><span class="comment"># Favicon</span></span><br><span class="line"><span class="attr">head:</span></span><br><span class="line">  <span class="attr">favicon:</span> <span class="string">/img/favicon.svg</span>  <span class="comment"># 后面附图片转svg在线链接</span></span><br></pre></td></tr></table></figure>
+
+<p><a href="https://www.bejson.com/convert/image_to_svg/">在线jpg,png图片转svg</a></p>
+<p><a href="https://v1.hitokoto.cn/">懿言推荐</a></p>
+<h3 id="代码高亮"><a href="#代码高亮" class="headerlink" title="代码高亮"></a>代码高亮</h3><p>如果你已在Hexo中启用了代码高亮功能，你可以通过<code>article</code>中的<code>highlight</code>设置来自定义代码块。 请从<a href="https://github.com/highlightjs/highlight.js/tree/9.18.1/src/styles">highlight.js&#x2F;src&#x2F;styles</a>下列出的所有主题中 选择一个主题。 然后，复制文件名(不带<code>.css</code>后缀)到<code>theme</code>设置项中。</p>
+<p>如要隐藏复制代码按钮，将<code>clipboard</code>设置为<code>false</code>。 如果你希望折叠或展开所有代码块，将<code>fold</code>设置为<code>&quot;folded&quot;</code>或<code>&quot;unfolded&quot;</code>。 你也可以将<code>fold</code>设置为空来禁止代码块折叠。</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 代码高亮</span></span><br><span class="line"><span class="attr">article:</span></span><br><span class="line">    <span class="attr">highlight:</span></span><br><span class="line">        <span class="comment"># 代码高亮主题</span></span><br><span class="line">        <span class="comment"># https://github.com/highlightjs/highlight.js/tree/master/src/styles</span></span><br><span class="line">        <span class="attr">theme:</span> <span class="string">atom-one-light</span>  <span class="comment"># atelier-lakeside-dark</span></span><br><span class="line">        <span class="comment"># 显示复制代码按钮</span></span><br><span class="line">        <span class="attr">clipboard:</span> <span class="literal">true</span></span><br><span class="line">        <span class="comment"># 代码块的默认折叠状态。可以是&quot;&quot;, &quot;folded&quot;, &quot;unfolded&quot;</span></span><br><span class="line">        <span class="attr">fold:</span> <span class="string">unfolded</span></span><br></pre></td></tr></table></figure>
+
+<p>此外，你可以在Markdown文件中使用下面的语法来折叠单独的代码块：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;% codeblock &quot;可选文件名&quot; lang:代码语言 &gt;folded %&#125;</span><br><span class="line">...代码块内容...</span><br><span class="line">&#123;% endcodeblock %&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="封面-amp-缩略图"><a href="#封面-amp-缩略图" class="headerlink" title="封面&amp;缩略图"></a>封面&amp;缩略图</h3><p>若要为文章添加封面图，请在文章的front-matter中添加<code>cover</code>选项：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">post.md</span><br><span class="line"></span><br><span class="line">title: Icarus快速上手</span><br><span class="line">cover: /gallery/covers/cover.jpg</span><br><span class="line">---</span><br><span class="line">Post content...</span><br></pre></td></tr></table></figure>
+
+<p>类似地，你也可以在文章的front-matter中为文章设置缩略图：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">post.md</span><br><span class="line"></span><br><span class="line">title: Icarus快速上手</span><br><span class="line">thumbnail: /gallery/thumbnails/thumbnail.jpg</span><br><span class="line">---</span><br><span class="line">Post content...</span><br></pre></td></tr></table></figure>
+
+<p>文章的缩略图会显示在归档页面和最新文章挂件中。</p>
+<p>如果你在front-matter中使用的是图片的路径，你需要确保它是绝对或者相对于你的source目录的路径。 例如，为使用<code>&lt;your blog&gt;/source/gallery/image.jpg</code>作为缩略图，你需要在front-matter中使用<code>/gallery/image.jpg</code>作为图片路径。</p>
+<h3 id="挂件"><a href="#挂件" class="headerlink" title="挂件"></a>挂件</h3><p><strong>官方链接：<a href="https://ppoffice.github.io/hexo-theme-icarus/Widgets/icarus%E7%94%A8%E6%88%B7%E6%8C%87%E5%8D%97-%E6%8C%82%E4%BB%B6/">Icarus用户指南-挂件</a></strong></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="string">&lt;链接名称&gt;:</span></span><br><span class="line">    <span class="attr">icon:</span> <span class="string">&lt;FontAwesome5_图标的_HTML_class名称&gt;</span></span><br><span class="line">    <span class="attr">url:</span> <span class="string">&lt;链接的URL地址&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><a href="https://fontawesome.com/v5.15/icons?d=gallery&p=1">Font Awesome图标库</a></p>
+<p><strong>点击发送邮件：</strong><code>mailto:youname.xxx.com</code></p>
+<blockquote>
+<p>文章目录</p>
+</blockquote>
+<p>若要展示文章目录，请在主题配置中添加如下挂件配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">_config.icarus.yml</span><br><span class="line"></span><br><span class="line">widgets:</span><br><span class="line">    -</span><br><span class="line">        type: toc</span><br><span class="line">        position: left</span><br><span class="line">        # 是否显示目录项目的序号</span><br><span class="line">        index: true</span><br></pre></td></tr></table></figure>
+
+<p>然后，在需要开启目录的文章头部加入<code>toc: true</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">Post.md</span><br><span class="line"></span><br><span class="line">title: 一篇有目录的文章</span><br><span class="line">toc: true</span><br><span class="line">---</span><br><span class="line">文章内容...</span><br></pre></td></tr></table></figure>
+
+<h3 id="内容折叠-amp-分页"><a href="#内容折叠-amp-分页" class="headerlink" title="内容折叠&amp;分页"></a>内容折叠&amp;分页</h3><h4 id="内容折叠"><a href="#内容折叠" class="headerlink" title="内容折叠"></a>内容折叠</h4><p>使用<code>more</code>语法可以使标记一下的内容进行折叠</p>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">&lt;!-- more --&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="分页"><a href="#分页" class="headerlink" title="分页"></a>分页</h4><p>修改<code>_config.yml</code>文件</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 主页每页显示文章数</span></span><br><span class="line"><span class="attr">index_generator:</span></span><br><span class="line">  <span class="attr">path:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line">  <span class="attr">per_page:</span> <span class="number">10</span></span><br><span class="line">  <span class="attr">order_by:</span> <span class="string">-date</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="新建文章时创建年份月份文件夹"><a href="#新建文章时创建年份月份文件夹" class="headerlink" title="新建文章时创建年份月份文件夹"></a>新建文章时创建年份月份文件夹</h4><p>修改<code>_config.yml</code></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">new_post_name:</span> <span class="string">&#x27;:year/:month/:title.md&#x27;</span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>教程</tag>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mac上使用SublimeText</title>
+    <url>/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/</url>
+    <content><![CDATA[<blockquote>
+<p>官网地址：<a href="https://www.sublimetext.com/">Sublime Text</a></p>
+</blockquote>
+<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p><a href="https://www.sublimetext.com/download">官方下载地址</a></p>
+<p><a href="https://www.sublimetext.com/docs/index.html">Sublime Text文档</a></p>
+<span id="more"></span>
+
+<h2 id="使用技巧"><a href="#使用技巧" class="headerlink" title="使用技巧"></a>使用技巧</h2><h3 id="在Sublime-Text上运行Java程序"><a href="#在Sublime-Text上运行Java程序" class="headerlink" title="在Sublime Text上运行Java程序"></a>在Sublime Text上运行Java程序</h3><ol>
+<li>编译</li>
+</ol>
+<p><code>command+B</code></p>
+<ol start="2">
+<li>安装JDK环境</li>
+<li>打开 Sublime Text -&gt; Tools -&gt;Build System -&gt; New Build System…</li>
+<li>复制下面代码，并保存文件为java.sublime-build到默认的User文件夹即可</li>
+</ol>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;shell_cmd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;javac \&quot;$file\&quot; &amp;&amp; java \&quot;$file_base_name\&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;file_regex&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^(...*?):([0-9]*):?([0-9]*)&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;selector&quot;</span><span class="punctuation">:</span> <span class="string">&quot;source.java&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>选择Tools -&gt; Build System -&gt; java</li>
+</ol>
+<img src="/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/image-20211211145804287.png" style="zoom:50%;" align="left">
+]]></content>
+      <tags>
+        <tag>教程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mac上安装halo</title>
+    <url>/2021/11/22/mac%E4%B8%8A%E5%AE%89%E8%A3%85halo/</url>
+    <content><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><ul>
+<li>操作系统：macOS</li>
+<li>java环境：openjdk 11</li>
+<li>halo版本：1.4.13</li>
+</ul>
+<h2 id="2-下载并安装"><a href="#2-下载并安装" class="headerlink" title="2. 下载并安装"></a>2. 下载并安装</h2><p>halo首页地址：<a href="https://halo.run/">halo首页</a><br>halo Github地址：<a href="https://github.com/halo-dev/halo">halo github地址</a></p>
+<span id="more"></span>
+
+<h3 id="2-1-安装brew"><a href="#2-1-安装brew" class="headerlink" title="2.1 安装brew"></a>2.1 安装brew</h3><p>Homebrew是 mac的包管理器，仅需执行相应的命令,就能下载安装需要的软件包，可以省掉自己去下载、解压、拖拽(安装)等繁琐的步骤。 比如安装服务器 nginx，打开终端执行以下命令即可安装:</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">brew install nginx</span><br></pre></td></tr></table></figure>
+
+<p>mac终端运行下面命令安装brew，镜像地址下载安装，速度快</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://cdn.jsdelivr.net/gh/ineo6/homebrew-install/install)&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-安装wget"><a href="#2-2-安装wget" class="headerlink" title="2.2 安装wget"></a>2.2 安装wget</h3><p>mac终端运行下面命令</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">brew install wget</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-下载安装halo"><a href="#2-3-下载安装halo" class="headerlink" title="2.3 下载安装halo"></a>2.3 下载安装halo</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">wget https://dl.halo.run/release/halo-1.4.13.jar</span><br><span class="line">java -jar halo-1.4.13.jar</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-访问halo"><a href="#2-4-访问halo" class="headerlink" title="2.4 访问halo"></a>2.4 访问halo</h3><ul>
+<li>注意⚠️：在访问halo期间，运行halo程序的终端不能关闭</li>
+</ul>
+<p>查看halo web页面，浏览器访问：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1:8090</span><br></pre></td></tr></table></figure>
+
+<p>查看halo管理页面，浏览器访问：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1:8090/admin</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-5-说明"><a href="#2-5-说明" class="headerlink" title="2.5 说明"></a>2.5 说明</h3><p>初次运行halo程序，会在 ~ 目录下创建一个.halo的文件夹，里面包含了博客内容以及账号信息，切记不要轻易删除此文件夹，否则账号信息以及博客内容都会被删除。</p>
+]]></content>
+      <tags>
+        <tag>教程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mac使用技巧</title>
+    <url>/2021/12/02/mac%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/</url>
+    <content><![CDATA[<h3 id="1-Mac终端"><a href="#1-Mac终端" class="headerlink" title="1. Mac终端"></a>1. Mac终端</h3><p><a href="https://support.apple.com/zh-cn/HT208050">Mac终端官方文档</a></p>
+<p>从 macOS Catalina 版开始，您的 Mac 将使用 zsh 作为默认登录 Shell 和交互式 Shell。您还可以在较低版本的 macOS 中将 zsh 设置为默认 Shell。</p>
+<span id="more"></span>
+
+<p>默认情况下，您的 Mac 使用 zsh 或 bash 作为登录 Shell 和交互式 Shell 的命令行解释器：</p>
+<ul>
+<li>从 macOS Catalina 版开始，<strong>zsh</strong> (Z shell) 是所有新建用户帐户的默认 Shell。</li>
+<li><strong>bash</strong> 是 <a href="https://support.apple.com/zh-cn/HT201260">macOS Mojave 及更低版本</a>中的默认 Shell。</li>
+</ul>
+<p>zsh 与 Bourne Shell (sh) 高度兼容，并且与 bash 基本兼容，但存在一些差别。要进一步了解 zsh 及其全面的命令行完成系统，请在“终端”中输入 <code>man zsh</code>。</p>
+<h4 id="从命令行中更改默认shell"><a href="#从命令行中更改默认shell" class="headerlink" title="从命令行中更改默认shell"></a>从命令行中更改默认shell</h4><p>在“终端”中，输入 <code>$ chsh -s path</code>，其中的 path 是 &#x2F;etc&#x2F;shells 中列出的某个 Shell 路径，例如 &#x2F;bin&#x2F;zsh、&#x2F;bin&#x2F;bash、&#x2F;bin&#x2F;csh、&#x2F;bin&#x2F;dash、&#x2F;bin&#x2F;ksh、&#x2F;bin&#x2F;sh 或 &#x2F;bin&#x2F;tcsh。</p>
+<h4 id="终端高亮显示"><a href="#终端高亮显示" class="headerlink" title="终端高亮显示"></a>终端高亮显示</h4><p>修改配置文件，<code>~/.bash_profile</code>或<code>~/.zshrc</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">export CLICOLOR=1</span><br><span class="line">export LSCOLORS=gxfxaxdxcxegedabagacad</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-Mac版IDEA快捷键"><a href="#2-Mac版IDEA快捷键" class="headerlink" title="2. Mac版IDEA快捷键"></a>2. Mac版IDEA快捷键</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line"># 更多操作，如导包，引入变量</span><br><span class="line">Option+Enter</span><br><span class="line"># 将当前行复制一行到下一行</span><br><span class="line">Command+D</span><br><span class="line"># 返回上一次编辑的地方</span><br><span class="line">Command+Option+⬅️ 或 Command+[</span><br><span class="line"># 全局搜索类</span><br><span class="line">Command+O</span><br><span class="line"># 删除当前行</span><br><span class="line">Command+Delete</span><br><span class="line"># 大小写切换</span><br><span class="line">Command+Shift+U</span><br><span class="line"># 查看类的继承结构</span><br><span class="line">Ctrl+h</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-给Mac命令添加别名"><a href="#3-给Mac命令添加别名" class="headerlink" title="3. 给Mac命令添加别名"></a>3. 给Mac命令添加别名</h3><ol>
+<li>修改.bash_profile（或.zshrc，取决于使用的哪个bash，新版本macOS默认是zsh）文件</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">vim ~/.zshrc</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 在.zshrc文件中添加alias语句 </span><br><span class="line">alias ll=&quot;ls -alF&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2021/12/02/mac%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/image-20220516164058025.png"></p>
+<ol start="2">
+<li>刷新文件</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">source ~/.zshrc</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-Mac环境变量"><a href="#4-Mac环境变量" class="headerlink" title="4. Mac环境变量"></a>4. Mac环境变量</h3><ol>
+<li>Mac中环境变量加载顺序如下</li>
+</ol>
+<blockquote>
+<p>a. 	&#x2F;etc&#x2F;profile<br>b. 	&#x2F;etc&#x2F;paths<br>c. 	~&#x2F;.bash_profile<br>d. 	~&#x2F;.bash_login<br>e. 	~&#x2F;.profile<br>f. 	~&#x2F;.bashrc</p>
+</blockquote>
+<p>其中a, b是系统级别</p>
+<ol start="2">
+<li>添加步骤</li>
+</ol>
+<p>推荐在c层级添加，对于最新版的Mac由于默认使用zsh shell，因此环境变量在<code>~/.zshrc</code>里修改</p>
+<p>基本语法：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">export PATH=&quot;$PATH:&lt;path1&gt;:&lt;path2&gt;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>path1</code>和<code>path2</code>是自定义环境变量，多个环境变量使用<code>:</code>进行分隔。</p>
+<p>注意要加上<code>$PATH</code>，否则会导致一些系统内置的命令失效。</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>教程</tag>
+        <tag>Mac</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>typora图片左对齐</title>
+    <url>/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/</url>
+    <content><![CDATA[<p>typora图片默认是剧中对齐的方式：</p>
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128142529931.png"> </p>
+<p>但很多情况下我们其实更倾向于图片左对齐，网上很多办法都更改typora的默认对齐方式，即更改github.css文件，但这种方式会让我们所有的图片都变成左对齐的方式，实际情况下我们有的时候只需要一张图片左对齐。其实在typora中实现图片左对齐的方法非常简单，只需要<strong>在图片链接后加一个空格即可</strong>：</p>
+<span id="more"></span>
+
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128143120575.png"></p>
+<hr>
+<h3 id="设置任意对齐方式"><a href="#设置任意对齐方式" class="headerlink" title="设置任意对齐方式"></a>设置任意对齐方式</h3><p>在<code>typora</code>中图片的默认格式为<code>![图片标题](图片url)</code></p>
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128151604005.png"></p>
+<p>实际上markdown是兼容<code>&lt;img src=&quot;&quot;&gt;</code>图片格式的，采用img标签就可以利用<code>align</code>属性设置图片对齐方式。</p>
+<p>下面介绍一种可以快速将图片格式从<code>![图片标题](图片url)</code>变为<code>&lt;img src=&quot;&quot;&gt;</code>格式，选中图片，右键，选择缩放图片，任意选择一个不是100%缩放比例（如果选择100%不会有任何变化，如果不想改变图片大小，设置<code>zoom:100</code>即可，即<code>style=&quot;zoom:100%;&quot;</code>），缩放完毕就可以发现图片格式进行自动转换，在<code>img标签中</code>添加<code>align</code>属性即可。</p>
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128152513094.png"></p>
+]]></content>
+      <tags>
+        <tag>教程</tag>
+        <tag>Typora</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>刷题分享：LeetCode139.单词拆分【字典树，动态规划】</title>
+    <url>/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/</url>
+    <content><![CDATA[<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/leetcode-1.jpg"></p>
+<p>题目对应<code>LeetCode</code><a href="https://leetcode.cn/problems/word-break/">139. 单词拆分</a></p>
+<span id="more"></span>
+
+<h3 id="1-题目描述"><a href="#1-题目描述" class="headerlink" title="1. 题目描述"></a>1. 题目描述</h3><p>给你一个字符串 s 和一个字符串列表 wordDict 作为字典。请你判断是否可以利用字典中出现的单词拼接出 s 。</p>
+<p>注意：不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。</p>
+<blockquote>
+<p>示例 1：</p>
+<p>输入: s &#x3D; “leetcode”, wordDict &#x3D; [“leet”, “code”]<br>输出: true<br>解释: 返回 true 因为 “leetcode” 可以由 “leet” 和 “code” 拼接成。</p>
+<p>示例 2：</p>
+<p>输入: s &#x3D; “applepenapple”, wordDict &#x3D; [“apple”, “pen”]<br>输出: true<br>解释: 返回 true 因为 “applepenapple” 可以由 “apple” “pen” “apple” 拼接成。<br>     注意，你可以重复使用字典中的单词。</p>
+<p>示例 3：</p>
+<p>输入: s &#x3D; “catsandog”, wordDict &#x3D; [“cats”, “dog”, “sand”, “and”, “cat”]<br>输出: false</p>
+</blockquote>
+<h3 id="2-代码分析"><a href="#2-代码分析" class="headerlink" title="2. 代码分析"></a>2. 代码分析</h3><p>【动态规划】+【字典树】</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">wordBreak</span><span class="params">(String s, List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> build(wordDict);</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> s.length();</span><br><span class="line">        <span class="comment">// 动态规划，转移方程：dp[i] = dp[i-k] &amp;&amp; (s[i-k,i] in wordDict)</span></span><br><span class="line">        <span class="type">boolean</span>[] dp = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;n; i++) &#123;</span><br><span class="line">            List&lt;Integer&gt; list = check(s, root, i);</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> idx : list) &#123;</span><br><span class="line">                <span class="comment">// 可能有多个位置匹配，只要存在一个k满足 dp[i-k] &amp;&amp; (s[i-k,i] in wordDict) == true，则dp[i]为true</span></span><br><span class="line">                <span class="keyword">if</span> (idx==<span class="number">0</span> || dp[idx-<span class="number">1</span>]) &#123;</span><br><span class="line">                    dp[i] = <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n-<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断是否满足最右匹配</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Integer&gt; <span class="title function_">check</span><span class="params">(String s, Trie root, <span class="type">int</span> lastIndex)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">        List&lt;Integer&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">while</span> (lastIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> s.charAt(lastIndex) - <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span> (node.children[index] == <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            node = node.children[index];</span><br><span class="line">            <span class="keyword">if</span> (node.isEnd) &#123;</span><br><span class="line">                <span class="comment">// 如果满足最右匹配，且到达单词末尾，将该Index加入List</span></span><br><span class="line">                list.add(lastIndex);</span><br><span class="line">            &#125;</span><br><span class="line">            lastIndex--;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 建立字典树，建立字典树的基本套路</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> Trie <span class="title function_">build</span><span class="params">(List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">        <span class="keyword">for</span> (String s : wordDict) &#123;</span><br><span class="line">            <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">            <span class="comment">// 这里需要注意，单词尾部向头部遍历，方便check时的最右匹配</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i=s.length()-<span class="number">1</span>; i&gt;=<span class="number">0</span>; i--) &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">idx</span> <span class="operator">=</span> s.charAt(i)-<span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">                <span class="keyword">if</span> (node.children[idx] == <span class="literal">null</span>) &#123;</span><br><span class="line">                    node.children[idx] = <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">                &#125;</span><br><span class="line">                node = node.children[idx];</span><br><span class="line">            &#125;</span><br><span class="line">            node.isEnd = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> root;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 字典树的典型结构</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Trie</span>&#123;</span><br><span class="line">    Trie[] children;</span><br><span class="line">    <span class="type">boolean</span> isEnd;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Trie</span><span class="params">()</span> &#123;</span><br><span class="line">        children = <span class="keyword">new</span> <span class="title class_">Trie</span>[<span class="number">26</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/image-20220524165305435.png"></p>
+]]></content>
+      <categories>
+        <category>算法题</category>
+      </categories>
+      <tags>
+        <tag>算法题</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vim常用命令</title>
+    <url>/2021/11/28/vim%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h2 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h2><ol>
+<li>查找命令</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查找命令</span></span><br><span class="line">/xxx</span><br><span class="line">n  # 下一个</span><br><span class="line">N  # 上一个</span><br><span class="line">:set hls  # 高亮查找</span><br><span class="line">:set nohls  # 关闭高亮查找</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>显示行号</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">:set nu		# 显示行号</span><br><span class="line">:set nonu		# 取消显示行号</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<ol start="3">
+<li>跳转命令</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">跳转行尾</span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash"></span></span><br><span class="line"><span class="language-bash"><span class="comment"># 跳转行首</span></span></span><br><span class="line">0</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">光标行尾编辑</span></span><br><span class="line">A</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">光标行首编辑</span></span><br><span class="line">I</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">下一行编辑</span></span><br><span class="line">o</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>高亮显示</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">:syntax on	# 开启高亮</span><br><span class="line">:syntax off		# 关闭高亮</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>代码块注释</li>
+</ol>
+<blockquote>
+<p>行首添加注释</p>
+</blockquote>
+<p>ctrl+v 进入列编辑模式,向下或向上移动光标,把需要注释的行的开头标记起来,然后按大写的I,再插入注释符,比如”#”,再按Esc,就会全部注释。</p>
+<blockquote>
+<p>行首删除注释符号</p>
+</blockquote>
+<p>先按v,进入visual模式,横向选中列的个数(如单个”#”注释符号),再按Esc,再按ctrl+v 进入列编辑模式,向下或向上移动光标,选中注释部分,然后按d, 就会删除注释符号（#）。</p>
+<p>个人理解就是按v的时候，横向确定代码块宽度（列数），C-v的时候纵向确定了代码块长度（行首）</p>
+<ol start="6">
+<li>缩进</li>
+</ol>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line"># 设置Tab键的宽度为4</span><br><span class="line">:set tabstop=4</span><br><span class="line"># 自动缩进</span><br><span class="line">set autoindent</span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li>复制粘贴</li>
+</ol>
+<h2 id="修改默认设置"><a href="#修改默认设置" class="headerlink" title="修改默认设置"></a>修改默认设置</h2><p>在当前用户<code>home</code>目录下创建一个.<code>vimrc</code>文件</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">&#x27;&#x27; 语法高亮</span><br><span class="line">syntax on</span><br><span class="line">&#x27;&#x27; 显示行号</span><br><span class="line">set nu</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>教程</tag>
+        <tag>vim</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>孤儿进程和僵尸进程</title>
+    <url>/2022/05/25/%E5%AD%A4%E5%84%BF%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%83%B5%E5%B0%B8%E8%BF%9B%E7%A8%8B/</url>
+    <content><![CDATA[<p><img src="/2022/05/25/%E5%AD%A4%E5%84%BF%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%83%B5%E5%B0%B8%E8%BF%9B%E7%A8%8B/linux-1.jpg"></p>
+<h2 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. 基本概念</h2><p>操作系统允许一个进程创建另一个进程，而且允许子进程继承父进程所拥有的资源，当子进程被终止时，其在父进程处继承的资源应当还给父进程。同时，终止父进程时同时也会终止其所有的子进程。</p>
+<span id="more"></span>
+
+<blockquote>
+<p> 注意：Linux 操作系统对于终止有子进程的父进程，会把子进程交给 1 号进程接管。</p>
+</blockquote>
+<p>正常情况下：子进程由父进程创建，子进程再创建新的进程。父子进程是一个<strong>异步过程</strong>，父进程永远无法预测子进程的结束，所以，当子进程结束后，它的父进程会调用wait()或waitpid()取得子进程的终止状态，回收掉子进程的资源。</p>
+<h3 id="1-孤儿进程"><a href="#1-孤儿进程" class="headerlink" title="1. 孤儿进程"></a>1. 孤儿进程</h3><p><strong>孤儿进程</strong>：一个父进程退出，而它的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。孤儿进程将被init进程(进程号为1)所收养，并由init进程对它们完成状态收集工作。</p>
+<h3 id="2-僵尸进程"><a href="#2-僵尸进程" class="headerlink" title="2. 僵尸进程"></a>2. 僵尸进程</h3><p><strong>僵尸进程</strong>：一个进程使用fork创建子进程，如果子进程退出，而父进程并没有调用wait或waitpid获取子进程的状态信息，那么子进程的进程描述符仍然保存在系统中。这种进程称之为僵死进程。</p>
+<h2 id="2-问题危害"><a href="#2-问题危害" class="headerlink" title="2. 问题危害"></a>2. 问题危害</h2><p>注意：unix提供了一种保证父进程知道子进程状态信息的机制。</p>
+<p>这种机制是：在每个进程退出的时候，内核会释放所有的资源，包括打开的文件，占用的内存等。但是仍保留一部分信息(进程号PID，退出状态，运行时间等)。直到父进程通过wait或waitpid来取时才释放。</p>
+<p><strong>暴露的问题：如果父进程不调用wait或waitpid的话，那么保留的那部分信息就不会释放，进程号一直被占用着。但是系统所能使用的进程号是有限的，如果大量产生僵死进程，将因没有可用的进程号而导致系统无法产生新的进程，这就是僵尸进程的危害。</strong></p>
+<p>孤儿进程是没有父进程的进程，它由init进程循环的wait()回收资源，init进程充当父进程。因此孤儿进程并没有什么危害。</p>
+<blockquote>
+<p>补充：任何一个子进程(init除外)在exit()之后，并非马上就消失掉，而是留下一个称为僵尸进程的数据结构，等待父进程去处理。如果父进程在子进程exit()之后，没有及时处理，出现僵尸进程，并可以用ps命令去查看，它的状态是“Z”。</p>
+</blockquote>
+<p>如果父进程能及时处理，可能用<code>ps</code>命令就来不及看到子进程的僵尸状态，但这并不等于子进程不经过僵尸状态。  <strong>如果父进程在子进程结束之前退出，则子进程将由init接管。init将会以父进程的身份对僵尸状态的子进程进行处理。</strong></p>
+<h2 id="3-解决方案"><a href="#3-解决方案" class="headerlink" title="3. 解决方案"></a>3. 解决方案</h2><ol>
+<li>kill杀死元凶父进程（一般不用）</li>
+</ol>
+<p>严格的说，僵尸进程并不是问题的根源，罪魁祸首是产生大量僵死进程的父进程。因此，我们可以直接除掉元凶，通过kill发送SIGTERM或者SIGKILL信号。元凶死后，僵尸进程进程变成孤儿进程，由init充当父进程，并回收资源。</p>
+<ol start="2">
+<li>父进程用wait或waitpid去回收资源（方案不好）</li>
+</ol>
+<p>父进程通过wait或waitpid等函数去等待子进程结束，但是不好，会导致父进程一直等待被挂起，相当于一个进程在干活，没有起到多进程的作用。</p>
+<ol start="3">
+<li>通过信号机制，在处理函数中调用wait，回收资源</li>
+</ol>
+<p>通过信号机制，子进程退出时向父进程发送SIGCHLD信号，父进程调用signal(SIGCHLD,sig_child)去处理SIGCHLD信号，在信号处理函数sig_child()中调用wait进行处理僵尸进程。什么时候得到子进程信号，什么时候进行信号处理，父进程可以继续干其他活，不用去阻塞等待。</p>
+]]></content>
+      <categories>
+        <category>计算机基础</category>
+      </categories>
+      <tags>
+        <tag>操作系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>将hexo博客部署到个人服务器</title>
+    <url>/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
+    <content><![CDATA[<p>本人之前的<code>Hexo</code>博客一直都是部署在<code>GitHub</code>上的，通过<code>github.io</code>域名后缀来访问，但是国内访问<code>GitHub</code>网络一直不太稳定，因此考虑自己购买一台服务器，将个人博客部署到自己的服务器。</p>
+<p><strong>主要步骤有：</strong></p>
+<ul>
+<li>购买服务器、域名</li>
+<li>在服务器上创建<code>git</code>仓库</li>
+<li>配置<code>nginx</code></li>
+<li>修改本地<code>hexo</code>配置</li>
+</ul>
+<span id="more"></span>
+
+
+
+<h3 id="1-购买服务器、域名"><a href="#1-购买服务器、域名" class="headerlink" title="1. 购买服务器、域名"></a>1. 购买服务器、域名</h3><p>这部分没啥技术含量，有钱就行！</p>
+<p>购买服务器（各大云厂商都有免费试用活动，可以先免费试用一段时间再考虑续费），我是购买了阿里云的服务器，<a href="https://www.aliyun.com/">阿里云官网</a>，刚开始购买最低配置的应该就够了，后面有需求可以升级；购买域名，我购买的域名是(ysfun.ink)，用来部署博客的是(blogs.ysfun.ink)。</p>
+<h3 id="2-在服务器上创建git仓库"><a href="#2-在服务器上创建git仓库" class="headerlink" title="2. 在服务器上创建git仓库"></a>2. 在服务器上创建git仓库</h3><p>安装<code>git</code>和<code>nginx</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">yum install -y nginx git</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>配置ssh免密</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">切换到root账号根目录，网上有很多教程创建新用户，后面部署的时候容易出现权限不足的情况，因此我直接用root账号</span></span><br><span class="line">cd /root</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">将本地的~/id_rsa.pub公钥内容复制到/root/.ssh/authorized_keys文件中</span></span><br><span class="line">vim /root/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>初始化<code>git</code>仓库</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建git仓库，我创建在/var/repo目录下</span></span><br><span class="line">mkdir /var/repo</span><br><span class="line">cd /var/repo</span><br><span class="line">git init --bare myblog.git</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">新建钩子文件</span></span><br><span class="line">vim /var/repo/myblog.git/hooks/post-receive</span><br></pre></td></tr></table></figure>
+
+<p><code>post-receive</code>文件加入如下内容，注意<code>/home/blog</code>目录可自行定义，这个目录是后面网站部署的文件根目录</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">#!/bin/bash</span><br><span class="line">git --work-tree=/home/blog --git-dir=/var/repo/myblog.git checkout -f</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">给post-receive文件添加可执行权限</span></span><br><span class="line">chmod +x /var/repo/myblog.git/hooks/post-receive</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-配置nginx"><a href="#3-配置nginx" class="headerlink" title="3. 配置nginx"></a>3. 配置nginx</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改nginx配置文件，只需要修改server_name（域名或ip地址）和root（网站文件的根目录，对应上面的/home/blog）即可</span></span><br><span class="line">vim /etc/nginx/nginx.conf</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/image-20220518230056773.png"></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">重启nginx</span></span><br><span class="line">systemctl restart nginx.service</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看nginx状态，看到绿色active(running)即为正常运行状态</span></span><br><span class="line">systemctl status nginx.service</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/image-20220518230340561.png"></p>
+<p>访问ip或者域名，如果出现<code>404</code>则表示配置失败，有问题，可以优先排查服务器是否安全组是否暴露相应端口，如<code>80, 443</code>；如果出现<code>403</code>则正常，因为目前<code>root</code>目录还没有任何文件。</p>
+<p>可以在上面配置的<code>root</code>目录（对应<code>/home/blog</code>）加如下<code>index.html</code>文件：</p>
+<figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>This is my Blog.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/image-20220518230659751.png"> </p>
+<p>出现这样，即正常。</p>
+<h3 id="4-本地修改hexo配置"><a href="#4-本地修改hexo配置" class="headerlink" title="4. 本地修改hexo配置"></a>4. 本地修改hexo配置</h3><p>修改博客根目录下的<code>_config.yml</code>，主要修改两处：<code>url</code>和<code>deploy</code></p>
+<p><img src="/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/image-20220518230921771.png"></p>
+<p>同时部署到两个仓库：</p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span></span><br><span class="line">    <span class="attr">github:</span> <span class="string">git@github.com:Ysfun/Ysfun.github.io.git</span></span><br><span class="line">    <span class="attr">aliyun:</span> <span class="string">root@47.110.56.85:/var/repo/myblog.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/image-20220518231032865.png"></p>
+<p>至此所有配置工作都完成了！</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">推送至个人服务器</span></span><br><span class="line">hexo g -d</span><br></pre></td></tr></table></figure>
+
+<p>使用Ip或者域名就访问网站了！</p>
+<p><img src="/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/image-20220518231252490.png"></p>
+<p>如果想要通过域名访问，需要给域名备案，备案成功后就可以了，至此大功告成！！！</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>解决hexo搭建博客图片不显示问题</title>
+    <url>/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h2 id="1-问题描述"><a href="#1-问题描述" class="headerlink" title="1. 问题描述"></a>1. 问题描述</h2><p>最近使用hexo搭建博客时，使用typora编辑完博客，在hexo上部署时发现图片都不能正常显示。图片采用复制粘贴的方式插入到.md文件中，图片格式：</p>
+<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128140607589.png"></p>
+<h2 id="2-初步探索"><a href="#2-初步探索" class="headerlink" title="2. 初步探索"></a>2. 初步探索</h2><ol>
+<li>更改typora设置</li>
+</ol>
+<p>按照网上的教程，先修改typora图片插入设置，打开typora设置 -&gt; 图像，按照下面方法设置。</p>
+<span id="more"></span>
+
+<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128141320644.png"> </p>
+<ol start="2">
+<li>修改配置文件，打开资源文件管理功能</li>
+</ol>
+<p>把博客根目录下的_config.yml中的<code>post_asset_folder</code>: 设置为<code>true</code></p>
+<p>Hexo将会在你每一次通过 <code>hexo new [layout] &lt;title&gt;</code> 命令创建新文章时自动创建一个文件夹。这个资源文件夹将会有与这个文章文件一样的名字。将所有与你的文章有关的资源放在这个关联文件夹中之后，你可以通过相对路径来引用它们，这样你就得到了一个更简单而且方便得多的工作流。</p>
+<ol start="3">
+<li>安装图片路径转换插件</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">**注意：插件不能安装最新的，安装老版本的**</span></span><br><span class="line">npm install https://github.com/EricGerry/hexo-asset-image-0.0.5.git --save</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">采用以下语句安装会出错</span></span><br><span class="line">npm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20220531012440436.png"></p>
+<p><strong>注意：按照<code>npm install https://github.com/EricGerry/hexo-asset-image-0.0.5.git --save</code>语句安装完成后无需进行后面的步骤！！！</strong></p>
+<br>
+
+<hr>
+<p>执行完上述操作，按照网上大多数的说法都是可以正常显示图片的，但很无奈，经过这番配置后，重新部署仍出现这样的结果：</p>
+<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128145011881.png"></p>
+<p>当场崩溃！！！ </p>
+<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/038556f2580ddb0fc0ca3edb83219601.jpeg"></p>
+<h2 id="3-大功告成"><a href="#3-大功告成" class="headerlink" title="3. 大功告成"></a>3. 大功告成</h2><p>经过一大番折腾，在网上查阅各种大佬的帖子，最后发现是是这个图片路径转换插件<code>hexo-asset-image</code>有问题，需要进行修改。把文件<code>/node_modules/hexo-asset-image/index.js</code>中的内容全部替换成下面的内容，其中<code>/</code>为博客根目录 。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="meta">&#x27;use strict&#x27;</span>;</span><br><span class="line"><span class="keyword">var</span> cheerio = <span class="built_in">require</span>(<span class="string">&#x27;cheerio&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// http://stackoverflow.com/questions/14480345/how-to-get-the-nth-occurrence-in-a-string</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getPosition</span>(<span class="params">str, m, i</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> str.<span class="title function_">split</span>(m, i).<span class="title function_">join</span>(m).<span class="property">length</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> version = <span class="title class_">String</span>(hexo.<span class="property">version</span>).<span class="title function_">split</span>(<span class="string">&#x27;.&#x27;</span>);</span><br><span class="line">hexo.<span class="property">extend</span>.<span class="property">filter</span>.<span class="title function_">register</span>(<span class="string">&#x27;after_post_render&#x27;</span>, <span class="keyword">function</span>(<span class="params">data</span>)&#123;</span><br><span class="line">  <span class="keyword">var</span> config = hexo.<span class="property">config</span>;</span><br><span class="line">  <span class="keyword">if</span>(config.<span class="property">post_asset_folder</span>)&#123;</span><br><span class="line">    	<span class="keyword">var</span> link = data.<span class="property">permalink</span>;</span><br><span class="line">	<span class="keyword">if</span>(version.<span class="property">length</span> &gt; <span class="number">0</span> &amp;&amp; <span class="title class_">Number</span>(version[<span class="number">0</span>]) == <span class="number">3</span>)</span><br><span class="line">	   <span class="keyword">var</span> beginPos = <span class="title function_">getPosition</span>(link, <span class="string">&#x27;/&#x27;</span>, <span class="number">1</span>) + <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	   <span class="keyword">var</span> beginPos = <span class="title function_">getPosition</span>(link, <span class="string">&#x27;/&#x27;</span>, <span class="number">3</span>) + <span class="number">1</span>;</span><br><span class="line">	<span class="comment">// In hexo 3.1.1, the permalink of &quot;about&quot; page is like &quot;.../about/index.html&quot;.</span></span><br><span class="line">	<span class="keyword">var</span> endPos = link.<span class="title function_">lastIndexOf</span>(<span class="string">&#x27;/&#x27;</span>) + <span class="number">1</span>;</span><br><span class="line">    link = link.<span class="title function_">substring</span>(beginPos, endPos);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> toprocess = [<span class="string">&#x27;excerpt&#x27;</span>, <span class="string">&#x27;more&#x27;</span>, <span class="string">&#x27;content&#x27;</span>];</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; toprocess.<span class="property">length</span>; i++)&#123;</span><br><span class="line">      <span class="keyword">var</span> key = toprocess[i];</span><br><span class="line"> </span><br><span class="line">      <span class="keyword">var</span> $ = cheerio.<span class="title function_">load</span>(data[key], &#123;</span><br><span class="line">        <span class="attr">ignoreWhitespace</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">xmlMode</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">lowerCaseTags</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">decodeEntities</span>: <span class="literal">false</span></span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">      $(<span class="string">&#x27;img&#x27;</span>).<span class="title function_">each</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">		<span class="keyword">if</span> ($(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>))&#123;</span><br><span class="line">			<span class="comment">// For windows style path, we replace &#x27;\&#x27; to &#x27;/&#x27;.</span></span><br><span class="line">			<span class="keyword">var</span> src = $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>).<span class="title function_">replace</span>(<span class="string">&#x27;\\&#x27;</span>, <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">			<span class="keyword">if</span>(!<span class="regexp">/http[s]*.*|\/\/.*/</span>.<span class="title function_">test</span>(src) &amp;&amp;</span><br><span class="line">			   !<span class="regexp">/^\s*\//</span>.<span class="title function_">test</span>(src)) &#123;</span><br><span class="line">			  <span class="comment">// For &quot;about&quot; page, the first part of &quot;src&quot; can&#x27;t be removed.</span></span><br><span class="line">			  <span class="comment">// In addition, to support multi-level local directory.</span></span><br><span class="line">			  <span class="keyword">var</span> linkArray = link.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">				<span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">			  &#125;);</span><br><span class="line">			  <span class="keyword">var</span> srcArray = src.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">				<span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span> &amp;&amp; elem != <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">			  &#125;);</span><br><span class="line">			  <span class="keyword">if</span>(srcArray.<span class="property">length</span> &gt; <span class="number">1</span>)</span><br><span class="line">				srcArray.<span class="title function_">shift</span>();</span><br><span class="line">			  src = srcArray.<span class="title function_">join</span>(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">			  $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, config.<span class="property">root</span> + link + src);</span><br><span class="line">			  <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+config.<span class="property">root</span> + link + src);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">			<span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;no src attr, skipped...&quot;</span>);</span><br><span class="line">			<span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>($(<span class="variable language_">this</span>));</span><br><span class="line">		&#125;</span><br><span class="line">      &#125;);</span><br><span class="line">      data[key] = $.<span class="title function_">html</span>();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>重新部署！图片正常显示！！！完美</p>
+ <img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128150713000.png" style="zoom:67%;">
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>教程</tag>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java小知识</title>
+    <url>/2022/05/11/Java%E5%B0%8F%E7%9F%A5%E8%AF%86/</url>
+    <content><![CDATA[<ol>
+<li>使用<code>String.split(expr)</code>方法时，要注意<code>expr</code>是否是正则表达式的通配符，如 <code>.</code>, <code>$</code>等，要使用双反斜杠进行转译<code>\\</code>，<code>\</code>要使用<code>\\\\</code>进行转译</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;abc.def.ghi&quot;</span>;</span><br><span class="line">String[] split = s.split(<span class="string">&quot;\\.&quot;</span>);</span><br><span class="line">System.out.println(Arrays.toString(split));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行结果</span></span><br><span class="line">[abc, def, ghi]</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;abc\\def\\ghi&quot;</span>;</span><br><span class="line">System.out.println(<span class="string">&quot;s:\t\t&quot;</span> + s);</span><br><span class="line">String[] split = s.split(<span class="string">&quot;\\\\&quot;</span>);</span><br><span class="line">System.out.println(<span class="string">&quot;split:\t&quot;</span> + Arrays.toString(split));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行结果</span></span><br><span class="line">s:			abc\def\ghi</span><br><span class="line">split:	[abc, def, ghi]</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>集合new对象时添加元素</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// new对象的时候添加元素</span></span><br><span class="line">Map&lt;String, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, Integer&gt;()&#123;&#123;</span><br><span class="line">  put(<span class="string">&quot;a&quot;</span>, <span class="number">0</span>);</span><br><span class="line">  put(<span class="string">&quot;b&quot;</span>, <span class="number">1</span>);</span><br><span class="line">&#125;&#125;;</span><br><span class="line">System.out.println(map);</span><br><span class="line"><span class="comment">// 正常添加元素</span></span><br><span class="line">map.put(<span class="string">&quot;c&quot;</span>, <span class="number">2</span>);</span><br><span class="line">System.out.println(map);</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<p><img src="/2022/05/11/Java%E5%B0%8F%E7%9F%A5%E8%AF%86/image-20211129213733732.png"> </p>
+<ol start="3">
+<li>查看Java版本信息</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">System.out.println(System.getProperty(<span class="string">&quot;java.version&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+
+
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？</title>
+    <url>/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/</url>
+    <content><![CDATA[<h3 id="问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数"><a href="#问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数" class="headerlink" title="问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数"></a>问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数</h3><p>解法：采用BitMap，每个整数分配2个bit</p>
+<blockquote>
+<p>00	&#x3D;&gt; 0	表示没出现过</p>
+<p>01	&#x3D;&gt; 1	表示出现过1次</p>
+<p>10	&#x3D;&gt;2	表示出现过多次</p>
+<p>11	&#x3D;&gt;3	表示无效数据。</p>
+</blockquote>
+<span id="more"></span>
+
+<ul>
+<li>内存分析</li>
+</ul>
+<p>每个无符号整数的取值范围为0~2^32-1，BitMap空间复杂度取决于MAX_VALUE，因此需要一个长度为2 ^ 32的BitMap，总占用空间为2^32 * 2bit &#x3D; 1 GB。</p>
+<h3 id="使用Java程序进行实现："><a href="#使用Java程序进行实现：" class="headerlink" title="使用Java程序进行实现："></a>使用Java程序进行实现：</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BitMapTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 00 没出现过</span></span><br><span class="line"><span class="comment">     * 01 出现过1次</span></span><br><span class="line"><span class="comment">     * 10 出现过多次</span></span><br><span class="line"><span class="comment">     * 11 无效表示</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 1 byte = 8 bit，可分配四个数字，长度为1000可覆盖4000个数字，因此我们设置输入整数不超过4000</span></span><br><span class="line"><span class="comment">     * 真实情况下该数组的长度应该为 2.5亿/4，才能覆盖所有无符号整数，此处测试用较小数字进行</span></span><br><span class="line"><span class="comment">     * flags默认初始值都为0</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |3 2 1 0| flag[0] 例如：10000100 表示3出现过多次, 2, 0都没有出现过，1出现过一次</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |7 6 5 4| flag[1]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="type">byte</span>[] flags = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1000</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] nums = <span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">2000</span>];  <span class="comment">// 2000个测试输入数据</span></span><br><span class="line">        <span class="comment">// 验证结果的正确性</span></span><br><span class="line">        Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(nums.length);</span><br><span class="line">        <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">        System.out.println(<span class="string">&quot;原始数据：&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="comment">// 填充随机数输入进行验证</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> random.nextInt(flags.length * <span class="number">4</span>);  <span class="comment">// flags长度为1000，整数最大只能为4000</span></span><br><span class="line">            nums[i] = num;</span><br><span class="line">            System.out.print(num + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            map.put(num, map.getOrDefault(num, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            setVal(num);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();</span><br><span class="line">        System.out.println(<span class="string">&quot;-------------------&quot;</span>);</span><br><span class="line">        List&lt;Integer&gt; bitMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        List&lt;Integer&gt; hashMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (getVal(nums[i]) == <span class="number">1</span>) &#123;</span><br><span class="line">                bitMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (map.getOrDefault(nums[i], <span class="number">0</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">                hashMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;只出现过一次的数据：&quot;</span>);</span><br><span class="line">        System.out.println(bitMapAns);</span><br><span class="line">        System.out.println(<span class="string">&quot;bitMapAns 是否和 hashMapAns相同：&quot;</span> + bitMapAns.equals(hashMapAns));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> getVal(idx);</span><br><span class="line">        <span class="keyword">if</span> (val &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="comment">// 11 或 10 表示出现过多次，保持不变即可</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        ~(3&lt;&lt;loc) =&gt; 11001111 即让2bit对应位置为0，其他都为1</span></span><br><span class="line"><span class="comment">        (flags[pos] &amp; ~(3&lt;&lt;loc)) =&gt; 效果就是让2bit对应位置置为00，其他为保持不变</span></span><br><span class="line"><span class="comment">        | ((val + 1) &lt;&lt; loc) =&gt; 效果就是让val+1的值填充2bit的位置</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">newVal</span> <span class="operator">=</span> (flags[pos] &amp; ~(<span class="number">3</span> &lt;&lt; (loc * <span class="number">2</span>))) | ((val + <span class="number">1</span>) &lt;&lt; (loc * <span class="number">2</span>));</span><br><span class="line">        flags[pos] = (<span class="type">byte</span>) newVal;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">getVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        flags[pos] &gt;&gt; (loc * 2)  =&gt; 00001001  (左边自动补0) 这个操作的效果是让2这个整数在bitmap中对应的两个bit移动到最右端</span></span><br><span class="line"><span class="comment">        拿上面的结果  (0b00001001) &amp; (byte)3  =&gt; (0b00001001) &amp; (0b00000011) =&gt; (0b00000001) 即可得到目标的两个bit对应的数字</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> (flags[pos] &gt;&gt; (loc * <span class="number">2</span>)) &amp; (<span class="type">byte</span>) <span class="number">3</span>;</span><br><span class="line">        <span class="keyword">return</span> val;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p><img src="/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/image-20220512221937915.png"></p>
+<p>上述通过<code>HashMap</code>的方案可以检验<code>BitMap</code>的答案是正确的，并且成功节省了内存空间。</p>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Git常用命令</title>
+    <url>/2022/05/10/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h2 id="Git基础命令"><a href="#Git基础命令" class="headerlink" title="Git基础命令"></a>Git基础命令</h2><ol>
+<li>克隆代码</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone xxx</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">克隆指定分支</span></span><br><span class="line">git clone -b branchName xxx</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>拉取（更新）代码</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git pull origin</span><br><span class="line">git pull origin branchName</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">变基</span></span><br><span class="line">git pull --rebase origin branchName</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<ol start="3">
+<li>提交代码</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit &quot;message&quot;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>推送远程分支</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git push origin head:branchName</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">强制推送</span></span><br><span class="line">git push -f origin head:branchName</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>合并提交记录</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">合并近k条提交记录</span></span><br><span class="line">git rebase -i head~k</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">一般pick第一条，后面都squash</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/10/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20220510193114486.png"></p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hexo博客Next主题安装配置教程</title>
+    <url>/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/</url>
+    <content><![CDATA[<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/apple-touch-icon-next.png"></p>
+<p>链接直达：<a href="https://hexo.io/zh-cn/">Hexo主页</a>	<a href="https://github.com/next-theme/hexo-theme-next">Next主题地址</a>	<a href="https://theme-next.js.org/docs/getting-started/">Next文档地址</a></p>
+<span id="more"></span>
+
+<h2 id="版本"><a href="#版本" class="headerlink" title="版本"></a>版本</h2><table>
+<thead>
+<tr>
+<th>版本</th>
+<th>年份</th>
+<th>仓库</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>v5.1.4 或更低</td>
+<td>2014 ~ 2017</td>
+<td><a href="https://github.com/iissnan/hexo-theme-next">iissnan&#x2F;hexo-theme-next</a></td>
+</tr>
+<tr>
+<td>v6.0.0 ~ v7.8.0</td>
+<td>2018 ~ 2019</td>
+<td><a href="https://github.com/theme-next/hexo-theme-next">theme-next&#x2F;hexo-theme-next</a></td>
+</tr>
+<tr>
+<td>v8.0.0 或更高</td>
+<td>2020</td>
+<td><a href="https://github.com/next-theme/hexo-theme-next">next-theme&#x2F;hexo-theme-next</a></td>
+</tr>
+</tbody></table>
+<h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><ul>
+<li><code>npm</code></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">npm install hexo-theme-next</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>使用npm安装要求Hexo是5.0及以后的版本</p>
+</blockquote>
+<ul>
+<li><code>git</code></li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone https://github.com/next-theme/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
+
+<p>指定版本安装：(以8.0.0版本为例)</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">npm install hexo-theme-next@8.0.0</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://github.com/next-theme/hexo-theme-next/releases">Next历史发行版本</a></p>
+<h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p><a href="https://theme-next.js.org/docs/getting-started/configuration.html">Next配置官方文档</a></p>
+<ul>
+<li>使用<code>Git</code>安装的配置文件位于<code>/themes/next/_config.yml</code></li>
+<li>使用<code>npm</code>安装的配置文件位于<code>node_modules/hexo-theme-next/_config.yml _config.next.yml</code></li>
+</ul>
+<p>其中第一个&#96;&#x2F;表示博客根目录</p>
+<h3 id="1-风格"><a href="#1-风格" class="headerlink" title="1. 风格"></a>1. 风格</h3><figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Schemes</span></span><br><span class="line"><span class="comment"># scheme: Muse</span></span><br><span class="line"><span class="comment"># scheme: Mist</span></span><br><span class="line"><span class="comment"># scheme: Pisces</span></span><br><span class="line"><span class="attr">scheme:</span> <span class="string">Gemini</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="2-不蒜子访客统计"><a href="#2-不蒜子访客统计" class="headerlink" title="2. 不蒜子访客统计"></a>2. 不蒜子访客统计</h3><p>将<code>busuanzi_count.enable</code>设为<code>true</code>即可</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Show Views / Visitors of the website / page with busuanzi.</span></span><br><span class="line"><span class="comment"># For more information: http://ibruce.info/2015/04/04/busuanzi/</span></span><br><span class="line"><span class="attr">busuanzi_count:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">total_visitors:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">total_visitors_icon:</span> <span class="string">fa</span> <span class="string">fa-user</span></span><br><span class="line">  <span class="attr">total_views:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">total_views_icon:</span> <span class="string">fa</span> <span class="string">fa-eye</span></span><br><span class="line">  <span class="attr">post_views:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">post_views_icon:</span> <span class="string">far</span> <span class="string">fa-eye</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="3-代码高亮"><a href="#3-代码高亮" class="headerlink" title="3. 代码高亮"></a>3. 代码高亮</h3><figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">codeblock:</span></span><br><span class="line">  <span class="comment"># Code Highlight theme</span></span><br><span class="line">  <span class="comment"># All available themes: https://theme-next.js.org/highlight/</span></span><br><span class="line">  <span class="attr">theme:</span></span><br><span class="line">    <span class="attr">light:</span> <span class="string">rainbow</span></span><br><span class="line">    <span class="attr">dark:</span> <span class="string">vs2015</span></span><br><span class="line">  <span class="attr">prism:</span></span><br><span class="line">    <span class="attr">light:</span> <span class="string">prism</span></span><br><span class="line">    <span class="attr">dark:</span> <span class="string">prism-dark</span></span><br><span class="line">  <span class="comment"># Add copy button on codeblock</span></span><br><span class="line">  <span class="attr">copy_button:</span></span><br><span class="line">    <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">    <span class="comment"># Available values: default | flat | mac</span></span><br><span class="line">    <span class="attr">style:</span> <span class="string">default</span></span><br></pre></td></tr></table></figure>
+
+<p>内置代码高亮样式在<code>/node_modules/highlight.js/styles</code>目录下</p>
+<h3 id="4-显示分类和标签"><a href="#4-显示分类和标签" class="headerlink" title="4. 显示分类和标签"></a>4. 显示分类和标签</h3><ol>
+<li>文章<code>header</code>部分添加</li>
+</ol>
+<figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">tags: Hexo</span><br><span class="line">categories: 教程</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220531150131104.png"> </p>
+<ol start="2">
+<li>新建<code>page</code></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">hexo n page tags</span><br><span class="line">hexo n page categories</span><br></pre></td></tr></table></figure>
+
+<p>此时会在<code>/source</code>目录下新增两个文件夹<code>tags</code>和<code>categories</code>，且两个目录下都有一个<code>index.md</code>文件</p>
+<ol start="3">
+<li>修改<code>index.md</code></li>
+</ol>
+<p>分别在<code>tags</code>和<code>categories</code>两个文件夹的<code>index.md</code>文件头部添加<code>type</code></p>
+<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220531150829131.png"> </p>
+<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220531150748063.png"> </p>
+<ol start="4">
+<li>侧边栏显示标签和分类</li>
+</ol>
+<p>修改Next主题配置文件<code>_config.next.yml</code></p>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Usage: `Key: /link/ || icon`</span></span><br><span class="line"><span class="comment"># Key is the name of menu item. If the translation for this item is available, the translated text will be loaded, otherwise the Key name will be used. Key is case-sensitive.</span></span><br><span class="line"><span class="comment"># Value before `||` delimiter is the target link, value after `||` delimiter is the name of Font Awesome icon.</span></span><br><span class="line"><span class="comment"># External url should start with http:// or https://</span></span><br><span class="line"><span class="attr">menu:</span></span><br><span class="line">  <span class="attr">home:</span> <span class="string">/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-home</span></span><br><span class="line">  <span class="comment">#about: /about/ || fa fa-user</span></span><br><span class="line">  <span class="attr">tags:</span> <span class="string">/tags/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-tags</span></span><br><span class="line">  <span class="attr">categories:</span> <span class="string">/categories/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-th</span></span><br><span class="line">  <span class="attr">archives:</span> <span class="string">/archives/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-archive</span></span><br><span class="line">  <span class="comment">#schedule: /schedule/ || fa fa-calendar</span></span><br><span class="line">  <span class="comment">#sitemap: /sitemap.xml || fa fa-sitemap</span></span><br><span class="line">  <span class="comment">#commonweal: /404/ || fa fa-heartbeat</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="5-背景配置"><a href="#5-背景配置" class="headerlink" title="5. 背景配置"></a>5. 背景配置</h3><h4 id="更改标题黑色背景"><a href="#更改标题黑色背景" class="headerlink" title="更改标题黑色背景"></a>更改标题黑色背景</h4><ol>
+<li>打开<code>Hexo/themes/next/source/css/_schemes/Pisces/_header.styl</code>，找到<code>background</code>改为<code>background: $blue-bright;</code>。</li>
+</ol>
+<blockquote>
+<p> 标题背景颜色默认为：<code>background: var(--theme-color);</code>，即默认为主题颜色，可直接在<code>_config.next.yml</code>配置文件中修改<code>theme_color:</code>即可改变背景颜色</p>
+<p><a href="https://theme-next.js.org/docs/theme-settings/miscellaneous.html#Theme-Color">修改背景颜色官方文档</a></p>
+</blockquote>
+<figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">theme_color:</span></span><br><span class="line">  <span class="attr">light:</span> <span class="string">&quot;#222&quot;</span></span><br><span class="line">  <span class="attr">dark:</span> <span class="string">&quot;#222&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p><a href="http://tools.jb51.net/static/colorpicker/">在线颜色选择器 | RGB颜色查询对照表</a></p>
+<ol start="2">
+<li><p>打开<code>Hexo\themes\next\source\css\_variables\Pisces.styl</code>，找到<code>subtitle-color</code>改为<code>$subtitle-color = $whitesmoke;</code></p>
+</li>
+<li><p>在<code>Hexo/themes/next/source/css/_variables/base.styl</code>里可以查看颜色设置。</p>
+</li>
+</ol>
+<h4 id="添加图片背景"><a href="#添加图片背景" class="headerlink" title="添加图片背景"></a>添加图片背景</h4><ol>
+<li>在hexo目录下的<code>source</code>文件夹下新建<code>_data</code>文件夹，不是主题next目录下的source文件夹。文件夹里新建文件<code>styles.styl</code>，添加如下内容：</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//背景图片设置</span></span><br><span class="line">body &#123;</span><br><span class="line">    background-<span class="attr">image</span>: <span class="title function_">url</span>(<span class="regexp">/images/</span>background.<span class="property">jpg</span>); </span><br><span class="line">    background-<span class="attr">repeat</span>: no-repeat;</span><br><span class="line">    background-<span class="attr">attachment</span>: fixed;</span><br><span class="line">    background-<span class="attr">size</span>: <span class="number">100</span>% <span class="number">100</span>%;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>background-image:url</code> 可以直接使用图片链接，也可以是图片路径（将自定义图片放入next\source\images） </p>
+<p><code>background-repeat：</code>若果背景图片不能全屏，那么是否平铺显示，充满屏幕 </p>
+<p><code>background-attachment：</code>背景是否随着网页上下滚动而滚动，fixed 为固定 </p>
+<p><code>background-size：</code>图片展示大小，设置 100%，100% 的意义为：如果背景图片不能全屏，那么是否通过拉伸的方式将背景强制拉伸至全屏显示</p>
+<ol>
+<li>打开主题配置文件，找到<code>custom_file_path:</code>，修改如下：</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">custom_file_path</span>:</span><br><span class="line">  <span class="attr">style</span>: source/_data/styles.<span class="property">styl</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="页面透明化"><a href="#页面透明化" class="headerlink" title="页面透明化"></a>页面透明化</h4><p>为了更好欣赏背景图片，可将博客页面透明化，在<code>source/_data/styles.styl</code>里添加如下内容：</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">//文章透明度设置</span></span><br><span class="line">.<span class="property">post</span>-block &#123;</span><br><span class="line">  <span class="attr">opacity</span>: <span class="number">0.9</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//侧边框的透明度设置</span></span><br><span class="line">.<span class="property">sidebar</span> &#123;</span><br><span class="line">  background-<span class="attr">color</span>: transparent;</span><br><span class="line">  <span class="attr">opacity</span>: <span class="number">0.9</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//菜单栏的透明度设置</span></span><br><span class="line">.<span class="property">header</span>-inner &#123;</span><br><span class="line">  <span class="attr">background</span>: <span class="title function_">rgba</span>(<span class="number">255</span>,<span class="number">255</span>,<span class="number">255</span>,<span class="number">0.9</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//搜索框（local-search）的透明度设置</span></span><br><span class="line">.<span class="property">popup</span> &#123;</span><br><span class="line">  <span class="attr">opacity</span>: <span class="number">0.9</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="边框圆角"><a href="#边框圆角" class="headerlink" title="边框圆角"></a>边框圆角</h4><ol>
+<li>在hexo目录下的<code>source</code>文件夹下新建<code>_data</code>文件夹，文件夹中新建文件<code>variables.styl</code>，添加如下内容：</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="comment">// 圆角设置</span></span><br><span class="line">$border-radius-inner     = 20px 20px 20px 20px;</span><br><span class="line">$border-radius           = 20px;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>打开主题配置文件，找到<code>custom_file_path:</code>，修改如下：</li>
+</ol>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="attr">custom_file_path</span>:</span><br><span class="line">  <span class="attr">variable</span>: source/_data/variables.<span class="property">styl</span></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java异常：Exception与Error，checkedException与unCheckedException</title>
+    <url>/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/</url>
+    <content><![CDATA[<h3 id="1-Java异常类层级结构图"><a href="#1-Java异常类层级结构图" class="headerlink" title="1. Java异常类层级结构图"></a>1. Java异常类层级结构图</h3><p><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512152121807.png"></p>
+<p><code>java.lang.Throwable</code>是Java异常的顶级接口，<code>Exception</code>和<code>Error</code>均继承自<code>Throwable</code>。</p>
+<span id="more"></span>
+
+<h3 id="2-Exception和Error有什么区别？"><a href="#2-Exception和Error有什么区别？" class="headerlink" title="2. Exception和Error有什么区别？"></a>2. Exception和Error有什么区别？</h3><ul>
+<li>Exception：程序本身可以处理的异常，可以通过<code>try-catch</code>进行捕获。<code>Exception</code>又可分为<code>CheckedException</code>（受检异常）和<code>unCheckedException</code>（非受检异常）。</li>
+<li><code>Error</code>：程序本身无法处理的异常，<del>无法通过<code>catch</code>进行捕获</del>不建议通过<code>catch</code>进行捕获。例如上图展示的<code>OutOfMemoryError</code>。这类异常发生时，会导致程序终止运行（线程终止）。</li>
+</ul>
+<h3 id="3-CheckedException和unCheckedException有什么区别？"><a href="#3-CheckedException和unCheckedException有什么区别？" class="headerlink" title="3. CheckedException和unCheckedException有什么区别？"></a>3. <code>CheckedException</code>和<code>unCheckedException</code>有什么区别？</h3><blockquote>
+<p> 二者只是逻辑上的分类，并不存在<code>CheckedException</code>或<code>unCheckedException</code>接口或类</p>
+</blockquote>
+<ul>
+<li><code>CheckedException</code>即受检查异常：Java代码在编译过程中，如果受检查异常没有被<code>catch</code>或者<code>throws</code>关键字处理的话，就没法通过编译。除了<code>RuntimeException</code>及其子类，其他的<code>Exception</code>类及其子类都是受检查异常，常见的有：<code>IoException</code>、<code>ClassNotFoundException</code>、<code>SQLException</code>等。</li>
+<li><code>unCheckedException</code>即非受检查异常：Java代码在编译过程中，即使我们不对其进行处理，编译也可以通过。<code>RuntimeException</code>及其子类都是非受检查异常，常见的有：<code>NullPointException</code>、<code>IllegalArgumentException</code>、<code>NumberFormatException</code>等。</li>
+</ul>
+<p><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512152237987.png"></p>
+<h3 id="4-Throwable有哪些常用方法？"><a href="#4-Throwable有哪些常用方法？" class="headerlink" title="4. Throwable有哪些常用方法？"></a>4. <code>Throwable</code>有哪些常用方法？</h3><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512152739565.png" style="zoom:40%" align="center">
+
+
+
+<ul>
+<li><code>String getMessage()</code>：返回异常描述信息</li>
+</ul>
+<p><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512153002731.png"></p>
+<ul>
+<li><code>void printStackTrace()</code>：在控制台打印<code>Throwable</code>对象封装的异常信息</li>
+</ul>
+<h3 id="5-try-with-resources代替try-catch-finally进行资源释放"><a href="#5-try-with-resources代替try-catch-finally进行资源释放" class="headerlink" title="5. try-with-resources代替try-catch-finally进行资源释放"></a>5. <code>try-with-resources</code>代替<code>try-catch-finally</code>进行资源释放</h3><p><code>try-with-resources</code>是JDK1.7推出的一种资源释放的方式。</p>
+<ol>
+<li>适用范围：资源的定义，任何实现<code>java.lang.AutoCloseable</code>或<code>java.lang.Closeable</code>接口的对象。</li>
+<li>关闭资源和finally块的执行顺序：在<code>try-with-resources</code>语句中，任何catch或finally块在声明的资源关闭后运行。</li>
+<li>使用说明：只需在<code>try</code>后面跟上小括号<code>()</code>括号中对资源进行定义，无需使用<code>finally</code>手动释放资源。</li>
+</ol>
+<p><strong>《Effective Java》</strong>中明确指出：</p>
+<blockquote>
+<p>面对必须要关闭的资源，我们总是优先使用<code>try-with-resources</code>而不是<code>finally</code>。随之产生的代码更简短，更清晰。</p>
+</blockquote>
+<p>Java中类似于<code>InputStream</code>、<code>OutputStream</code>、<code>Scanner</code>、<code>PrintWriter</code>等资源都需要我们调用<code>close()</code>方法进行手动关闭资源，一般情况下我们可以使用<code>try-catch-finally</code>来实现：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">Scanner</span> <span class="variable">scanner</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  scanner = <span class="keyword">new</span> <span class="title class_">Scanner</span>(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;read.txt&quot;</span>));</span><br><span class="line">&#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">  e.printStackTrace();</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (scanner != <span class="literal">null</span>) &#123;</span><br><span class="line">    scanner.close();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>JDK1.7后使用<code>try-with-resources</code>实现：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span> (<span class="type">Scanner</span> <span class="variable">scanner</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;read.txt&quot;</span>)))&#123;</span><br><span class="line">  <span class="keyword">while</span> (scanner.hasNext()) &#123;</span><br><span class="line">    System.out.println(scanner.nextLine());</span><br><span class="line">  &#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">  e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>涉及到多个资源的定义，使用分号<code>;</code>进行分隔</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span> (<span class="type">Scanner</span> <span class="variable">scanner</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;read.txt&quot;</span>)); </span><br><span class="line">     <span class="type">OutputStream</span> <span class="variable">outputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;output.txt&quot;</span>))&#123;</span><br><span class="line">  <span class="keyword">while</span> (scanner.hasNext()) &#123;</span><br><span class="line">    outputStream.write(scanner.nextLine().getBytes(StandardCharsets.UTF_8));</span><br><span class="line">  &#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">  e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>springBoot2中-Configuration注解新增的proxyBeanMehtods属性详解</title>
+    <url>/2021/11/22/springBoot2%E4%B8%AD-Configuration%E6%B3%A8%E8%A7%A3%E6%96%B0%E5%A2%9E%E7%9A%84proxyBeanMehtods%E5%B1%9E%E6%80%A7%E8%AF%A6%E8%A7%A3/</url>
+    <content><![CDATA[<h2 id="Configuration-proxyBeanMethods-x3D-true-x2F-false"><a href="#Configuration-proxyBeanMethods-x3D-true-x2F-false" class="headerlink" title="@Configuration(proxyBeanMethods &#x3D; true&#x2F;false)"></a>@Configuration(proxyBeanMethods &#x3D; true&#x2F;false)</h2><h3 id="1、Full模式（proxyBeanMethods-x3D-true）"><a href="#1、Full模式（proxyBeanMethods-x3D-true）" class="headerlink" title="1、Full模式（proxyBeanMethods&#x3D;true）"></a>1、Full模式（proxyBeanMethods&#x3D;true）</h3><p>proxyBeanMethods&#x3D;true 为Full模式（默认为true），此时在spring IOC容器中的<strong>此配置类是一个CGLIB代理类</strong>，并且调用此配置类的@Bean方法产生的bean是单例的，即<strong>每次调用标有@Bean注解方法都会检查IOC容器中是否有该bean组件</strong>，如果没有则调用方法创建，否则就直接从IOC容器中获取。</p>
+<h4 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h4><span id="more"></span>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ProxyBeanMethodTest</span> &#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> User <span class="title function_">user</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainApplication</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        <span class="type">ConfigurableApplicationContext</span> <span class="variable">run</span> <span class="operator">=</span> SpringApplication.run(MainApplication.class, args);</span><br><span class="line">        <span class="type">ProxyBeanMethodTest</span> <span class="variable">bean</span> <span class="operator">=</span> run.getBean(ProxyBeanMethodTest.class);</span><br><span class="line">        System.out.println(<span class="string">&quot;配置类：&quot;</span>+bean);</span><br><span class="line">        <span class="type">User</span> <span class="variable">user1</span> <span class="operator">=</span> bean.user();</span><br><span class="line">        <span class="type">User</span> <span class="variable">user2</span> <span class="operator">=</span> bean.user();</span><br><span class="line">        System.out.println(<span class="string">&quot;第一次调用配置类中的@Bean注解方法得到的bean组件：&quot;</span>+user1);</span><br><span class="line">        System.out.println(<span class="string">&quot;第二次调用配置类中的@Bean注解方法得到的bean组件：&quot;</span>+user2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h4><h4 id><a href="#" class="headerlink" title></a><img src="/2021/11/22/springBoot2%E4%B8%AD-Configuration%E6%B3%A8%E8%A7%A3%E6%96%B0%E5%A2%9E%E7%9A%84proxyBeanMehtods%E5%B1%9E%E6%80%A7%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/springBoot2中-Configuration注解新增的proxyBeanMehtods属性详解/image-20210427140058050.png"></h4><p><strong>两次调用user()方法得到的是同一个user对象</strong></p>
+<h3 id="2、Lite模式（proxyBeanMethods-x3D-false）"><a href="#2、Lite模式（proxyBeanMethods-x3D-false）" class="headerlink" title="2、Lite模式（proxyBeanMethods&#x3D;false）"></a>2、Lite模式（proxyBeanMethods&#x3D;false）</h3><p>proxyBeanMethods&#x3D;false 为Lite模式，此时在spring IOC容器中<strong>此配置类就是一个普通的类</strong>，每次调用此配置类中标有@Bean注解的方法时都会在IOC容器中注册新的bean组件，调用@Bean方法时无需检查IOC容器中是否存在该bean组件，<strong>可以提高效率，加速容器启动</strong></p>
+<h4 id="测试代码-1"><a href="#测试代码-1" class="headerlink" title="测试代码"></a>测试代码</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = false)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ProxyBeanMethodTest</span> &#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> User <span class="title function_">user</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainApplication</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        <span class="type">ConfigurableApplicationContext</span> <span class="variable">run</span> <span class="operator">=</span> SpringApplication.run(MainApplication.class, args);</span><br><span class="line">        <span class="type">ProxyBeanMethodTest</span> <span class="variable">bean</span> <span class="operator">=</span> run.getBean(ProxyBeanMethodTest.class);</span><br><span class="line">        System.out.println(<span class="string">&quot;配置类：&quot;</span>+bean);</span><br><span class="line">        <span class="type">User</span> <span class="variable">user1</span> <span class="operator">=</span> bean.user();</span><br><span class="line">        <span class="type">User</span> <span class="variable">user2</span> <span class="operator">=</span> bean.user();</span><br><span class="line">        System.out.println(<span class="string">&quot;第一次调用配置类中的@Bean注解方法得到的bean组件：&quot;</span>+user1);</span><br><span class="line">        System.out.println(<span class="string">&quot;第二次调用配置类中的@Bean注解方法得到的bean组件：&quot;</span>+user2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="运行结果-1"><a href="#运行结果-1" class="headerlink" title="运行结果"></a>运行结果</h4><h4 id="-1"><a href="#-1" class="headerlink" title></a><img src="/2021/11/22/springBoot2%E4%B8%AD-Configuration%E6%B3%A8%E8%A7%A3%E6%96%B0%E5%A2%9E%E7%9A%84proxyBeanMehtods%E5%B1%9E%E6%80%A7%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/springBoot2中-Configuration注解新增的proxyBeanMehtods属性详解/image-20210427141917861.png"></h4><p><strong>两次调用user()方法得到的是不同的User对象</strong></p>
+<h3 id="3、Full模式和Lite模式优劣比较"><a href="#3、Full模式和Lite模式优劣比较" class="headerlink" title="3、Full模式和Lite模式优劣比较"></a>3、Full模式和Lite模式优劣比较</h3><p><strong>Full模式</strong>可以很好地处理<strong>组件之间相互依赖</strong>的问题</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ProxyBeanMethodTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> User <span class="title function_">user</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        user.setDog(dog());</span><br><span class="line">        <span class="keyword">return</span> user;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> Dog <span class="title function_">dog</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Dog</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">ConfigurableApplicationContext</span> <span class="variable">run</span> <span class="operator">=</span> SpringApplication.run(MainApplication.class, args);</span><br><span class="line">        </span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> run.getBean(User.class);</span><br><span class="line">        <span class="type">Dog</span> <span class="variable">dog1</span> <span class="operator">=</span> user.getDog();</span><br><span class="line">        <span class="type">Dog</span> <span class="variable">dog2</span> <span class="operator">=</span> run.getBean(Dog.class);</span><br><span class="line">        System.out.println(dog1 == dog2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由以上结果可以看出，IOC容器中的Dog与User的属性Dog是同一个对象，也更加印证了当为User对象注入Dog属性时，此Dog是从IOC容器中获取的，而并非重新调用了dog()方法。从上面的测试代码中也可以看出，使用Full模式可以确保IOC容器中同一类型的对象始终是同一个，可以很好的处理组件依赖问题。</p>
+<p><strong>Lite模式</strong>免去了每次调用方法前去IOC容器中检查的过程，可以有效加速容器启动过程</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ProxyBeanMethodTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> User <span class="title function_">user</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        user.setDog(dog());</span><br><span class="line">        <span class="keyword">return</span> user;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> Dog <span class="title function_">dog</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Dog</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">ConfigurableApplicationContext</span> <span class="variable">run</span> <span class="operator">=</span> SpringApplication.run(MainApplication.class, args);</span><br><span class="line">        </span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> run.getBean(User.class);</span><br><span class="line">        <span class="type">Dog</span> <span class="variable">dog1</span> <span class="operator">=</span> user.getDog();</span><br><span class="line">        <span class="type">Dog</span> <span class="variable">dog2</span> <span class="operator">=</span> run.getBean(Dog.class);</span><br><span class="line">        System.out.println(dog1 == dog2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/22/springBoot2%E4%B8%AD-Configuration%E6%B3%A8%E8%A7%A3%E6%96%B0%E5%A2%9E%E7%9A%84proxyBeanMehtods%E5%B1%9E%E6%80%A7%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/springBoot2中-Configuration注解新增的proxyBeanMehtods属性详解/image-20210427144808890.png" align="left"><br></p>
+<h3 id="4、结论"><a href="#4、结论" class="headerlink" title="4、结论"></a>4、结论</h3><ul>
+<li>配置类组件之间无依赖关系时使用Lite模式，可以省去检查容器中是否已经存在同类型组件的过程，加速容器启动</li>
+<li>配置类组件之间有依赖关系，使用Full模式，方法调用得到容器中的单实例组件</li>
+</ul>
+<br>
+
+<h4 id="友情链接"><a href="#友情链接" class="headerlink" title="友情链接"></a>友情链接</h4><p>视频讲解内容可参考尚硅谷-SpringBoot2讲解视频：<a href="https://www.bilibili.com/video/BV19K4y1L7MT?p=8">https://www.bilibili.com/video/BV19K4y1L7MT?p=8</a></p>
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+        <tag>Spring</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL:InnoDB存储引擎和MyISAM的区别？</title>
+    <url>/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/</url>
+    <content><![CDATA[<p>本文从<strong>事务</strong>，<strong>外键</strong>，<strong>索引</strong>， <strong>存储文件</strong>，<strong>日志</strong>，<strong>count行数</strong>，<strong>锁</strong>，<strong>主键</strong>八个方面系统地对比了在<code>MySQL</code>中<code>InnoDB</code>存储引擎和<code>MyISAM</code>存储引擎的区别。</p>
+<h3 id="1-事务"><a href="#1-事务" class="headerlink" title="1. 事务"></a>1. 事务</h3><ul>
+<li><p><code>InnoDB</code>：支持事务。</p>
+</li>
+<li><p><code>MyISAM</code>：不支持事务，强调的是性能，每次查询具有原子性，一般情况下其查询数度比<code>InnoDB</code>更快，但是不提供事务支持。</p>
+</li>
+</ul>
+<span id="more"></span>
+
+<blockquote>
+<p>一般情况下<code>MyISAM</code>查询速度比<code>InnoDB</code>快的原因：</p>
+<p>答：在查询的时候，InnoDB要维护的东西比MyISAM多很多，具体以下几点：</p>
+<ul>
+<li>InnoDB缓存数据块，MyISAM只缓存索引块， 这中间还有换进换出的减少；</li>
+<li>InnoDB寻址要映射到块，再到行，MyISAM记录的直接是文件的OFFSET，定位比InnoDB要快 </li>
+<li>InnoDB还需要维护MVCC一致； 虽然你的场景没有，但他还是需要去检查和维护</li>
+</ul>
+</blockquote>
+<h3 id="2-外键"><a href="#2-外键" class="headerlink" title="2. 外键"></a>2. 外键</h3><ul>
+<li><code>InnoDB</code>：支持外键</li>
+<li><code>MyISAM</code>：不支持外键，对一个包含外键的InnoDB表转为MyISAM会失败</li>
+</ul>
+<h3 id="3-索引"><a href="#3-索引" class="headerlink" title="3. 索引"></a>3. 索引</h3><ul>
+<li><code>InnoDB</code>：聚集索引，数据文件和索引存储在一起，必须要有主键，通过主键查询效率很高，一次查询即可得到完整的行数据。辅助索引存储的数据是对应的主键索引的值，通过辅助索引查询需要两次查询，根据辅助索引查询到对应的主键索引，再根据主键索引查询到对应的行数据（这一过程称之为<strong>回表</strong>）。</li>
+<li><code>MyISAM</code>：非聚集索引，索引和数据文件分开保存，索引保存的是数据文件的指针。主键索引和辅助索引相互独立。</li>
+</ul>
+<blockquote>
+<p>InnoDB的B+树主键索引的叶子节点就是数据文件，辅助索引的叶子节点是主键的值；而MyISAM的B+树主键索引和辅助索引的叶子节点都是数据文件的地址指针。</p>
+</blockquote>
+<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png"></p>
+<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130322302.png"></p>
+<h3 id="4-存储文件"><a href="#4-存储文件" class="headerlink" title="4. 存储文件"></a>4. 存储文件</h3><ul>
+<li><code>InnoDB</code>：存储文件有<strong>frm、ibd</strong>，<strong>frm</strong>是表定义文件，<strong>ibd</strong>是数据文件。</li>
+<li><code>MyISAM</code>：存储文件有<strong>frm、myd、myi</strong>，<strong>frm</strong>是表定义文件，<strong>myd</strong>是数据文件，<strong>myi</strong>是索引文件。</li>
+</ul>
+<h3 id="5-日志"><a href="#5-日志" class="headerlink" title="5. 日志"></a>5. 日志</h3><ul>
+<li><code>InnoDB</code>：有<code>redo log</code>，使用 InnoDB 的数据库在异常崩溃后，数据库重新启动的时候会保证数据库恢复到崩溃前的状态，这个恢复的过程依赖于 <code>redo log</code> 。 <code>redo log</code> 保证事务的持久性， <code>undo log</code> 保证事务的原子性。</li>
+<li><code>MyISAM</code>：没有<code>redo log</code>，不支持数据库异常崩溃后的安全恢复。</li>
+</ul>
+<h3 id="6-count"><a href="#6-count" class="headerlink" title="6. count"></a>6. count</h3><ul>
+<li><code>InnoDB</code>：不保存表的具体行数，如果使用<code>select count(*) from table</code>，就会遍历整个表，消耗相当大，但是在加了<code>where</code>条件后，myisam和innodb处理的方式都一样。</li>
+<li><code>MyISAM</code>：使用一个变量保存整个表的行数，如果使用<code>select count(*) from table</code>，会直接读取该变量。</li>
+</ul>
+<blockquote>
+<p> 因为InnoDB的事务特性，在同一时刻表中的行数对于不同的事务而言是不一样的，因此count统计会计算对于当前事务而言可以统计到的行数，而不是将总行数储存起来方便快速查询。</p>
+</blockquote>
+<h3 id="7-锁"><a href="#7-锁" class="headerlink" title="7. 锁"></a>7. 锁</h3><ul>
+<li><code>InnoDB</code>：支持行级锁和表锁。行锁是基于索引实现的，如果没有命中索引，也无法使用行锁，会退化到表锁。</li>
+<li><code>MyISAM</code>：仅支持表锁，不支持行锁。</li>
+</ul>
+<h3 id="8-主键"><a href="#8-主键" class="headerlink" title="8. 主键"></a>8. 主键</h3><ul>
+<li><code>InnoDB</code>：如果没有设定主键，会自动生成一个6字节的隐藏主键（用户不可见），数据保存在主键索引的叶子节点上。</li>
+<li><code>MyISAM</code>：允许不含有主键。</li>
+</ul>
+<blockquote>
+<p>删除部分自增主键后，二者的区别？</p>
+<ol>
+<li>不重启服务器</li>
+</ol>
+<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，插入一行新的数据，无论是<code>InnoDB</code>还是<code>MyISAM</code>都会从<code>6</code>开始插入。</p>
+<ol start="2">
+<li>重启服务器</li>
+</ol>
+<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，重启服务器，再插入一行新的数据，<code>InnoDB</code>主键会从<code>4</code>开始插入，而<code>MyISAM</code>会从<code>6</code>开始插入。</p>
+<blockquote>
+<p>原因：Innodb表把自增主键的最大ID记录到内存中，重启数据库后，都会导致最大自增ID重置；MyISAM表会把自增主键的最大ID记录到数据文件里，重启MySQL自增主键的最大ID也不会丢失。</p>
+</blockquote>
+<p><strong>说明：mysql8.0版本，重启数据库后，不会导致最大自增ID重置</strong></p>
+<p><strong>原因：</strong>在 MySQL 8.0 中，<code>AUTO_INCREMENT</code>计数器的逻辑变了，每当计数器的值有变，InnoDB 会将其写入 redo log，保存到引擎专用的系统表中。MySQL 正常关闭后重启：从系统表中获取计数器的值。MySQL 故障后重启：从系统表中获取计数器的值；从最后一个检查点开始扫描 redo log 中记录的计数器值；取这两者的最大值作为新值。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL:事务</title>
+    <url>/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/</url>
+    <content><![CDATA[<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/mysql-logo-800-400.jpg"></p>
+<h2 id="MySQL事务"><a href="#MySQL事务" class="headerlink" title="MySQL事务"></a>MySQL事务</h2><p>数据库的<strong>事务（Transaction）</strong>是一种机制、一个操作序列，包含了一组数据库操作命令。事务把所有的命令作为一个整体一起向系统提交或撤销操作请求，即这一组数据库命令要么都执行，要么都不执行，因此事务是一个不可分割的工作逻辑单元。</p>
+<span id="more"></span>
+
+<h3 id="事务的四大特性"><a href="#事务的四大特性" class="headerlink" title="事务的四大特性"></a>事务的四大特性</h3><ul>
+<li><p><strong>原子性（Atomicity）：</strong>一个事务中的所有操作，要么都执行，要么都失败，不存在中间状态，一旦事务执行过程中发生了错误，事务会进行回滚，恢复到事务开始之前的状态，就像这个事务从来没有执行过一样。</p>
+</li>
+<li><p><strong>一致性（Consistency）：</strong>数据库的完整性不会因为事务的执行而受到破坏，一个事务执行之前和执行之后都必须处于一致状态。比如表中有一个字段为姓名，它有唯一约束，也就是表中姓名不能重复，如果一个事务对姓名字段进行了修改，但是在事务提交后，表中的姓名变得非唯一性了，这就破坏了事务的一致性要求，这时数据库就要撤销该事务，返回初始化的状态。再比如用户A和用户B两者的钱加起来一共是1000，那么不管A和B之间如何转账、转几次账，事务结束后两个用户的钱相加起来应该还得是1000，这就是事务的一致性。</p>
+</li>
+<li><p><strong>隔离性（Isolation）：</strong>数据库允许多个并发事务同时对其数据进行读写和修改的能力，隔离性可以保证多个事务在并发执行的过程中互相隔离，互不干扰，从而避免并发事务交叉执行时带来的数据不一致问题。</p>
+</li>
+<li><p><strong>持久性（Durability）：</strong>事务结束后，对数据的修改是永久的，即便发生系统故障也不会对丢失。</p>
+</li>
+</ul>
+<p><strong><code>InnoDB</code>引擎如何保证事务的四大特性？</strong></p>
+<p>持久性通过<code>redo log</code>（重做日志）来保证的</p>
+<p>原子性通过<code>undo log</code>（回滚日志）来保证的</p>
+<p>隔离性通过<code>mvcc</code>（多版本并发控制）或锁机制来保证的</p>
+<p>一致性通过持久性+原子性+隔离性来保证的</p>
+<h3 id="并发事务带来的问题"><a href="#并发事务带来的问题" class="headerlink" title="并发事务带来的问题"></a>并发事务带来的问题</h3><h4 id="脏读"><a href="#脏读" class="headerlink" title="脏读"></a>脏读</h4><p><strong>一个事务「读到」了另一个「未提交事务修改的数据」</strong></p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/10b513008ea35ee880c592a88adcb12f.png"></p>
+<p>因为事务 A 是还没提交事务的，也就是它随时可能发生回滚操作，<strong>如果在上面这种情况事务 A 发生了回滚，那么事务 B 刚才得到的数据就是过期的数据，这种现象就被称为脏读。</strong></p>
+<h4 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h4>]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Redis过期key是否立马被删除？</title>
+    <url>/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/</url>
+    <content><![CDATA[<h3 id="Redis过期key是否立马被删除？"><a href="#Redis过期key是否立马被删除？" class="headerlink" title="Redis过期key是否立马被删除？"></a>Redis过期key是否立马被删除？</h3><p>答案是不会，Redis处理过期key主要有两种方式：</p>
+<ul>
+<li>惰性删除（客户端侧）</li>
+<li>定期随机删除（服务端侧）</li>
+</ul>
+<span id="more"></span>
+
+<h4 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h4><p>当客户端请求查询时，判断当前key已过期，则会删除该key，删除key的主动权交给每次访问的请求。</p>
+<p>弊端：只能处理还会访问的key，无法对一些不再会被访问的key进行删除。</p>
+<p>该实现通过<code>expiredIfNeeded</code>函数实现，源码路径：<code>src/db.c</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">expireIfNeeded</span><span class="params">(redisDb *db, robj *key, <span class="type">int</span> force_delete_expired)</span> &#123;</span><br><span class="line">   <span class="comment">// key 没有过期，return 0</span></span><br><span class="line">    <span class="keyword">if</span> (!keyIsExpired(db,key)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (server.masterhost != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (server.current_client == server.master) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (!force_delete_expired) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (checkClientPauseTimeoutAndReturnIfPaused()) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Delete the key */</span></span><br><span class="line">    deleteExpiredKeyAndPropagate(db,key);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h4><p>对于一些key过期后不再被访问，惰性删除永远无法对其进行删除，这会导致已过期的key不断积压，因此仅靠客户端侧的处理是不够的。</p>
+<ul>
+<li>如何让处理“占着茅坑不拉屎”的key?</li>
+</ul>
+<p>服务端进行定期删除，顾名思义就是Redis默认每100 ms 执行一次，随机抽取一些设置了过期时间的key，判断是否过期，如发现已过期就直接删除。</p>
+<blockquote>
+<p>注意：并不是检查所有key，而是随机抽取一定数量的key</p>
+</blockquote>
+<p>具体步骤如下：</p>
+<img src="/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/image-20220511000559696.png" style="zoom:70%">
+
+<p>该过程通过<code>activeExpireCycle</code>函数实现，源码路径：<code>src/expire.c</code></p>
+<ul>
+<li>为什么不检查所有设置过期时间的key？</li>
+</ul>
+<p>Redis中存放了数以万计的key，如果每隔100 ms 就要轮询检查所有设置过期时间的key，会非常耗费CPU</p>
+<ul>
+<li>删除如何做到主从同步？</li>
+</ul>
+<p>不论是惰性删除还是定期删除，当进行删除时，<code>master</code>会将删除指令记录到<code>AOF</code>和<code>slave</code>节点</p>
+<blockquote>
+<p><strong>如果过期数据太多，定时删除无法完全删除（每次删除完过期的key还是超过25%），同时这些key再也不会被客户端请求，即也无法通过惰性删除，该如何解决？</strong></p>
+<p>答：内存淘汰机制</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>String s=&quot;a&quot;+&quot;b&quot;+&quot;c&quot;到底创建了几个对象？</title>
+    <url>/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/</url>
+    <content><![CDATA[<p><strong>常量折叠技术</strong>：在编译期间，编译器会将<strong>编译器常</strong>的加减乘除运算过程在编译过程中折叠。编译器通过语法分析，将常量表达式计算求值，并用求出来的值替换表达式，而不必等到运行期间再进行运算处理，从而在运行期间节省处理器资源。</p>
+<ul>
+<li>下面来对比三种不同写法，观察那些情况下会发生<strong>常量折叠</strong></li>
+</ul>
+<span id="more"></span>
+
+<blockquote>
+<p>  我们对比反编译后的字节码文件以及使用<code>jclasslib bytecode viewer</code>查看字节码信息</p>
+</blockquote>
+<ol>
+<li>我们来分析一下语句，查看反编译后的字节码文件，进行了<strong>常量折叠</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;a&quot;</span> + <span class="string">&quot;b&quot;</span> + <span class="string">&quot;c&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511003922966.png"></p>
+<p>字节码信息如下：</p>
+<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511005110697.png"></p>
+<p>直接对比是否指向同一个对象：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;a&quot;</span> + <span class="string">&quot;b&quot;</span> + <span class="string">&quot;c&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">t</span> <span class="operator">=</span> <span class="string">&quot;abc&quot;</span>;</span><br><span class="line">System.out.println(s == t);</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511010602524.png" alt="image-20220511010602524"> </p>
+<ol start="2">
+<li>再来对比，没有进行<strong>常量折叠</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> <span class="string">&quot;ab&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> s1 + <span class="string">&quot;c&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511004222616.png"></p>
+<p>字节码信息如下：</p>
+<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511004929034.png"></p>
+<p>是否指向常量池中的常量：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> <span class="string">&quot;ab&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> s1 + <span class="string">&quot;c&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">t</span> <span class="operator">=</span> <span class="string">&quot;abc&quot;</span>;</span><br><span class="line">System.out.println(s == t);</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511010725943.png"> </p>
+<ol start="3">
+<li>在观察如下语句，与2唯一的区别就是给<code>s1</code>添加了<code>final</code>修饰，可以发现又发生了<strong>常量折叠</strong></li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> <span class="string">&quot;ab&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> s1 + <span class="string">&quot;c&quot;</span>;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511005336059.png"></p>
+<p>字节码信息如下：</p>
+<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511005447668.png"></p>
+<p>是否指向同一个对象：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> <span class="string">&quot;ab&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> s1 + <span class="string">&quot;c&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">t</span> <span class="operator">=</span> <span class="string">&quot;abc&quot;</span>;</span><br><span class="line">System.out.println(s == t);</span><br></pre></td></tr></table></figure>
+
+<p>结果：</p>
+<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511010924324.png"> </p>
+<blockquote>
+<p>发生<code>常量折叠</code>必须是编译器常量：</p>
+<ul>
+<li>被声明为final</li>
+<li>基本数据类型或者字符串类型</li>
+<li>声明时就已经初始化了</li>
+<li>使用常量表达式进行初始化</li>
+</ul>
+</blockquote>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Markdown如何实现页内跳转？</title>
+    <url>/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/</url>
+    <content><![CDATA[<h2 id="1-Markdown怎么实现页内跳转？"><a href="#1-Markdown怎么实现页内跳转？" class="headerlink" title="1. Markdown怎么实现页内跳转？"></a>1. Markdown怎么实现页内跳转？</h2><h3 id="1-利用Markdown语法"><a href="#1-利用Markdown语法" class="headerlink" title="1. 利用Markdown语法"></a>1. 利用Markdown语法</h3><p>格式：[描述文字] (#标题名称)</p>
+<span id="more"></span>
+
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">实践：</span><br><span class="line"></span><br><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line"></span><br><span class="line">[点我去顶部](#1.-我是顶部（空格用`-`代替，转换为html时会跳转失败）)</span><br><span class="line"></span><br><span class="line">[点我去中部](#我是中部)</span><br><span class="line"></span><br><span class="line">##### 1. 我是顶部（空格用`-`代替，转换为html时会跳转失败）</span><br><span class="line"></span><br><span class="line">##### 我是中部</span><br></pre></td></tr></table></figure>
+
+<p><strong>效果展示：</strong></p>
+<hr>
+<p><a href="#1.-%E6%88%91%E6%98%AF%E9%A1%B6%E9%83%A8%EF%BC%88%E7%A9%BA%E6%A0%BC%E7%94%A8%60-%60%E4%BB%A3%E6%9B%BF%EF%BC%8C%E8%BD%AC%E6%8D%A2%E4%B8%BAhtml%E6%97%B6%E4%BC%9A%E8%B7%B3%E8%BD%AC%E5%A4%B1%E8%B4%A5%EF%BC%89">点我去顶部</a></p>
+<p><a href="#%E6%88%91%E6%98%AF%E4%B8%AD%E9%83%A8">点我去中部</a></p>
+<h5 id="1-我是顶部（空格用-代替，转换为html时会跳转失败）"><a href="#1-我是顶部（空格用-代替，转换为html时会跳转失败）" class="headerlink" title="1. 我是顶部（空格用-代替，转换为html时会跳转失败）"></a>1. 我是顶部（空格用<code>-</code>代替，转换为html时会跳转失败）</h5><h5 id="我是中部"><a href="#我是中部" class="headerlink" title="我是中部"></a>我是中部</h5><hr>
+<blockquote>
+<p>注意事项：标题名称要完全一样，标题中的空格要用 <code>-</code>代替，这种跳转方式只能局限于跳转到<code>#</code>目录</p>
+</blockquote>
+<h3 id="2-使用html标签"><a href="#2-使用html标签" class="headerlink" title="2. 使用html标签"></a>2. 使用html标签</h3><p>格式：</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">在需要被跳转到地方添加标签：&lt;a id=&quot;xxx&quot;&gt;&lt;/a&gt;</span><br><span class="line">在跳转的位置添加标签：[跳转名称](#xxx)</span><br></pre></td></tr></table></figure>
+
+<p>实践：</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line">[跳转到位置1](#a1)</span><br><span class="line"></span><br><span class="line">[跳转到地方2](#p2)</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;a id=&quot;a1&quot;&gt;位置1&lt;/a&gt;</span><br><span class="line"></span><br><span class="line">地方2&lt;a id=&quot;p2&quot;&gt;&lt;/a&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>效果展示：</strong></p>
+<hr>
+<p><a href="#a1">跳转到位置1</a></p>
+<p><a href="#p2">跳转到地方2</a></p>
+<br>
+
+<br>
+
+<p><a id="a1">位置1</a></p>
+<p>地方2<a id="p2"></a></p>
+<hr>
+<blockquote>
+<p>采用这种方式在转换为html时仍然生效，且可控制性高，推荐这种方式。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何配置git ssh</title>
+    <url>/2022/05/10/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgit-ssh/</url>
+    <content><![CDATA[<h3 id="1-检查用户名和邮箱"><a href="#1-检查用户名和邮箱" class="headerlink" title="1. 检查用户名和邮箱"></a>1. 检查用户名和邮箱</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看用户名</span></span><br><span class="line">git config user.name</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看邮箱</span></span><br><span class="line">git config user.email</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置用户名</span></span><br><span class="line">git config --global user.name &quot;xxx&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置邮箱</span></span><br><span class="line">git config --global user.email &quot;xxx&quot;</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h3 id="2-查看是否配置过SSH-Key"><a href="#2-查看是否配置过SSH-Key" class="headerlink" title="2. 查看是否配置过SSH Key"></a>2. 查看是否配置过SSH Key</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ls ~/.ssh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">hyunmin@HyunmindeMacBook-Air .ssh % <span class="built_in">ls</span> ~/.ssh</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">id_rsa      id_rsa.pub  known_hosts</span></span><br></pre></td></tr></table></figure>
+
+<p>存在id_rsa      id_rsa.pub文件即证明已配置过SSH Key</p>
+<h3 id="3-生成SSH-Key（秘钥）"><a href="#3-生成SSH-Key（秘钥）" class="headerlink" title="3. 生成SSH Key（秘钥）"></a>3. 生成SSH Key（秘钥）</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t -rsa -C &quot;email&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-GitHub远程仓库添加公钥"><a href="#4-GitHub远程仓库添加公钥" class="headerlink" title="4. GitHub远程仓库添加公钥"></a>4. GitHub远程仓库添加公钥</h3><ol>
+<li><p>复制<code>~/.ssh/id_rsa.pub</code>文件内容，并粘贴到GitHub-&gt;settings-&gt;SSH and GPG keys</p>
+</li>
+<li><p>检查是否配置成功</p>
+</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示如下内容则表示配置成功</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Hi Ysfun! You<span class="string">&#x27;ve successfully authenticated, but GitHub does not provide shell access.</span></span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL:总算把B+树搞明白了</title>
+    <url>/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/</url>
+    <content><![CDATA[<h2 id="1-MySQL索引为何使用B-树"><a href="#1-MySQL索引为何使用B-树" class="headerlink" title="1. MySQL索引为何使用B+树"></a>1. MySQL索引为何使用B+树</h2><p><code>MySQL</code>索引是提升数据库查询效率的最强武器，那么为何索引能够提升数据库查询速度？为何<code>MySQL</code>采用<code>B+树</code>来实现索引？</p>
+<h3 id="1-为何索引能提升查询性能？"><a href="#1-为何索引能提升查询性能？" class="headerlink" title="1. 为何索引能提升查询性能？"></a>1. 为何索引能提升查询性能？</h3><p>第一个问题可以用一个比较通俗的说法来回答，数据库索引相当于给一本书加了一个目录。</p>
+<p>问题来了，为什么有了”目录“就能提升数据库查询效率呢？</p>
+<span id="more"></span>
+
+<p>比较简单的解释，通过目录查找的过程可以近似理解为<code>二分查找</code>查找的过程，我们知道<code>二分查找</code>可以将遍历查询的时间复杂度从<code>o(n)</code>降为<code>o(log n)</code>。</p>
+<p>数据库利用索引查询数据的具体过程，后文会进行详细描述。</p>
+<h3 id="2-为何MySQL不用二叉树来实现索引？"><a href="#2-为何MySQL不用二叉树来实现索引？" class="headerlink" title="2. 为何MySQL不用二叉树来实现索引？"></a>2. 为何<code>MySQL</code>不用<code>二叉树</code>来实现索引？</h3><p>我们知道通过排序二叉树（也叫二分查找树）可以实现<code>o(log n)</code>的时间复杂度进行查询，相比于<code>o(n)</code>的时间复杂度已经有了极大的提升。</p>
+<p><strong><code>MySQL</code>为何没有采用二分查找树作为索引呢？</strong></p>
+<p>要解答这个问题，就必须介绍那些因素对数据库查询过程中起到了制约作用。我们都知道<code>CPU</code>的数据处理性能远远比<code>磁盘I/O</code>的速度快，因此要提升查询性能，较少<code>I/O</code>次数就至关重要了。通过<code>树</code>查找的过程，树的层数基本就等于<code>磁盘I/O</code>的次数，因此要尽可能降低树的高度。</p>
+<p>我们知道，对于一颗满二叉树，假设树的高度为<code>n</code>，那么这棵树的节点个数为<code>2^n-1</code>个，即对于一个含有<code>n</code>个节点的二叉树，其高度至少为<code>log n</code>，对于数据库百万千万的数据，如果要经历<code>log n</code>次的<code>I/O</code>，其查询耗时则可想而知。</p>
+<p>至此，我们知道，之所以不采用<code>二叉树</code>来实现数据库索引，是因为二叉树的高度太大，而每次查询经历的<code>磁盘I/O</code>的次数和树的高度相等，导致查询速度过慢。</p>
+<h3 id="3-为何使用B-树？"><a href="#3-为何使用B-树？" class="headerlink" title="3. 为何使用B+树？"></a>3. 为何使用<code>B+</code>树？</h3><p>前面提到，为了减少<code>磁盘I/O</code>的次数，就必须降低树的高度，比较容易想到降低树的高度的方法：增加树的分叉！不难计算，对于一颗具有<code>n</code>个节点的<code>k</code>叉树，其树的高度为$log_k n$。</p>
+<p>多叉树里有两种较为常见的，分别为<code>B-</code>树（又称为<code>B</code>树）和<code>B+</code>树。这二者的区别可参考<a href="https://www.jianshu.com/p/ace3cd6526c4">B+树和B树的区别</a>，我们这里主要提三点：</p>
+<ul>
+<li><code>B+</code>树的data数据只存放在叶子节点，非叶子节点只存储树的索引信息；而<code>B-</code>树的叶子节点和非叶子节点都存放实际的数据。</li>
+<li><code>B+</code>树的叶子节点增加了前后指针，分别指向前一个叶子节点和后一个叶子结点，可以理解为维护了一个双向链表。</li>
+<li>由于<code>B+</code>树的实际数据都保存在叶子结点，且所有叶子节点都在同一层，所以使用<code>B+</code>树进行查询所经历的<code>I/O</code>次数固定为树的高度；而由于<code>B-</code>树非叶子节点也存放数据，则其查询时间是不固定的。</li>
+</ul>
+<p><strong><code>B+</code>树和<code>B-</code>树中，为何选择<code>B+</code>树？</strong><a id="1"></a></p>
+<p>我们知道要提升数据库查询效率，就要尽可能降低树的高度，即对应相同的数据量，应尽可能使树变得”胖“一些。由于<code>B+</code>树非叶子节点不存储实际数据，对于一个非叶子节点（MySQL数据是分页保存，每页默认16kB，即树的每个节点的大小为16kB），能够有更多的”分叉“，因此可以让树变得更”宽矮“一些，即相比于<code>B-</code>树，同样高度的<code>B+</code>树能保存更多的数据页，因此MySQL采用<code>B+</code>树来实现索引。</p>
+<h2 id="2-InnoDB是如何存储数据的？"><a href="#2-InnoDB是如何存储数据的？" class="headerlink" title="2. InnoDB是如何存储数据的？"></a>2. <code>InnoDB</code>是如何存储数据的？</h2><blockquote>
+<p>MySQL 支持多种存储引擎，不同的存储引擎，存储数据的方式也是不同的，我们最常使用的是 InnoDB 存储引擎，下面介绍下InnoDB 是如何存储数据的。</p>
+</blockquote>
+<p>磁盘读写的最小单位是<strong>扇区</strong>，扇区的大小只有 <code>512B</code> 大小，操作系统一次会读写多个扇区，所以<strong>操作系统的最小读写单位是块（Block）。Linux 中的块大小为 <code>4KB</code><strong>，也就是一次磁盘  I&#x2F;O 操作会直接读写 8 个扇区。同样的，MySQL保存的记录是以「行」为单位的，但是数据库的读取并不以「行」为单位，否则一次读取（也就是一次 I&#x2F;O 操作）只能处理一行数据，效率会非常低。</strong>InnoDB 的数据是按「数据页」为单位来读写的</strong>，也就是说，当需要读一条记录的时候，并不是将这个记录本身从磁盘读出来，而是以页为单位，将其整体读入内存。</p>
+<p><code>InnoDB</code>保存的数据文件是后缀为<code>.ibd</code>的文件，其含义是<code>InnoDB data</code>文件，又叫<code>表空间</code>。虽然在数据表里，它们看起来是挨在一起的。但实际上在<code>xx.ibd</code>里他们被分成很多小份的<strong>数据页</strong>，每份默认大小为<code>16kB</code>。类似如下结构：</p>
+<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223121145.png" style="zoom:60%">
+
+<p>数据库<code>I/O</code>操作的最小单位是<strong>页</strong>，<strong>InnoDB 数据页的默认大小是 16KB</strong>，意味着数据库每次读写都是以 16KB 为单位的，一次最少从磁盘中读取 16K 的内容到内存中，一次最少把内存中的 16K 内容刷新到磁盘中。</p>
+<p>数据页主要包括七个部分，<strong>数据页结构图</strong><a id="2"></a>如下：</p>
+<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221149949.png" style="zoom:40%">
+
+<p>各部分的作用：</p>
+<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221347217.png" style="zoom:50%">
+
+<p>在 File Header 中有两个指针，分别指向上一个数据页和下一个数据页，连接起来的页相当于一个双向的链表，如下图所示：</p>
+<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221521045.png" style="zoom:60%">
+
+<blockquote>
+<p>采用链表的结构是让数据页之间不需要是物理上的连续的，而是逻辑上的连续。</p>
+</blockquote>
+<p><strong>数据页中的记录按照「主键」顺序组成单向链表</strong>，单向链表的特点就是插入、删除非常方便，但是检索效率不高，最差的情况下需要遍历链表上的所有节点才能完成检索。</p>
+<p>因此，数据页中有一个<strong>页目录</strong>，起到记录的索引作用，就像我们书那样，针对书中内容的每个章节设立了一个目录，想看某个章节的时候，可以查看目录，快速找到对应的章节的页数，而数据页中的页目录就是为了能快速找到记录。通过<strong>页目录</strong>可以使数据页内查询记录的时间复杂度从<code>o(n)</code>变为<code>o(log n)</code>，提升页内查询效率。</p>
+<h2 id="3-B-树是如何进行查询的？"><a href="#3-B-树是如何进行查询的？" class="headerlink" title="3. B+树是如何进行查询的？"></a>3. <code>B+</code>树是如何进行查询的？</h2><p>在<code>InnoDB</code>中一个<strong>数据页</strong>默认的大小为<code>16 kB</code>，当面对大数据量时，需要多个数据页共同存放数据，如何建立合适的索引，才能快速的定位到记录所在的页。因此，<code>MySQL</code>采用<code>B+</code>树作为索引。</p>
+<p>InnoDB 里的 B+ 树中的<strong>每个节点都是一个数据页</strong>，结构示意图如下：</p>
+<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223718982.png" style="zoom:80%">
+
+<p>通过上图，我们看出  B+ 树的特点：</p>
+<ul>
+<li>只有叶子节点（最底层的节点）才存放了数据，非叶子节点（其他上层节）仅用来存放目录项作为索引。</li>
+<li>非叶子节点分为不同层次，通过分层来降低每一层的搜索量；</li>
+<li>所有节点按照索引键大小排序，构成一个双向链表，便于范围查询；</li>
+</ul>
+<p>我们再看看 B+ 树如何实现快速查找主键为 6 的记录，以上图为例子：</p>
+<ul>
+<li>从根节点开始，通过二分法快速定位到符合页内范围包含查询值的页，因为查询的主键值为 6，在[1, 7)范围之间，所以到页 30 中查找更详细的目录项；</li>
+<li>在非叶子节点（页30）中，继续通过二分法快速定位到符合页内范围包含查询值的页，主键值大于 5，所以就到叶子节点（页16）查找记录；</li>
+<li>接着，在叶子节点（页16）中，通过槽查找记录时，使用二分法快速定位要查询的记录在哪个槽（哪个记录分组），定位到槽后，再遍历槽内的所有记录，找到主键为 6 的记录。</li>
+</ul>
+<h2 id="4-聚集索引和二级索引"><a href="#4-聚集索引和二级索引" class="headerlink" title="4. 聚集索引和二级索引"></a>4. 聚集索引和二级索引</h2><p>索引又可以分为聚集索引和二级索引，其区别在于叶子节点存放了什么数据。</p>
+<ul>
+<li>聚集索引叶子节点存放了实际数据，所有完整的数据记录都保存在聚集索引的叶子节点；</li>
+<li>二级索引叶子节点存放了主键值，而不是实际数据</li>
+</ul>
+<p>因为表的数据都是存放在聚集索引的叶子节点里，所以 InnoDB 存储引擎一定会为表创建一个聚集索引，且由于数据在物理上只会保存一份，所以聚簇索引只能有一个。</p>
+<p>InnoDB 在创建聚簇索引时，会根据不同的场景选择不同的列作为索引：</p>
+<ul>
+<li>如果有主键，默认会使用主键作为聚簇索引的索引键；</li>
+<li>如果没有主键，就选择第一个不包含 NULL 值的唯一列作为聚簇索引的索引键；</li>
+<li>在上面两个都没有的情况下，InnoDB 将自动生成一个隐式自增 id 列作为聚簇索引的索引键；</li>
+</ul>
+<p>一张表只能有一个聚簇索引，那为了实现非主键字段的快速搜索，就引出了二级索引（非聚簇索引&#x2F;辅助索引），它也是利用了 B+ 树的数据结构，但是二级索引的叶子节点存放的是主键值，不是实际数据。</p>
+<blockquote>
+<p>如果某个查询语句使用了二级索引，但是查询的数据不是主键值，这时在二级索引找到主键值后，需要去聚簇索引中获得数据行，这个过程就叫作「<strong>回表</strong>」，也就是说要查两个 B+ 树才能查到数据。不过，当查询的数据是主键值时，因为只在二级索引就能查询到，不用再去聚簇索引查，这个过程就叫作「<strong>索引覆盖</strong>」，也就是只需要查一个 B+ 树就能找到数据。</p>
+</blockquote>
+<h2 id="5-一颗B-树可以存放多少行数据？"><a href="#5-一颗B-树可以存放多少行数据？" class="headerlink" title="5. 一颗B+树可以存放多少行数据？"></a>5. 一颗<code>B+</code>树可以存放多少行数据？</h2><p>前面提到，<code>B+</code>树的每个节点是一个<strong>数据页</strong>，默认大小<code>16kB</code>。前面<a href="#2"> 数据页结构图</a>已经介绍了每个数据页的结构，除去页头页尾及其它描述信息，真正存放用户记录的<code>User Records</code>部分还不足<code>16kB</code>。</p>
+<h3 id="1-叶子节点和非叶子节点分别存放多少数据？"><a href="#1-叶子节点和非叶子节点分别存放多少数据？" class="headerlink" title="1. 叶子节点和非叶子节点分别存放多少数据？"></a>1. 叶子节点和非叶子节点分别存放多少数据？</h3><p>B+树的<strong>最末级叶子结点</strong>里放了record数据。而<strong>非叶子结点</strong>里则放了用来加速查询的索引数据。</p>
+<p><img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517235249221.png" alt="三层B+树"></p>
+<p>同样一个16kB的页，非叶子节点里每一条数据都指向一个新的页，而新的页有两种可能。</p>
+<ul>
+<li>如果是末级叶子节点的话，那么里面放的就是一行行record数据。</li>
+<li>如果是非叶子节点，那么就会循环继续指向新的数据页。</li>
+</ul>
+<h3 id="2-B-树总行数的计算公式"><a href="#2-B-树总行数的计算公式" class="headerlink" title="2. B+树总行数的计算公式"></a>2. <strong>B+树总行数的计算公式</strong></h3><p>假设</p>
+<ul>
+<li>非叶子结点内指向其他内存页的指针数量为<code>x</code></li>
+<li>叶子节点内能容纳的record数量为<code>y</code></li>
+<li>B+树的层数为<code>z</code></li>
+</ul>
+<p>那这棵B+树放的<strong>行数据总量</strong>等于 <code>(x ^ (z-1)) * y</code>。</p>
+<p><strong><code>x</code>怎么算？</strong></p>
+<p><img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517235825563.png" alt="数据页的结构"></p>
+<p>非叶子节点里主要放索引查询相关的数据，放的是主键和指向页号。</p>
+<p>主键假设是<code>bigint（8Byte）</code>，而页号在源码里叫<code>FIL_PAGE_OFFSET（4Byte）</code>，那么非叶子节点里的一条数据是<code>12Byte</code>左右。</p>
+<p>整个数据页<code>16k</code>， 页头页尾那部分数据全加起来大概<code>128Byte</code>，加上页目录毛估占<code>1k</code>吧。那剩下的<code>15kB</code>除以<code>12Byte</code>，等于<code>1280</code>，也就是可以指向<strong>x&#x3D;1280页</strong>。</p>
+<p>我们常说的二叉树指的是一个结点可以发散出两个新的结点。m叉树一个节点能指向m个新的结点。这个指向新节点的操作就叫<strong>扇出（fanout）</strong>。</p>
+<p>而上面的B+树，它能指向1280个新的节点，恐怖如斯，可以说<strong>扇出非常高</strong>了。</p>
+<p> <strong><code>y</code>怎么算？</strong></p>
+<p>叶子节点和非叶子节点的数据结构是一样的，所以也假设剩下<code>15kB</code>可以发挥。</p>
+<p>叶子节点里放的是真正的行数据。假设一条行数据<code>1kB</code>，所以一页里能放<strong>y&#x3D;15行</strong>。</p>
+<p><strong>行总数计算</strong></p>
+<p>回到  <code>(x ^ (z-1)) * y</code> 这个公式。</p>
+<p>已知<code>x=1280</code>，<code>y=15</code>。</p>
+<p>假设B+树是<strong>两层</strong>，那<code>z=2</code>。则是<code>(1280 ^ (2-1)) * 15 ≈ 2w</code></p>
+<p>假设B+树是<strong>三层</strong>，那<code>z=3</code>。则是<code>(1280 ^ (3-1)) * 15 ≈ 2.5kw</code></p>
+<p><strong>这个2.5kw，就是我们常说的单表建议最大行数2kw的由来。</strong>毕竟再加一层，数据就大得有点离谱了。三层数据页对应最多三次磁盘IO，也比较合理。</p>
+<h3 id="3-行数超过1亿查询速度就慢吗？"><a href="#3-行数超过1亿查询速度就慢吗？" class="headerlink" title="3. 行数超过1亿查询速度就慢吗？"></a>3. 行数超过1亿查询速度就慢吗？</h3><p>上面假设单行数据用了1kb，所以一个数据页能放个15行数据。</p>
+<p>如果我单行数据用不了这么多，比如只用了<code>250byte</code>。那么单个数据页能放60行数据。</p>
+<p>那同样是三层B+树，单表支持的行数就是 <code>(1280 ^ (3-1)) * 60 ≈ 1个亿</code>。</p>
+<p>你看我一个亿的数据，其实也就三层B+树，在这个B+树里要查到某行数据，最多也是三次磁盘IO。所以并不慢。</p>
+<h3 id="4-B树存放多少行数据"><a href="#4-B树存放多少行数据" class="headerlink" title="4. B树存放多少行数据"></a>4. B树存放多少行数据</h3><p>B树将行数据都存在非叶子节点上，假设每个数据页还是16kB，掐头去尾每页剩15kB，并且一条数据表行数据还是占1kb，就算不考虑各种页指针的情况下，也只能放个15条数据。<strong>数据页扇出明显变少了。</strong></p>
+<p>B树可承载的总行数的公式也变成了一个<strong>等比数列</strong>。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">15 + 15^2 +15^3 + ... + 15^z</span><br></pre></td></tr></table></figure>
+
+<p>其中<strong>z还是层数</strong>的意思。</p>
+<p>为了能放<code>2kw</code>左右的数据，需要<code>z&gt;=6</code>。也就是树需要有6层，查一次要访问6个页。假设这6个页并不连续，为了查询其中一条数据，最坏情况需要进行<strong>6次磁盘IO</strong>。</p>
+<p>而B+树同样情况下放2kw数据左右，查一次最多是<strong>3次磁盘IO。</strong></p>
+<p>磁盘IO越多则越慢，这两者在性能上差距略大。</p>
+<p>为此，我们可以更明确地回答<a href="#1"><code>B+</code>树和<code>B-</code>树中，为何选择<code>B+</code>树？</a>，<strong>B+树比B树更适合成为mysql的索引。</strong></p>
+<p>参考资料：</p>
+<p>《MYSQL内核：INNODB存储引擎 卷1》</p>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+</search>

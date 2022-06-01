@@ -20,17 +20,28 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"www.ysfun.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":null,"post_header":null,"post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":null}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="MySQL事务数据库的事务（Transaction）是一种机制、一个操作序列，包含了一组数据库操作命令。事务把所有的命令作为一个整体一起向系统提交或撤销操作请求，即这一组数据库命令要么都执行，要么都不执行，因此事务是一个不可分割的工作逻辑单元。">
+    <meta name="description" content="数据库事务（transaction）是访问并可能操作各种数据项的一个数据库操作序列，这些操作要么全部执行,要么全部不执行，是一个不可分割的工作逻辑单元。">
 <meta property="og:type" content="article">
-<meta property="og:title" content="MySQL:事务">
+<meta property="og:title" content="MySQL:事务&amp;MVCC详解">
 <meta property="og:url" content="https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/index.html">
 <meta property="og:site_name" content="Ysfun&#39;s blog">
-<meta property="og:description" content="MySQL事务数据库的事务（Transaction）是一种机制、一个操作序列，包含了一组数据库操作命令。事务把所有的命令作为一个整体一起向系统提交或撤销操作请求，即这一组数据库命令要么都执行，要么都不执行，因此事务是一个不可分割的工作逻辑单元。">
+<meta property="og:description" content="数据库事务（transaction）是访问并可能操作各种数据项的一个数据库操作序列，这些操作要么全部执行,要么全部不执行，是一个不可分割的工作逻辑单元。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/mysql-logo-800-400.jpg">
 <meta property="og:image" content="https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/10b513008ea35ee880c592a88adcb12f.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/f5b4f8f0c0adcf044b34c1f300a95abf.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/d19a1019dc35dfe8cfe7fbff8cd97e31-20220601203800758.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/cce766a69dea725cd8f19b90db2d0430.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/4e98ea2e60923b969790898565b4d643.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/11a65cbc2e97f6855d7692a265dc2651-20220601215949157.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/f595d13450878acd04affa82731f76c5.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/ReadView.drawio.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E4%BA%8B%E5%8A%A1ab%E7%9A%84%E8%A7%86%E5%9B%BE-new.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E4%BA%8B%E5%8A%A1ab%E7%9A%84%E8%A7%86%E5%9B%BE2.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E8%AF%BB%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A1-20220601234013624.png">
+<meta property="og:image" content="https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E8%AF%BB%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A12.drawio.png">
 <meta property="article:published_time" content="2022-05-30T08:58:31.000Z">
-<meta property="article:modified_time" content="2022-05-31T10:29:54.909Z">
+<meta property="article:modified_time" content="2022-06-01T15:48:25.518Z">
 <meta property="article:author" content="Ysfun">
 <meta property="article:tag" content="MySQL">
 <meta name="twitter:card" content="summary">
@@ -41,10 +52,10 @@
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/","path":"2022/05/30/MySQL-事务/","title":"MySQL:事务"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/","path":"2022/05/30/MySQL-事务/","title":"MySQL:事务&MVCC详解"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>MySQL:事务 | Ysfun's blog</title>
+<title>MySQL:事务&MVCC详解 | Ysfun's blog</title>
   
 
 
@@ -146,7 +157,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#MySQL%E4%BA%8B%E5%8A%A1"><span class="nav-number">1.</span> <span class="nav-text">MySQL事务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1%E7%9A%84%E5%9B%9B%E5%A4%A7%E7%89%B9%E6%80%A7"><span class="nav-number">1.1.</span> <span class="nav-text">事务的四大特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E4%BA%8B%E5%8A%A1%E5%B8%A6%E6%9D%A5%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">1.2.</span> <span class="nav-text">并发事务带来的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%84%8F%E8%AF%BB"><span class="nav-number">1.2.1.</span> <span class="nav-text">脏读</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB"><span class="nav-number">1.2.2.</span> <span class="nav-text">不可重复读</span></a></li></ol></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1%E7%9A%84%E5%9B%9B%E5%A4%A7%E7%89%B9%E6%80%A7"><span class="nav-number">1.</span> <span class="nav-text">事务的四大特性</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%B9%B6%E5%8F%91%E4%BA%8B%E5%8A%A1%E5%B8%A6%E6%9D%A5%E7%9A%84%E9%97%AE%E9%A2%98"><span class="nav-number">2.</span> <span class="nav-text">并发事务带来的问题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%84%8F%E8%AF%BB"><span class="nav-number">2.1.</span> <span class="nav-text">脏读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8D%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB"><span class="nav-number">2.2.</span> <span class="nav-text">不可重复读</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B9%BB%E8%AF%BB"><span class="nav-number">2.3.</span> <span class="nav-text">幻读</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8B%E5%8A%A1%E7%9A%84%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB"><span class="nav-number">3.</span> <span class="nav-text">事务的隔离级别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E7%A7%8D%E9%9A%94%E7%A6%BB%E7%BA%A7%E5%88%AB%E6%98%AF%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E7%9A%84%EF%BC%9F"><span class="nav-number">3.1.</span> <span class="nav-text">四种隔离级别是如何实现的？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MVCC%EF%BC%88Multi-Version-Concurrency-Control%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">MVCC（Multi-Version Concurrency Control）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Read-View%E5%9C%A8MVCC%E4%B8%AD%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84%EF%BC%9F"><span class="nav-number">4.1.</span> <span class="nav-text">Read View在MVCC中是如何工作的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E9%87%8D%E5%A4%8D%E8%AF%BB%E6%98%AF%E5%A6%82%E4%BD%95%E5%B7%A5%E4%BD%9C%E7%9A%84%EF%BC%9F"><span class="nav-number">4.2.</span> <span class="nav-text">可重复读是如何工作的？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%BB%E5%B7%B2%E6%8F%90%E4%BA%A4%E6%98%AF%E6%80%8E%E4%B9%88%E5%B7%A5%E4%BD%9C%E7%9A%84%EF%BC%9F"><span class="nav-number">4.3.</span> <span class="nav-text">读已提交是怎么工作的？</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -226,12 +237,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="MySQL:事务 | Ysfun's blog">
+      <meta itemprop="name" content="MySQL:事务&MVCC详解 | Ysfun's blog">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          MySQL:事务
+          MySQL:事务&MVCC详解
         </h1>
 
         <div class="post-meta-container">
@@ -249,7 +260,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-05-31 18:29:54" itemprop="dateModified" datetime="2022-05-31T18:29:54+08:00">2022-05-31</time>
+      <time title="修改时间：2022-06-01 23:48:25" itemprop="dateModified" datetime="2022-06-01T23:48:25+08:00">2022-06-01</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -279,7 +290,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>848</span>
+      <span>4.8k</span>
     </span>
 
 </div>
@@ -292,10 +303,10 @@
     
     <div class="post-body" itemprop="articleBody">
         <p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/mysql-logo-800-400.jpg"></p>
-<h2 id="MySQL事务"><a href="#MySQL事务" class="headerlink" title="MySQL事务"></a>MySQL事务</h2><p>数据库的<strong>事务（Transaction）</strong>是一种机制、一个操作序列，包含了一组数据库操作命令。事务把所有的命令作为一个整体一起向系统提交或撤销操作请求，即这一组数据库命令要么都执行，要么都不执行，因此事务是一个不可分割的工作逻辑单元。</p>
+<p><strong>数据库事务（transaction）</strong>是访问并可能操作各种数据项的一个数据库操作序列，这些操作要么全部执行,要么全部不执行，是一个不可分割的工作逻辑单元。</p>
 <span id="more"></span>
 
-<h3 id="事务的四大特性"><a href="#事务的四大特性" class="headerlink" title="事务的四大特性"></a>事务的四大特性</h3><ul>
+<h2 id="事务的四大特性"><a href="#事务的四大特性" class="headerlink" title="事务的四大特性"></a>事务的四大特性</h2><ul>
 <li><p><strong>原子性（Atomicity）：</strong>一个事务中的所有操作，要么都执行，要么都失败，不存在中间状态，一旦事务执行过程中发生了错误，事务会进行回滚，恢复到事务开始之前的状态，就像这个事务从来没有执行过一样。</p>
 </li>
 <li><p><strong>一致性（Consistency）：</strong>数据库的完整性不会因为事务的执行而受到破坏，一个事务执行之前和执行之后都必须处于一致状态。比如表中有一个字段为姓名，它有唯一约束，也就是表中姓名不能重复，如果一个事务对姓名字段进行了修改，但是在事务提交后，表中的姓名变得非唯一性了，这就破坏了事务的一致性要求，这时数据库就要撤销该事务，返回初始化的状态。再比如用户A和用户B两者的钱加起来一共是1000，那么不管A和B之间如何转账、转几次账，事务结束后两个用户的钱相加起来应该还得是1000，这就是事务的一致性。</p>
@@ -310,10 +321,125 @@
 <p>原子性通过<code>undo log</code>（回滚日志）来保证的</p>
 <p>隔离性通过<code>mvcc</code>（多版本并发控制）或锁机制来保证的</p>
 <p>一致性通过持久性+原子性+隔离性来保证的</p>
-<h3 id="并发事务带来的问题"><a href="#并发事务带来的问题" class="headerlink" title="并发事务带来的问题"></a>并发事务带来的问题</h3><h4 id="脏读"><a href="#脏读" class="headerlink" title="脏读"></a>脏读</h4><p><strong>一个事务「读到」了另一个「未提交事务修改的数据」</strong></p>
+<h2 id="并发事务带来的问题"><a href="#并发事务带来的问题" class="headerlink" title="并发事务带来的问题"></a>并发事务带来的问题</h2><h3 id="脏读"><a href="#脏读" class="headerlink" title="脏读"></a>脏读</h3><p><strong>一个事务读到了另一个「未提交事务修改的数据」，如果该数据发生回滚，则读到的数据就是错误的数据，就意味着发生了「脏读」现象。</strong></p>
 <p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/10b513008ea35ee880c592a88adcb12f.png"></p>
 <p>因为事务 A 是还没提交事务的，也就是它随时可能发生回滚操作，<strong>如果在上面这种情况事务 A 发生了回滚，那么事务 B 刚才得到的数据就是过期的数据，这种现象就被称为脏读。</strong></p>
-<h4 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h4>
+<h3 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h3><p><strong>在一个事务内多次读取同一个数据，如果前后两次读到的数据不一致，就意味着发生了「不可重复读」现象。</strong></p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/f5b4f8f0c0adcf044b34c1f300a95abf.png"></p>
+<p>事务B第一读取余额为100万，第二次读取余额变为200万，两次读同一条数据结果却不一致。</p>
+<h3 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h3><p><strong>在一个事务中多次查询符合特定条件的记录数量，如果前后两次查询到的记录数量不同，就意味着发生了「幻读」。</strong></p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/d19a1019dc35dfe8cfe7fbff8cd97e31-20220601203800758.png"></p>
+<p>事务B第一次查询大于100万的记录有5条，第二次查询同样条件结果却变成了6条，出现了幻读。</p>
+<blockquote>
+<p>MySQL针对「脏读，不可重复读，幻读」等现象，采取了什么措施应对？</p>
+<p>答：隔离级别</p>
+</blockquote>
+<h2 id="事务的隔离级别"><a href="#事务的隔离级别" class="headerlink" title="事务的隔离级别"></a>事务的隔离级别</h2><p>SQL标准规定了四种隔离级别：</p>
+<ul>
+<li><strong>读未提交（Read Uncommitted）</strong>，一个事务可以读取到其他未提交事务变更过的数据；</li>
+<li><strong>读已提交（Read Committed）</strong>，一个事务只能读取到其他已经提交多的事务变更的数据，<code>Oracle</code>数据库默认采用这种隔离级别；</li>
+<li><strong>不可重复读（Repeatable Read）</strong>，一个事务执行过程中读取到的数据始终和事务开始时读到的数据一致，<code>MySQL</code>数据库默认采用这种隔离级别；</li>
+<li><strong>串行化（Serializable）</strong>，会对记录加上读写锁，在多个事务对这条记录进行读写操作时，如果发生了读写冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行；</li>
+</ul>
+<p>按「隔离水平」从高到低排序：</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/cce766a69dea725cd8f19b90db2d0430.png"></p>
+<p>针对不同隔离级别，并发事务时可能发生的现象：</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/4e98ea2e60923b969790898565b4d643.png"></p>
+<p>解决脏读现象，就要升级到「读提交」以上的隔离级别；要解决不可重复读现象，就要升级到「可重复读」的隔离级别。</p>
+<p>不过，要解决幻读现象不建议将隔离级别升级到「串行化」，因为这样会导致数据库在并发事务时性能很差。</p>
+<p><strong>MySQL的默认隔离级别是「不可重复读」，但是它采用<code>Next-Key Lock</code>锁（行锁和间隙锁的组合），来锁住记录本身以及记录的“间隙”，防止其他事务在记录之间插入新的记录，从而可以有效避免幻读。</strong></p>
+<h3 id="四种隔离级别是如何实现的？"><a href="#四种隔离级别是如何实现的？" class="headerlink" title="四种隔离级别是如何实现的？"></a>四种隔离级别是如何实现的？</h3><ul>
+<li>对于「读未提交」，因为可以读到为其他未提交事务修改的数据，所以直接读取最新数据；</li>
+<li>对于「串行化」，通过加<strong>读写锁</strong>的方式来避免并行访问；</li>
+<li>对于「读已提交」和「不可重复读」，它们都是通过<code>Read View</code>来实现的，它们的区别在于创建<code>Read View</code>的时机不同，<code>Read View</code>可以理解为一个快照数据，类似于相机拍的照片，记录的是某一时刻的风景。「读已提交」是在<strong>每个读语句执行前</strong>都会重新创建一个新的<code>Read View</code>；而「不可重复读」则是在<strong>事务开启前</strong>创建一个<code>Read View</code>，然后整个事务执行期间都使用这个<code>Read View</code>。</li>
+</ul>
+<blockquote>
+<p>Read View是MVCC工作的核心，下面来详细讲讲MVCC（多版本并发控制）。</p>
+</blockquote>
+<h2 id="MVCC（Multi-Version-Concurrency-Control）"><a href="#MVCC（Multi-Version-Concurrency-Control）" class="headerlink" title="MVCC（Multi-Version Concurrency Control）"></a>MVCC（Multi-Version Concurrency Control）</h2><p>MVCC最大的好处就是：读不加锁，读写不冲突。相比基于锁的并发控制，在读多写少的场景下，MVCC极大地提升了系统的并发性能。</p>
+<p>在MVCC并发控制中，读操作可以分为两类：快照读（Snapshot Read）和当前读（Current Read）。快照读，读取的是记录的可见版本（可能是历史版本），不用加锁；当前读，读取的是记录的最新版本，并且当前读返回的数据都会上锁，保证其他事务不会并发修改该记录。</p>
+<p>快照读中的记录快照就对应着前面提到的<code>Read View</code>，下面介绍MVCC的工作原理。</p>
+<h3 id="Read-View在MVCC中是如何工作的？"><a href="#Read-View在MVCC中是如何工作的？" class="headerlink" title="Read View在MVCC中是如何工作的？"></a>Read View在MVCC中是如何工作的？</h3><p>首先我们需要了解两个知识点：</p>
+<ul>
+<li>Read View中的四个字段，及其作用</li>
+<li>聚簇索引记录中两个跟事务相关的隐藏列</li>
+</ul>
+<ol>
+<li><strong>Read View的四个重要字段</strong></li>
+</ol>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/11a65cbc2e97f6855d7692a265dc2651-20220601215949157.png"></p>
+<p>各个字段的含义：</p>
+<ul>
+<li>creator_trx_id：是指<strong>创建该Read View的事务id</strong></li>
+<li>m_ids：创建Read View时，当前数据库中「<strong>活跃事务」的事务id列表</strong>，“活跃事务”是指启动了但还未提交的事务</li>
+<li>min_trx_id：创建Read View时，<strong>「活跃事务」中最小的事务id</strong>，即<code>m_idx</code>中的最小值</li>
+<li>max_trx_id：创建Read View时，当前数据库中应该给<strong>下一个事务的id值</strong>，不是<code>m_idx</code>中的最大值，是全局事务中最大的事务id+1</li>
+</ul>
+<ol start="2">
+<li><strong>聚簇索引记录中两个跟事务相关的隐藏列</strong></li>
+</ol>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/f595d13450878acd04affa82731f76c5.png"></p>
+<ul>
+<li>trx_id：当某个事务对该条记录改动时，会把<strong>该事务的事务id记录在trx_id中</strong></li>
+<li>roll_pointer：每次对某一条记录进行修改时，都会把这条记录的旧版本保存到<code>undo log</code>中，这个隐藏列是一个指针，指向了上一个版本的记录，于是通过它就能找到历史版本</li>
+</ul>
+<p><strong>在创建Read View时我们可以将记录中的trx_id划分为三种情况：</strong></p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/ReadView.drawio.png"></p>
+<p>一个事务去读取数据时，除当前事务的修改记录总是可见的之外，还有一下情况：</p>
+<ul>
+<li>如果记录的<code>trx_id</code>小于Read View中的<code>min_trx_id</code>，表示这个版本的记录是<strong>在创建Read View之前就已经提交了的事务生成的</strong>，因此该版本的记录对当前事务是可见的。</li>
+<li>如果记录的<code>trx_id</code>大于等于Read View中的<code>max_trx_id</code>，表示这个版本的记录是<strong>在创建Read View之后才启动的事务生成的</strong>，因此该版本的记录对当前事务是不可见的。</li>
+<li>如果记录的<code>trx_id</code>介于Read View中的<code>min_trx_id</code>和<code>max_trx_id</code>之间，则需要判断<code>trx_id</code>是否在<code>m_ids</code>列表中：<ul>
+<li>如果记录的<code>trx_id</code><strong>在</strong><code>m_ids</code>中，则表明这个版本的记录是在<strong>创建Read View时仍处于活跃状态（启动但未提交）的事务生成的</strong>，因此该版本的记录对当前事务时不可见的。</li>
+<li>如果记录的<code>trx_id</code><strong>不在</strong><code>m_ids</code>中，则表明生成该版本记录的活跃事务<strong>在创建Read View时已经提交</strong>，因此该版本的记录对当前事务是可见的。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>这种通过「版本链」来控制并发事务访问同一条记录时的行为就叫MVCC（多版本并发控制）。</p>
+</blockquote>
+<h3 id="可重复读是如何工作的？"><a href="#可重复读是如何工作的？" class="headerlink" title="可重复读是如何工作的？"></a>可重复读是如何工作的？</h3><p><strong>可重复读隔离级别是启动事务时生成一个 Read View，然后整个事务期间都在用这个 Read View</strong>。</p>
+<p>分析一个场景，假设事务A（事务id为51）启动后，紧接着启动了事务B（事务id为52），那么两个事务创建的Read View及初始记录如下：</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E4%BA%8B%E5%8A%A1ab%E7%9A%84%E8%A7%86%E5%9B%BE-new.png"></p>
+<p>事务 A 和 事务 B 的 Read View 具体内容如下：</p>
+<ul>
+<li>在事务 A 的 Read View 中，它的事务 id 是 51，由于它是第一个启动的事务，所以此时活跃事务的事务 id 列表就只有 51，活跃事务的事务 id 列表中最小的事务 id 是事务 A 本身，下一个事务 id 则是 52。</li>
+<li>在事务 B 的 Read View 中，它的事务 id 是 52，由于事务 A 是活跃的，所以此时活跃事务的事务 id 列表是 51 和 52，<strong>活跃的事务 id 中最小的事务 id 是事务 A</strong>，下一个事务 id 应该是 53。</li>
+</ul>
+<p>接着，在「可重复读」隔离级别下，事务A和事务B按顺序执行了以下操作：</p>
+<ol>
+<li>事务B读取小林的账户余额，显示余额为100万</li>
+<li>事务A更新小林的账户余额为200万，但还未提交</li>
+<li>事务B再读取小林的账户余额，显示100万</li>
+<li>事务A提交事务</li>
+<li>事务B再次读取到小林的账户余额为100万</li>
+</ol>
+<p>分析过程：</p>
+<p>事务B第一次读取账户余额时，记录的<code>trx_id</code>为50，小于Read View中的<code>min_trx_id</code>&#x3D;51，因此记录对于事务B是可见的，因此读取到余额为100万；</p>
+<p>事务A更新余额后，两个事务的Read View及记录的版本信息为</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E4%BA%8B%E5%8A%A1ab%E7%9A%84%E8%A7%86%E5%9B%BE2.png"></p>
+<p>事务B第二次读取账户余额时，最新版本记录的<code>trx_id</code>为51，处于事务B的Read View中<code>min_trx_id=51</code>和<code>max_trx_id=53</code>之间；因此还需判断<code>trx_id</code>是否在事务B的Read View中<code>m_ids=[51, 52]</code>列表中，发现在<code>m_ids</code>列表中，因此最新版本的记录对于事务B是不可见的；此时会根据当前版本记录的<code>roll_pointer</code>沿着<code>undo log</code>链条找历史版本，直到发现<code>trx_id</code>小于事务B的Read View中<code>min_trx_id</code>的第一条记录，所以事务B能读到<code>trx_id=50</code>的记录，也就是余额为100万的记录。</p>
+<p>最后在事务A提交后，由于在「可重复读」隔离级别下，Read View只会在创建事务时生成，因此事务A和事务B的Read View和创建事务是的一样。事务B第三次读取余额时还是基于之前的Read View来判断版本记录是否可见，因此此时读到的数据和第二次读取的结果是一样的，余额也是100万。</p>
+<p><strong>就是通过这样的方式实现了，「可重复读」隔离级别下在事务期间读到的记录都是事务启动前的记录。</strong></p>
+<h3 id="读已提交是怎么工作的？"><a href="#读已提交是怎么工作的？" class="headerlink" title="读已提交是怎么工作的？"></a>读已提交是怎么工作的？</h3><p><strong>读提交隔离级别是在每次读取数据时，都会生成一个新的 Read View。</strong></p>
+<p>同样分析上面那个场景，只不过将隔离级别从原来的「可重复读」改为「读已提交」。操作顺序也同上</p>
+<ol>
+<li>事务B读取小林的账户余额，显示余额为100万</li>
+<li>事务A更新小林的账户余额为200万，但还未提交</li>
+<li>事务B再读取小林的账户余额，显示100万</li>
+<li>事务A提交事务</li>
+<li>事务B再次读取到小林的账户余额为200万</li>
+</ol>
+<p>我们来分析事务B第二次读取记录时，读取不到事务A未提交的修改？</p>
+<p>在「读已提交」隔离级别下，事务B在第二次读取数据时会新创建Read View</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E8%AF%BB%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A1-20220601234013624.png"></p>
+<p>由于事务A还未提交，因此事务B读数据时事务A扔出于活跃状态，因此事务A的修改无法被事务B读取到。</p>
+<p>我们再来分析事务B第三次读数据时，为什么可以读取到事务A（事务已提交）的修改？</p>
+<p>事务B第三次执行读数据操作时创建的Read View如下：</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E8%AF%BB%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A12.drawio.png"></p>
+<p>事务B第三次读数据时，事务A已经提交，此时的Read View中的<code>min_trx_id</code>为52，即当前活跃的事务只有事务B，最新版记录由事务A创建，因此其<code>trx_id</code>为51，小于事务B的Read View中的<code>min_trx_id</code>，因此最新版本的记录对于事务B是可见的，因此第三次事务B读取到的余额为200万。</p>
+<p>正是因为在读提交隔离级别下，事务每次读数据时都重新创建 Read View，那么在事务期间的多次读取同一条数据，前后两次读的数据可能会出现不一致，因为可能这期间另外一个事务修改了该记录，并提交了事务。</p>
+
     </div>
 
     
@@ -343,7 +469,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/" title="MySQL:事务">https://www.ysfun.cn/2022/05/30/MySQL-事务/</a>
+      <a href="https://www.ysfun.cn/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/" title="MySQL:事务&amp;MVCC详解">https://www.ysfun.cn/2022/05/30/MySQL-事务/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -400,7 +526,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">50k</span>
+    <span title="站点总字数">54k</span>
   </span>
 </div>
 <div class="busuanzi-count">

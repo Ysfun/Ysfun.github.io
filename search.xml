@@ -1,48 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Https、ssh加密原理</title>
-    <url>/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<h2 id="1-Https与Http区别"><a href="#1-Https与Http区别" class="headerlink" title="1. Https与Http区别"></a>1. Https与Http区别</h2><p>相比于Http，Https采用了加密传输方式，可以有效防止网络攻击。可以近似理解为Https &#x3D; Http + SSL证书。</p>
-<p>Http默认端口为8080，Https默认端口为443。</p>
-<h2 id="2-Https加密原理"><a href="#2-Https加密原理" class="headerlink" title="2. Https加密原理"></a>2. Https加密原理</h2><p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/Https%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png"></p>
-<span id="more"></span>
-
-<ol>
-<li>客户端（浏览器）向服务端发起请求</li>
-<li>服务端接收请求，并明文传输公钥A给客户端，为了证实服务端的身份，服务端会将CA证书一同传输给客户端（这个步骤是与ssh建立连接的区别所在）</li>
-<li>客户端接收到公钥A，并用公钥A加密自己本地随机生成的对称加密密钥X</li>
-<li>公钥A加密的信息只有通过私钥才能解密，因此只有服务端才能解密并获取对称密钥X</li>
-<li>至此，服务端和客户端双方都持有对称密钥X，且第三方无法窃取，此后通过密钥X加密传输数据</li>
-</ol>
-<h2 id="3-SSH加密原理"><a href="#3-SSH加密原理" class="headerlink" title="3. SSH加密原理"></a>3. SSH加密原理</h2><p>SSH是一种网络协议，用于计算机之间的加密登录。如果一个用户从本地计算机，使用SSH协议登录另一台远程计算机，我们就可以认为，这种登录是安全的，即使被中途截获，密码也不会泄露。</p>
-<p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png"></p>
-<p>SSH加密原理与https基本相同，唯一的区别在于ssh没有CA证书，容易收到中间人攻击（Man-in-the-middle attack）。客户端无法验证公钥有没有被篡改过，如果有人截取数据，并返回篡改后的假公钥给客户端，客户端通过假公钥加密后的密码信息被截取并解密，就会导致客户端密码信息泄漏。</p>
-<ul>
-<li>下图展示了SSH被攻击的情况</li>
-</ul>
-<p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E8%A2%AB%E6%94%BB%E5%87%BB.png"></p>
-<p>问题在于客户端无法验证公钥A是不是来自服务端真实的公钥，Https采用CA证书来验证服务端的身份，而SSH则没有。</p>
-<h2 id="4-SSH解决中间人攻击的办法"><a href="#4-SSH解决中间人攻击的办法" class="headerlink" title="4. SSH解决中间人攻击的办法"></a>4. SSH解决中间人攻击的办法</h2><p>SSH的publish key和private key都是自己生成的，没法公证。只能通过Client端自己对公钥进行确认。</p>
-<p>通常在第一次登录的时候，系统会出现下面提示信息：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ssh user@host</span></span><br><span class="line">The authenticity of host &#x27;host (12.18.429.21)&#x27; can&#x27;t be established.</span><br><span class="line">RSA key fingerprint is 98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d.</span><br><span class="line">Are you sure you want to continue connecting (yes/no)?</span><br></pre></td></tr></table></figure>
-
-<p>上面信息的意思是：无法确认主机host(12.18.429.21)的真实性，不过知道它的公钥指纹，询问你是否继续连接？</p>
-<p>所谓”公钥指纹”，是指公钥长度较长（这里采用RSA算法，长达1024位），很难比对，所以对其进行MD5计算，将它变成一个128位的指纹。上例中是98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d，再进行比较，就容易多了。</p>
-<p>之所以用fingerprint代替key，主要是key过于长（RSA算法生成的公钥有1024位），很难直接比较。所以，对公钥进行hash生成一个128位的指纹，这样就方便比较了。</p>
-<p>很自然的一个问题就是，用户怎么知道远程主机的公钥指纹应该是多少？</p>
-<p>回答是没有好办法，远程主机必须在自己的网站上贴出公钥指纹，以便用户自行核对，或者自己甄别host地址是否正确。</p>
-<p>假定经过风险衡量以后（一般用户直接就选择yes吧），用户决定接受这个远程主机的公钥。<br>　　Are you sure you want to continue connecting (yes&#x2F;no)? yes<br>系统会出现一句提示，表示host主机已经得到认可。<br>　　Warning: Permanently added ‘host,12.18.429.21’ (RSA) to the list of known hosts.<br>然后，会要求输入密码。<br>　　Password: (enter password)<br>如果密码正确，就可以登录了。</p>
-<p>当远程主机的公钥被接受以后，它就会被保存在文件$HOME&#x2F;.ssh&#x2F;known_hosts之中。下次再连接这台主机，系统就会认出它的公钥已经保存在本地了，从而跳过警告部分，直接提示输入密码。<br>每个SSH用户都有自己的known_hosts文件，此外系统也有一个这样的文件，通常是&#x2F;etc&#x2F;ssh&#x2F;ssh_known_hosts，保存一些对所有用户都可信赖的远程主机的公钥。</p>
-]]></content>
-      <categories>
-        <category>计算机基础</category>
-      </categories>
-      <tags>
-        <tag>计算机网络</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Docker常用命令</title>
     <url>/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h2 id="帮助命令"><a href="#帮助命令" class="headerlink" title="帮助命令"></a>帮助命令</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看版本信息</span></span><br><span class="line">docker version</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">信息</span></span><br><span class="line">docker info</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看命令帮助信息</span></span><br><span class="line">docker 命令 --help</span><br></pre></td></tr></table></figure>
@@ -100,6 +58,48 @@
       </categories>
       <tags>
         <tag>Docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Https、ssh加密原理</title>
+    <url>/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<h2 id="1-Https与Http区别"><a href="#1-Https与Http区别" class="headerlink" title="1. Https与Http区别"></a>1. Https与Http区别</h2><p>相比于Http，Https采用了加密传输方式，可以有效防止网络攻击。可以近似理解为Https &#x3D; Http + SSL证书。</p>
+<p>Http默认端口为8080，Https默认端口为443。</p>
+<h2 id="2-Https加密原理"><a href="#2-Https加密原理" class="headerlink" title="2. Https加密原理"></a>2. Https加密原理</h2><p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/Https%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png"></p>
+<span id="more"></span>
+
+<ol>
+<li>客户端（浏览器）向服务端发起请求</li>
+<li>服务端接收请求，并明文传输公钥A给客户端，为了证实服务端的身份，服务端会将CA证书一同传输给客户端（这个步骤是与ssh建立连接的区别所在）</li>
+<li>客户端接收到公钥A，并用公钥A加密自己本地随机生成的对称加密密钥X</li>
+<li>公钥A加密的信息只有通过私钥才能解密，因此只有服务端才能解密并获取对称密钥X</li>
+<li>至此，服务端和客户端双方都持有对称密钥X，且第三方无法窃取，此后通过密钥X加密传输数据</li>
+</ol>
+<h2 id="3-SSH加密原理"><a href="#3-SSH加密原理" class="headerlink" title="3. SSH加密原理"></a>3. SSH加密原理</h2><p>SSH是一种网络协议，用于计算机之间的加密登录。如果一个用户从本地计算机，使用SSH协议登录另一台远程计算机，我们就可以认为，这种登录是安全的，即使被中途截获，密码也不会泄露。</p>
+<p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png"></p>
+<p>SSH加密原理与https基本相同，唯一的区别在于ssh没有CA证书，容易收到中间人攻击（Man-in-the-middle attack）。客户端无法验证公钥有没有被篡改过，如果有人截取数据，并返回篡改后的假公钥给客户端，客户端通过假公钥加密后的密码信息被截取并解密，就会导致客户端密码信息泄漏。</p>
+<ul>
+<li>下图展示了SSH被攻击的情况</li>
+</ul>
+<p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E8%A2%AB%E6%94%BB%E5%87%BB.png"></p>
+<p>问题在于客户端无法验证公钥A是不是来自服务端真实的公钥，Https采用CA证书来验证服务端的身份，而SSH则没有。</p>
+<h2 id="4-SSH解决中间人攻击的办法"><a href="#4-SSH解决中间人攻击的办法" class="headerlink" title="4. SSH解决中间人攻击的办法"></a>4. SSH解决中间人攻击的办法</h2><p>SSH的publish key和private key都是自己生成的，没法公证。只能通过Client端自己对公钥进行确认。</p>
+<p>通常在第一次登录的时候，系统会出现下面提示信息：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ssh user@host</span></span><br><span class="line">The authenticity of host &#x27;host (12.18.429.21)&#x27; can&#x27;t be established.</span><br><span class="line">RSA key fingerprint is 98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d.</span><br><span class="line">Are you sure you want to continue connecting (yes/no)?</span><br></pre></td></tr></table></figure>
+
+<p>上面信息的意思是：无法确认主机host(12.18.429.21)的真实性，不过知道它的公钥指纹，询问你是否继续连接？</p>
+<p>所谓”公钥指纹”，是指公钥长度较长（这里采用RSA算法，长达1024位），很难比对，所以对其进行MD5计算，将它变成一个128位的指纹。上例中是98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d，再进行比较，就容易多了。</p>
+<p>之所以用fingerprint代替key，主要是key过于长（RSA算法生成的公钥有1024位），很难直接比较。所以，对公钥进行hash生成一个128位的指纹，这样就方便比较了。</p>
+<p>很自然的一个问题就是，用户怎么知道远程主机的公钥指纹应该是多少？</p>
+<p>回答是没有好办法，远程主机必须在自己的网站上贴出公钥指纹，以便用户自行核对，或者自己甄别host地址是否正确。</p>
+<p>假定经过风险衡量以后（一般用户直接就选择yes吧），用户决定接受这个远程主机的公钥。<br>　　Are you sure you want to continue connecting (yes&#x2F;no)? yes<br>系统会出现一句提示，表示host主机已经得到认可。<br>　　Warning: Permanently added ‘host,12.18.429.21’ (RSA) to the list of known hosts.<br>然后，会要求输入密码。<br>　　Password: (enter password)<br>如果密码正确，就可以登录了。</p>
+<p>当远程主机的公钥被接受以后，它就会被保存在文件$HOME&#x2F;.ssh&#x2F;known_hosts之中。下次再连接这台主机，系统就会认出它的公钥已经保存在本地了，从而跳过警告部分，直接提示输入密码。<br>每个SSH用户都有自己的known_hosts文件，此外系统也有一个这样的文件，通常是&#x2F;etc&#x2F;ssh&#x2F;ssh_known_hosts，保存一些对所有用户都可信赖的远程主机的公钥。</p>
+]]></content>
+      <categories>
+        <category>计算机基础</category>
+      </categories>
+      <tags>
+        <tag>计算机网络</tag>
       </tags>
   </entry>
   <entry>
@@ -182,6 +182,62 @@
       </tags>
   </entry>
   <entry>
+    <title>mac上使用Homebrew安装mysql</title>
+    <url>/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/</url>
+    <content><![CDATA[<p>注意⚠️：本教程是采用Homebrew安装mysql，引用官方的一句话：Homebrew是Mac OS 不可或缺的套件管理器。执行一下命令即可安装Homebrew：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装Homebrew</span></span><br><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://cdn.jsdelivr.net/gh/ineo6/homebrew-install/install)&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看版本信息</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew -v</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">出现下面版本信息，则表明安装成功</span></span><br><span class="line">Homebrew 3.3.4</span><br><span class="line">Homebrew/homebrew-core (git revision 4605f7a940f; last commit 2021-11-21)</span><br></pre></td></tr></table></figure>
+
+<h2 id="安装mysql"><a href="#安装mysql" class="headerlink" title="安装mysql"></a>安装mysql</h2><blockquote>
+<ol>
+<li>使用Homebrew搜索mysql版本</li>
+</ol>
+</blockquote>
+<span id="more"></span>
+
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew search mysql</span></span><br><span class="line"></span><br><span class="line">==&gt; Formulae</span><br><span class="line">automysqlbackup          mysql-client             mysql-sandbox            mysql@5.7</span><br><span class="line">mysql                    mysql-client@5.7         mysql-search-replace     mysqltuner</span><br><span class="line">mysql++                  mysql-connector-c++      mysql@5.6                qt-mysql</span><br><span class="line"></span><br><span class="line">==&gt; Casks</span><br><span class="line">homebrew/cask/mysql-connector-python               homebrew/cask/navicat-for-mysql</span><br><span class="line">homebrew/cask/mysql-shell                          homebrew/cask/sqlpro-for-mysql</span><br><span class="line">homebrew/cask/mysql-utilities</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ol start="2">
+<li>安装<a href="mailto:&#109;&#x79;&#115;&#x71;&#108;&#x40;&#x35;&#46;&#x37;">&#109;&#x79;&#115;&#x71;&#108;&#x40;&#x35;&#46;&#x37;</a></li>
+</ol>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew install mysql@5.7</span></span><br><span class="line"></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/manifests/5.7.36</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/blobs/sha256:e23df0f6e8bfc83fe2e982ec60e8</span><br><span class="line">==&gt; Downloading from https://pkg-containers.githubusercontent.com/ghcr1/blobs/sha256:e23df0f6e8bfc83</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Pouring mysql@5.7--5.7.36.arm64_big_sur.bottle.tar.gz</span><br><span class="line">==&gt; /opt/homebrew/Cellar/mysql@5.7/5.7.36/bin/mysqld --initialize-insecure --user=hyunmin --basedir=</span><br><span class="line">==&gt; Caveats</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ol start="3">
+<li>配置环境变量</li>
+</ol>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1. bash shell</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">vim ~/.bash_profile</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2. zsh shell</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">vim ~/.zshrc</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在配置文件中加入</span></span><br><span class="line">export PATH=&quot;/opt/homebrew/opt/mysql@5.7/bin:$PATH&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash"><span class="built_in">source</span> ~/.bash_profile</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">或</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash"><span class="built_in">source</span> ~/.zshrc</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124170144671.png" alt="image-20211124170144671"></p>
+<blockquote>
+<ol start="4">
+<li>启动MySQL服务</li>
+</ol>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">mysql.server start</span></span><br><span class="line"></span><br><span class="line">Starting MySQL</span><br><span class="line">. SUCCESS! </span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ol start="5">
+<li>MySQL初始化配置</li>
+</ol>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">mysql_secure_installation</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124204756469.png" alt="image-20211124204756469"></p>
+<blockquote>
+<ol start="6">
+<li>登陆测试</li>
+</ol>
+</blockquote>
+<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124204950548.png" alt="image-20211124204950548"></p>
+]]></content>
+      <tags>
+        <tag>教程</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>hexo博客安装Icarus主题</title>
     <url>/2021/11/28/hexo%E5%8D%9A%E5%AE%A2%E5%AE%89%E8%A3%85Icarus%E4%B8%BB%E9%A2%98/</url>
     <content><![CDATA[<p><strong>官方链接：</strong><a href="https://ppoffice.github.io/hexo-theme-icarus/Configuration/icarus%E7%94%A8%E6%88%B7%E6%8C%87%E5%8D%97-%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE/">Icarus用户指南-主题配置</a></p>
@@ -258,56 +314,30 @@
       </tags>
   </entry>
   <entry>
-    <title>mac上使用Homebrew安装mysql</title>
-    <url>/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/</url>
-    <content><![CDATA[<p>注意⚠️：本教程是采用Homebrew安装mysql，引用官方的一句话：Homebrew是Mac OS 不可或缺的套件管理器。执行一下命令即可安装Homebrew：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装Homebrew</span></span><br><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://cdn.jsdelivr.net/gh/ineo6/homebrew-install/install)&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看版本信息</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew -v</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">出现下面版本信息，则表明安装成功</span></span><br><span class="line">Homebrew 3.3.4</span><br><span class="line">Homebrew/homebrew-core (git revision 4605f7a940f; last commit 2021-11-21)</span><br></pre></td></tr></table></figure>
-
-<h2 id="安装mysql"><a href="#安装mysql" class="headerlink" title="安装mysql"></a>安装mysql</h2><blockquote>
-<ol>
-<li>使用Homebrew搜索mysql版本</li>
-</ol>
+    <title>mac上使用SublimeText</title>
+    <url>/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/</url>
+    <content><![CDATA[<blockquote>
+<p>官网地址：<a href="https://www.sublimetext.com/">Sublime Text</a></p>
 </blockquote>
+<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p><a href="https://www.sublimetext.com/download">官方下载地址</a></p>
+<p><a href="https://www.sublimetext.com/docs/index.html">Sublime Text文档</a></p>
 <span id="more"></span>
 
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew search mysql</span></span><br><span class="line"></span><br><span class="line">==&gt; Formulae</span><br><span class="line">automysqlbackup          mysql-client             mysql-sandbox            mysql@5.7</span><br><span class="line">mysql                    mysql-client@5.7         mysql-search-replace     mysqltuner</span><br><span class="line">mysql++                  mysql-connector-c++      mysql@5.6                qt-mysql</span><br><span class="line"></span><br><span class="line">==&gt; Casks</span><br><span class="line">homebrew/cask/mysql-connector-python               homebrew/cask/navicat-for-mysql</span><br><span class="line">homebrew/cask/mysql-shell                          homebrew/cask/sqlpro-for-mysql</span><br><span class="line">homebrew/cask/mysql-utilities</span><br></pre></td></tr></table></figure>
-
-<blockquote>
+<h2 id="使用技巧"><a href="#使用技巧" class="headerlink" title="使用技巧"></a>使用技巧</h2><h3 id="在Sublime-Text上运行Java程序"><a href="#在Sublime-Text上运行Java程序" class="headerlink" title="在Sublime Text上运行Java程序"></a>在Sublime Text上运行Java程序</h3><ol>
+<li>编译</li>
+</ol>
+<p><code>command+B</code></p>
 <ol start="2">
-<li>安装<a href="mailto:&#109;&#121;&#x73;&#113;&#x6c;&#x40;&#x35;&#46;&#55;">&#109;&#121;&#x73;&#113;&#x6c;&#x40;&#x35;&#46;&#55;</a></li>
+<li>安装JDK环境</li>
+<li>打开 Sublime Text -&gt; Tools -&gt;Build System -&gt; New Build System…</li>
+<li>复制下面代码，并保存文件为java.sublime-build到默认的User文件夹即可</li>
 </ol>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew install mysql@5.7</span></span><br><span class="line"></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/manifests/5.7.36</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/blobs/sha256:e23df0f6e8bfc83fe2e982ec60e8</span><br><span class="line">==&gt; Downloading from https://pkg-containers.githubusercontent.com/ghcr1/blobs/sha256:e23df0f6e8bfc83</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Pouring mysql@5.7--5.7.36.arm64_big_sur.bottle.tar.gz</span><br><span class="line">==&gt; /opt/homebrew/Cellar/mysql@5.7/5.7.36/bin/mysqld --initialize-insecure --user=hyunmin --basedir=</span><br><span class="line">==&gt; Caveats</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;shell_cmd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;javac \&quot;$file\&quot; &amp;&amp; java \&quot;$file_base_name\&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;file_regex&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^(...*?):([0-9]*):?([0-9]*)&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;selector&quot;</span><span class="punctuation">:</span> <span class="string">&quot;source.java&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<ol start="3">
-<li>配置环境变量</li>
-</ol>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1. bash shell</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">vim ~/.bash_profile</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2. zsh shell</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">vim ~/.zshrc</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在配置文件中加入</span></span><br><span class="line">export PATH=&quot;/opt/homebrew/opt/mysql@5.7/bin:$PATH&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash"><span class="built_in">source</span> ~/.bash_profile</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">或</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash"><span class="built_in">source</span> ~/.zshrc</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124170144671.png" alt="image-20211124170144671"></p>
-<blockquote>
-<ol start="4">
-<li>启动MySQL服务</li>
-</ol>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">mysql.server start</span></span><br><span class="line"></span><br><span class="line">Starting MySQL</span><br><span class="line">. SUCCESS! </span><br></pre></td></tr></table></figure>
-
-<blockquote>
 <ol start="5">
-<li>MySQL初始化配置</li>
+<li>选择Tools -&gt; Build System -&gt; java</li>
 </ol>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">mysql_secure_installation</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124204756469.png" alt="image-20211124204756469"></p>
-<blockquote>
-<ol start="6">
-<li>登陆测试</li>
-</ol>
-</blockquote>
-<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124204950548.png" alt="image-20211124204950548"></p>
+<img src="/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/image-20211211145804287.png" style="zoom:50%;" align="left">
 ]]></content>
       <tags>
         <tag>教程</tag>
@@ -410,54 +440,77 @@
       </tags>
   </entry>
   <entry>
-    <title>typora图片左对齐</title>
-    <url>/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/</url>
-    <content><![CDATA[<p>typora图片默认是剧中对齐的方式：</p>
-<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128142529931.png"> </p>
-<p>但很多情况下我们其实更倾向于图片左对齐，网上很多办法都更改typora的默认对齐方式，即更改github.css文件，但这种方式会让我们所有的图片都变成左对齐的方式，实际情况下我们有的时候只需要一张图片左对齐。其实在typora中实现图片左对齐的方法非常简单，只需要<strong>在图片链接后加一个空格即可</strong>：</p>
-<span id="more"></span>
+    <title>springBoot2中-Configuration注解新增的proxyBeanMehtods属性详解</title>
+    <url>/2021/11/22/springBoot2%E4%B8%AD-Configuration%E6%B3%A8%E8%A7%A3%E6%96%B0%E5%A2%9E%E7%9A%84proxyBeanMehtods%E5%B1%9E%E6%80%A7%E8%AF%A6%E8%A7%A3/</url>
+    <content><![CDATA[<h2 id="Configuration-proxyBeanMethods-x3D-true-x2F-false"><a href="#Configuration-proxyBeanMethods-x3D-true-x2F-false" class="headerlink" title="@Configuration(proxyBeanMethods &#x3D; true&#x2F;false)"></a>@Configuration(proxyBeanMethods &#x3D; true&#x2F;false)</h2><h3 id="1、Full模式（proxyBeanMethods-x3D-true）"><a href="#1、Full模式（proxyBeanMethods-x3D-true）" class="headerlink" title="1、Full模式（proxyBeanMethods&#x3D;true）"></a>1、Full模式（proxyBeanMethods&#x3D;true）</h3><p>proxyBeanMethods&#x3D;true 为Full模式（默认为true），此时在spring IOC容器中的<strong>此配置类是一个CGLIB代理类</strong>，并且调用此配置类的@Bean方法产生的bean是单例的，即<strong>每次调用标有@Bean注解方法都会检查IOC容器中是否有该bean组件</strong>，如果没有则调用方法创建，否则就直接从IOC容器中获取。</p>
+<h4 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h4><span id="more"></span>
 
-<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128143120575.png"></p>
-<hr>
-<h3 id="设置任意对齐方式"><a href="#设置任意对齐方式" class="headerlink" title="设置任意对齐方式"></a>设置任意对齐方式</h3><p>在<code>typora</code>中图片的默认格式为<code>![图片标题](图片url)</code></p>
-<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128151604005.png"></p>
-<p>实际上markdown是兼容<code>&lt;img src=&quot;&quot;&gt;</code>图片格式的，采用img标签就可以利用<code>align</code>属性设置图片对齐方式。</p>
-<p>下面介绍一种可以快速将图片格式从<code>![图片标题](图片url)</code>变为<code>&lt;img src=&quot;&quot;&gt;</code>格式，选中图片，右键，选择缩放图片，任意选择一个不是100%缩放比例（如果选择100%不会有任何变化，如果不想改变图片大小，设置<code>zoom:100</code>即可，即<code>style=&quot;zoom:100%;&quot;</code>），缩放完毕就可以发现图片格式进行自动转换，在<code>img标签中</code>添加<code>align</code>属性即可。</p>
-<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128152513094.png"></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ProxyBeanMethodTest</span> &#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> User <span class="title function_">user</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainApplication</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        <span class="type">ConfigurableApplicationContext</span> <span class="variable">run</span> <span class="operator">=</span> SpringApplication.run(MainApplication.class, args);</span><br><span class="line">        <span class="type">ProxyBeanMethodTest</span> <span class="variable">bean</span> <span class="operator">=</span> run.getBean(ProxyBeanMethodTest.class);</span><br><span class="line">        System.out.println(<span class="string">&quot;配置类：&quot;</span>+bean);</span><br><span class="line">        <span class="type">User</span> <span class="variable">user1</span> <span class="operator">=</span> bean.user();</span><br><span class="line">        <span class="type">User</span> <span class="variable">user2</span> <span class="operator">=</span> bean.user();</span><br><span class="line">        System.out.println(<span class="string">&quot;第一次调用配置类中的@Bean注解方法得到的bean组件：&quot;</span>+user1);</span><br><span class="line">        System.out.println(<span class="string">&quot;第二次调用配置类中的@Bean注解方法得到的bean组件：&quot;</span>+user2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h4><h4 id><a href="#" class="headerlink" title></a><img src="/2021/11/22/springBoot2%E4%B8%AD-Configuration%E6%B3%A8%E8%A7%A3%E6%96%B0%E5%A2%9E%E7%9A%84proxyBeanMehtods%E5%B1%9E%E6%80%A7%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/springBoot2中-Configuration注解新增的proxyBeanMehtods属性详解/image-20210427140058050.png"></h4><p><strong>两次调用user()方法得到的是同一个user对象</strong></p>
+<h3 id="2、Lite模式（proxyBeanMethods-x3D-false）"><a href="#2、Lite模式（proxyBeanMethods-x3D-false）" class="headerlink" title="2、Lite模式（proxyBeanMethods&#x3D;false）"></a>2、Lite模式（proxyBeanMethods&#x3D;false）</h3><p>proxyBeanMethods&#x3D;false 为Lite模式，此时在spring IOC容器中<strong>此配置类就是一个普通的类</strong>，每次调用此配置类中标有@Bean注解的方法时都会在IOC容器中注册新的bean组件，调用@Bean方法时无需检查IOC容器中是否存在该bean组件，<strong>可以提高效率，加速容器启动</strong></p>
+<h4 id="测试代码-1"><a href="#测试代码-1" class="headerlink" title="测试代码"></a>测试代码</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = false)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ProxyBeanMethodTest</span> &#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> User <span class="title function_">user</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainApplication</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        <span class="type">ConfigurableApplicationContext</span> <span class="variable">run</span> <span class="operator">=</span> SpringApplication.run(MainApplication.class, args);</span><br><span class="line">        <span class="type">ProxyBeanMethodTest</span> <span class="variable">bean</span> <span class="operator">=</span> run.getBean(ProxyBeanMethodTest.class);</span><br><span class="line">        System.out.println(<span class="string">&quot;配置类：&quot;</span>+bean);</span><br><span class="line">        <span class="type">User</span> <span class="variable">user1</span> <span class="operator">=</span> bean.user();</span><br><span class="line">        <span class="type">User</span> <span class="variable">user2</span> <span class="operator">=</span> bean.user();</span><br><span class="line">        System.out.println(<span class="string">&quot;第一次调用配置类中的@Bean注解方法得到的bean组件：&quot;</span>+user1);</span><br><span class="line">        System.out.println(<span class="string">&quot;第二次调用配置类中的@Bean注解方法得到的bean组件：&quot;</span>+user2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="运行结果-1"><a href="#运行结果-1" class="headerlink" title="运行结果"></a>运行结果</h4><h4 id="-1"><a href="#-1" class="headerlink" title></a><img src="/2021/11/22/springBoot2%E4%B8%AD-Configuration%E6%B3%A8%E8%A7%A3%E6%96%B0%E5%A2%9E%E7%9A%84proxyBeanMehtods%E5%B1%9E%E6%80%A7%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/springBoot2中-Configuration注解新增的proxyBeanMehtods属性详解/image-20210427141917861.png"></h4><p><strong>两次调用user()方法得到的是不同的User对象</strong></p>
+<h3 id="3、Full模式和Lite模式优劣比较"><a href="#3、Full模式和Lite模式优劣比较" class="headerlink" title="3、Full模式和Lite模式优劣比较"></a>3、Full模式和Lite模式优劣比较</h3><p><strong>Full模式</strong>可以很好地处理<strong>组件之间相互依赖</strong>的问题</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ProxyBeanMethodTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> User <span class="title function_">user</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        user.setDog(dog());</span><br><span class="line">        <span class="keyword">return</span> user;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> Dog <span class="title function_">dog</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Dog</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">ConfigurableApplicationContext</span> <span class="variable">run</span> <span class="operator">=</span> SpringApplication.run(MainApplication.class, args);</span><br><span class="line">        </span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> run.getBean(User.class);</span><br><span class="line">        <span class="type">Dog</span> <span class="variable">dog1</span> <span class="operator">=</span> user.getDog();</span><br><span class="line">        <span class="type">Dog</span> <span class="variable">dog2</span> <span class="operator">=</span> run.getBean(Dog.class);</span><br><span class="line">        System.out.println(dog1 == dog2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由以上结果可以看出，IOC容器中的Dog与User的属性Dog是同一个对象，也更加印证了当为User对象注入Dog属性时，此Dog是从IOC容器中获取的，而并非重新调用了dog()方法。从上面的测试代码中也可以看出，使用Full模式可以确保IOC容器中同一类型的对象始终是同一个，可以很好的处理组件依赖问题。</p>
+<p><strong>Lite模式</strong>免去了每次调用方法前去IOC容器中检查的过程，可以有效加速容器启动过程</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ProxyBeanMethodTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> User <span class="title function_">user</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        user.setDog(dog());</span><br><span class="line">        <span class="keyword">return</span> user;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> Dog <span class="title function_">dog</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Dog</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">ConfigurableApplicationContext</span> <span class="variable">run</span> <span class="operator">=</span> SpringApplication.run(MainApplication.class, args);</span><br><span class="line">        </span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> run.getBean(User.class);</span><br><span class="line">        <span class="type">Dog</span> <span class="variable">dog1</span> <span class="operator">=</span> user.getDog();</span><br><span class="line">        <span class="type">Dog</span> <span class="variable">dog2</span> <span class="operator">=</span> run.getBean(Dog.class);</span><br><span class="line">        System.out.println(dog1 == dog2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/22/springBoot2%E4%B8%AD-Configuration%E6%B3%A8%E8%A7%A3%E6%96%B0%E5%A2%9E%E7%9A%84proxyBeanMehtods%E5%B1%9E%E6%80%A7%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/springBoot2中-Configuration注解新增的proxyBeanMehtods属性详解/image-20210427144808890.png" align="left"><br></p>
+<h3 id="4、结论"><a href="#4、结论" class="headerlink" title="4、结论"></a>4、结论</h3><ul>
+<li>配置类组件之间无依赖关系时使用Lite模式，可以省去检查容器中是否已经存在同类型组件的过程，加速容器启动</li>
+<li>配置类组件之间有依赖关系，使用Full模式，方法调用得到容器中的单实例组件</li>
+</ul>
+<br>
+
+<h4 id="友情链接"><a href="#友情链接" class="headerlink" title="友情链接"></a>友情链接</h4><p>视频讲解内容可参考尚硅谷-SpringBoot2讲解视频：<a href="https://www.bilibili.com/video/BV19K4y1L7MT?p=8">https://www.bilibili.com/video/BV19K4y1L7MT?p=8</a></p>
 ]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
       <tags>
-        <tag>教程</tag>
-        <tag>Typora</tag>
+        <tag>Java</tag>
+        <tag>Spring</tag>
       </tags>
   </entry>
   <entry>
-    <title>mac上使用SublimeText</title>
-    <url>/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/</url>
-    <content><![CDATA[<blockquote>
-<p>官网地址：<a href="https://www.sublimetext.com/">Sublime Text</a></p>
-</blockquote>
-<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p><a href="https://www.sublimetext.com/download">官方下载地址</a></p>
-<p><a href="https://www.sublimetext.com/docs/index.html">Sublime Text文档</a></p>
+    <title>刷题分享：LeetCode139.单词拆分【字典树，动态规划】</title>
+    <url>/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/</url>
+    <content><![CDATA[<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/leetcode-1.jpg"></p>
+<p>题目对应<code>LeetCode</code><a href="https://leetcode.cn/problems/word-break/">139. 单词拆分</a></p>
 <span id="more"></span>
 
-<h2 id="使用技巧"><a href="#使用技巧" class="headerlink" title="使用技巧"></a>使用技巧</h2><h3 id="在Sublime-Text上运行Java程序"><a href="#在Sublime-Text上运行Java程序" class="headerlink" title="在Sublime Text上运行Java程序"></a>在Sublime Text上运行Java程序</h3><ol>
-<li>编译</li>
-</ol>
-<p><code>command+B</code></p>
-<ol start="2">
-<li>安装JDK环境</li>
-<li>打开 Sublime Text -&gt; Tools -&gt;Build System -&gt; New Build System…</li>
-<li>复制下面代码，并保存文件为java.sublime-build到默认的User文件夹即可</li>
-</ol>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;shell_cmd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;javac \&quot;$file\&quot; &amp;&amp; java \&quot;$file_base_name\&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;file_regex&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^(...*?):([0-9]*):?([0-9]*)&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;selector&quot;</span><span class="punctuation">:</span> <span class="string">&quot;source.java&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="1-题目描述"><a href="#1-题目描述" class="headerlink" title="1. 题目描述"></a>1. 题目描述</h3><p>给你一个字符串 s 和一个字符串列表 wordDict 作为字典。请你判断是否可以利用字典中出现的单词拼接出 s 。</p>
+<p>注意：不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。</p>
+<blockquote>
+<p>示例 1：</p>
+<p>输入: s &#x3D; “leetcode”, wordDict &#x3D; [“leet”, “code”]<br>输出: true<br>解释: 返回 true 因为 “leetcode” 可以由 “leet” 和 “code” 拼接成。</p>
+<p>示例 2：</p>
+<p>输入: s &#x3D; “applepenapple”, wordDict &#x3D; [“apple”, “pen”]<br>输出: true<br>解释: 返回 true 因为 “applepenapple” 可以由 “apple” “pen” “apple” 拼接成。<br>     注意，你可以重复使用字典中的单词。</p>
+<p>示例 3：</p>
+<p>输入: s &#x3D; “catsandog”, wordDict &#x3D; [“cats”, “dog”, “sand”, “and”, “cat”]<br>输出: false</p>
+</blockquote>
+<h3 id="2-代码分析"><a href="#2-代码分析" class="headerlink" title="2. 代码分析"></a>2. 代码分析</h3><p>【动态规划】+【字典树】</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">wordBreak</span><span class="params">(String s, List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> build(wordDict);</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> s.length();</span><br><span class="line">        <span class="comment">// 动态规划，转移方程：dp[i] = dp[i-k] &amp;&amp; (s[i-k,i] in wordDict)</span></span><br><span class="line">        <span class="type">boolean</span>[] dp = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;n; i++) &#123;</span><br><span class="line">            List&lt;Integer&gt; list = check(s, root, i);</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> idx : list) &#123;</span><br><span class="line">                <span class="comment">// 可能有多个位置匹配，只要存在一个k满足 dp[i-k] &amp;&amp; (s[i-k,i] in wordDict) == true，则dp[i]为true</span></span><br><span class="line">                <span class="keyword">if</span> (idx==<span class="number">0</span> || dp[idx-<span class="number">1</span>]) &#123;</span><br><span class="line">                    dp[i] = <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n-<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断是否满足最右匹配</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Integer&gt; <span class="title function_">check</span><span class="params">(String s, Trie root, <span class="type">int</span> lastIndex)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">        List&lt;Integer&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">while</span> (lastIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> s.charAt(lastIndex) - <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span> (node.children[index] == <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            node = node.children[index];</span><br><span class="line">            <span class="keyword">if</span> (node.isEnd) &#123;</span><br><span class="line">                <span class="comment">// 如果满足最右匹配，且到达单词末尾，将该Index加入List</span></span><br><span class="line">                list.add(lastIndex);</span><br><span class="line">            &#125;</span><br><span class="line">            lastIndex--;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 建立字典树，建立字典树的基本套路</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> Trie <span class="title function_">build</span><span class="params">(List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">        <span class="keyword">for</span> (String s : wordDict) &#123;</span><br><span class="line">            <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">            <span class="comment">// 这里需要注意，单词尾部向头部遍历，方便check时的最右匹配</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i=s.length()-<span class="number">1</span>; i&gt;=<span class="number">0</span>; i--) &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">idx</span> <span class="operator">=</span> s.charAt(i)-<span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">                <span class="keyword">if</span> (node.children[idx] == <span class="literal">null</span>) &#123;</span><br><span class="line">                    node.children[idx] = <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">                &#125;</span><br><span class="line">                node = node.children[idx];</span><br><span class="line">            &#125;</span><br><span class="line">            node.isEnd = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> root;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 字典树的典型结构</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Trie</span>&#123;</span><br><span class="line">    Trie[] children;</span><br><span class="line">    <span class="type">boolean</span> isEnd;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Trie</span><span class="params">()</span> &#123;</span><br><span class="line">        children = <span class="keyword">new</span> <span class="title class_">Trie</span>[<span class="number">26</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<ol start="5">
-<li>选择Tools -&gt; Build System -&gt; java</li>
-</ol>
-<img src="/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/image-20211211145804287.png" style="zoom:50%;" align="left">
+<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/image-20220524165305435.png"></p>
 ]]></content>
+      <categories>
+        <category>算法题</category>
+      </categories>
       <tags>
-        <tag>教程</tag>
+        <tag>算法题</tag>
       </tags>
   </entry>
   <entry>
@@ -515,32 +568,24 @@
       </tags>
   </entry>
   <entry>
-    <title>刷题分享：LeetCode139.单词拆分【字典树，动态规划】</title>
-    <url>/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/</url>
-    <content><![CDATA[<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/leetcode-1.jpg"></p>
-<p>题目对应<code>LeetCode</code><a href="https://leetcode.cn/problems/word-break/">139. 单词拆分</a></p>
+    <title>typora图片左对齐</title>
+    <url>/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/</url>
+    <content><![CDATA[<p>typora图片默认是剧中对齐的方式：</p>
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128142529931.png"> </p>
+<p>但很多情况下我们其实更倾向于图片左对齐，网上很多办法都更改typora的默认对齐方式，即更改github.css文件，但这种方式会让我们所有的图片都变成左对齐的方式，实际情况下我们有的时候只需要一张图片左对齐。其实在typora中实现图片左对齐的方法非常简单，只需要<strong>在图片链接后加一个空格即可</strong>：</p>
 <span id="more"></span>
 
-<h3 id="1-题目描述"><a href="#1-题目描述" class="headerlink" title="1. 题目描述"></a>1. 题目描述</h3><p>给你一个字符串 s 和一个字符串列表 wordDict 作为字典。请你判断是否可以利用字典中出现的单词拼接出 s 。</p>
-<p>注意：不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。</p>
-<blockquote>
-<p>示例 1：</p>
-<p>输入: s &#x3D; “leetcode”, wordDict &#x3D; [“leet”, “code”]<br>输出: true<br>解释: 返回 true 因为 “leetcode” 可以由 “leet” 和 “code” 拼接成。</p>
-<p>示例 2：</p>
-<p>输入: s &#x3D; “applepenapple”, wordDict &#x3D; [“apple”, “pen”]<br>输出: true<br>解释: 返回 true 因为 “applepenapple” 可以由 “apple” “pen” “apple” 拼接成。<br>     注意，你可以重复使用字典中的单词。</p>
-<p>示例 3：</p>
-<p>输入: s &#x3D; “catsandog”, wordDict &#x3D; [“cats”, “dog”, “sand”, “and”, “cat”]<br>输出: false</p>
-</blockquote>
-<h3 id="2-代码分析"><a href="#2-代码分析" class="headerlink" title="2. 代码分析"></a>2. 代码分析</h3><p>【动态规划】+【字典树】</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">wordBreak</span><span class="params">(String s, List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> build(wordDict);</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> s.length();</span><br><span class="line">        <span class="comment">// 动态规划，转移方程：dp[i] = dp[i-k] &amp;&amp; (s[i-k,i] in wordDict)</span></span><br><span class="line">        <span class="type">boolean</span>[] dp = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;n; i++) &#123;</span><br><span class="line">            List&lt;Integer&gt; list = check(s, root, i);</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> idx : list) &#123;</span><br><span class="line">                <span class="comment">// 可能有多个位置匹配，只要存在一个k满足 dp[i-k] &amp;&amp; (s[i-k,i] in wordDict) == true，则dp[i]为true</span></span><br><span class="line">                <span class="keyword">if</span> (idx==<span class="number">0</span> || dp[idx-<span class="number">1</span>]) &#123;</span><br><span class="line">                    dp[i] = <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n-<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断是否满足最右匹配</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Integer&gt; <span class="title function_">check</span><span class="params">(String s, Trie root, <span class="type">int</span> lastIndex)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">        List&lt;Integer&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">while</span> (lastIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> s.charAt(lastIndex) - <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span> (node.children[index] == <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            node = node.children[index];</span><br><span class="line">            <span class="keyword">if</span> (node.isEnd) &#123;</span><br><span class="line">                <span class="comment">// 如果满足最右匹配，且到达单词末尾，将该Index加入List</span></span><br><span class="line">                list.add(lastIndex);</span><br><span class="line">            &#125;</span><br><span class="line">            lastIndex--;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 建立字典树，建立字典树的基本套路</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> Trie <span class="title function_">build</span><span class="params">(List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">        <span class="keyword">for</span> (String s : wordDict) &#123;</span><br><span class="line">            <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">            <span class="comment">// 这里需要注意，单词尾部向头部遍历，方便check时的最右匹配</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i=s.length()-<span class="number">1</span>; i&gt;=<span class="number">0</span>; i--) &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">idx</span> <span class="operator">=</span> s.charAt(i)-<span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">                <span class="keyword">if</span> (node.children[idx] == <span class="literal">null</span>) &#123;</span><br><span class="line">                    node.children[idx] = <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">                &#125;</span><br><span class="line">                node = node.children[idx];</span><br><span class="line">            &#125;</span><br><span class="line">            node.isEnd = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> root;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 字典树的典型结构</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Trie</span>&#123;</span><br><span class="line">    Trie[] children;</span><br><span class="line">    <span class="type">boolean</span> isEnd;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Trie</span><span class="params">()</span> &#123;</span><br><span class="line">        children = <span class="keyword">new</span> <span class="title class_">Trie</span>[<span class="number">26</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/image-20220524165305435.png"></p>
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128143120575.png"></p>
+<hr>
+<h3 id="设置任意对齐方式"><a href="#设置任意对齐方式" class="headerlink" title="设置任意对齐方式"></a>设置任意对齐方式</h3><p>在<code>typora</code>中图片的默认格式为<code>![图片标题](图片url)</code></p>
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128151604005.png"></p>
+<p>实际上markdown是兼容<code>&lt;img src=&quot;&quot;&gt;</code>图片格式的，采用img标签就可以利用<code>align</code>属性设置图片对齐方式。</p>
+<p>下面介绍一种可以快速将图片格式从<code>![图片标题](图片url)</code>变为<code>&lt;img src=&quot;&quot;&gt;</code>格式，选中图片，右键，选择缩放图片，任意选择一个不是100%缩放比例（如果选择100%不会有任何变化，如果不想改变图片大小，设置<code>zoom:100</code>即可，即<code>style=&quot;zoom:100%;&quot;</code>），缩放完毕就可以发现图片格式进行自动转换，在<code>img标签中</code>添加<code>align</code>属性即可。</p>
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128152513094.png"></p>
 ]]></content>
-      <categories>
-        <category>算法题</category>
-      </categories>
       <tags>
-        <tag>算法题</tag>
+        <tag>教程</tag>
+        <tag>Typora</tag>
       </tags>
   </entry>
   <entry>
@@ -582,6 +627,53 @@
       </categories>
       <tags>
         <tag>操作系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>解决hexo搭建博客图片不显示问题</title>
+    <url>/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/</url>
+    <content><![CDATA[<h2 id="1-问题描述"><a href="#1-问题描述" class="headerlink" title="1. 问题描述"></a>1. 问题描述</h2><p>最近使用hexo搭建博客时，使用typora编辑完博客，在hexo上部署时发现图片都不能正常显示。图片采用复制粘贴的方式插入到.md文件中，图片格式：</p>
+<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128140607589.png"></p>
+<h2 id="2-初步探索"><a href="#2-初步探索" class="headerlink" title="2. 初步探索"></a>2. 初步探索</h2><ol>
+<li>更改typora设置</li>
+</ol>
+<p>按照网上的教程，先修改typora图片插入设置，打开typora设置 -&gt; 图像，按照下面方法设置。</p>
+<span id="more"></span>
+
+<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128141320644.png"> </p>
+<ol start="2">
+<li>修改配置文件，打开资源文件管理功能</li>
+</ol>
+<p>把博客根目录下的_config.yml中的<code>post_asset_folder</code>: 设置为<code>true</code></p>
+<p>Hexo将会在你每一次通过 <code>hexo new [layout] &lt;title&gt;</code> 命令创建新文章时自动创建一个文件夹。这个资源文件夹将会有与这个文章文件一样的名字。将所有与你的文章有关的资源放在这个关联文件夹中之后，你可以通过相对路径来引用它们，这样你就得到了一个更简单而且方便得多的工作流。</p>
+<ol start="3">
+<li>安装图片路径转换插件</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">**注意：插件不能安装最新的，安装老版本的**</span></span><br><span class="line">npm install https://github.com/EricGerry/hexo-asset-image-0.0.5.git --save</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">采用以下语句安装会出错</span></span><br><span class="line">npm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20220531012440436.png"></p>
+<p><strong>注意：按照<code>npm install https://github.com/EricGerry/hexo-asset-image-0.0.5.git --save</code>语句安装完成后无需进行后面的步骤！！！</strong></p>
+<br>
+
+<hr>
+<p>执行完上述操作，按照网上大多数的说法都是可以正常显示图片的，但很无奈，经过这番配置后，重新部署仍出现这样的结果：</p>
+<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128145011881.png"></p>
+<p>当场崩溃！！！ </p>
+<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/038556f2580ddb0fc0ca3edb83219601.jpeg"></p>
+<h2 id="3-大功告成"><a href="#3-大功告成" class="headerlink" title="3. 大功告成"></a>3. 大功告成</h2><p>经过一大番折腾，在网上查阅各种大佬的帖子，最后发现是是这个图片路径转换插件<code>hexo-asset-image</code>有问题，需要进行修改。把文件<code>/node_modules/hexo-asset-image/index.js</code>中的内容全部替换成下面的内容，其中<code>/</code>为博客根目录 。</p>
+<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="meta">&#x27;use strict&#x27;</span>;</span><br><span class="line"><span class="keyword">var</span> cheerio = <span class="built_in">require</span>(<span class="string">&#x27;cheerio&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// http://stackoverflow.com/questions/14480345/how-to-get-the-nth-occurrence-in-a-string</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getPosition</span>(<span class="params">str, m, i</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> str.<span class="title function_">split</span>(m, i).<span class="title function_">join</span>(m).<span class="property">length</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> version = <span class="title class_">String</span>(hexo.<span class="property">version</span>).<span class="title function_">split</span>(<span class="string">&#x27;.&#x27;</span>);</span><br><span class="line">hexo.<span class="property">extend</span>.<span class="property">filter</span>.<span class="title function_">register</span>(<span class="string">&#x27;after_post_render&#x27;</span>, <span class="keyword">function</span>(<span class="params">data</span>)&#123;</span><br><span class="line">  <span class="keyword">var</span> config = hexo.<span class="property">config</span>;</span><br><span class="line">  <span class="keyword">if</span>(config.<span class="property">post_asset_folder</span>)&#123;</span><br><span class="line">    	<span class="keyword">var</span> link = data.<span class="property">permalink</span>;</span><br><span class="line">	<span class="keyword">if</span>(version.<span class="property">length</span> &gt; <span class="number">0</span> &amp;&amp; <span class="title class_">Number</span>(version[<span class="number">0</span>]) == <span class="number">3</span>)</span><br><span class="line">	   <span class="keyword">var</span> beginPos = <span class="title function_">getPosition</span>(link, <span class="string">&#x27;/&#x27;</span>, <span class="number">1</span>) + <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	   <span class="keyword">var</span> beginPos = <span class="title function_">getPosition</span>(link, <span class="string">&#x27;/&#x27;</span>, <span class="number">3</span>) + <span class="number">1</span>;</span><br><span class="line">	<span class="comment">// In hexo 3.1.1, the permalink of &quot;about&quot; page is like &quot;.../about/index.html&quot;.</span></span><br><span class="line">	<span class="keyword">var</span> endPos = link.<span class="title function_">lastIndexOf</span>(<span class="string">&#x27;/&#x27;</span>) + <span class="number">1</span>;</span><br><span class="line">    link = link.<span class="title function_">substring</span>(beginPos, endPos);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> toprocess = [<span class="string">&#x27;excerpt&#x27;</span>, <span class="string">&#x27;more&#x27;</span>, <span class="string">&#x27;content&#x27;</span>];</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; toprocess.<span class="property">length</span>; i++)&#123;</span><br><span class="line">      <span class="keyword">var</span> key = toprocess[i];</span><br><span class="line"> </span><br><span class="line">      <span class="keyword">var</span> $ = cheerio.<span class="title function_">load</span>(data[key], &#123;</span><br><span class="line">        <span class="attr">ignoreWhitespace</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">xmlMode</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">lowerCaseTags</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">decodeEntities</span>: <span class="literal">false</span></span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">      $(<span class="string">&#x27;img&#x27;</span>).<span class="title function_">each</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">		<span class="keyword">if</span> ($(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>))&#123;</span><br><span class="line">			<span class="comment">// For windows style path, we replace &#x27;\&#x27; to &#x27;/&#x27;.</span></span><br><span class="line">			<span class="keyword">var</span> src = $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>).<span class="title function_">replace</span>(<span class="string">&#x27;\\&#x27;</span>, <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">			<span class="keyword">if</span>(!<span class="regexp">/http[s]*.*|\/\/.*/</span>.<span class="title function_">test</span>(src) &amp;&amp;</span><br><span class="line">			   !<span class="regexp">/^\s*\//</span>.<span class="title function_">test</span>(src)) &#123;</span><br><span class="line">			  <span class="comment">// For &quot;about&quot; page, the first part of &quot;src&quot; can&#x27;t be removed.</span></span><br><span class="line">			  <span class="comment">// In addition, to support multi-level local directory.</span></span><br><span class="line">			  <span class="keyword">var</span> linkArray = link.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">				<span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">			  &#125;);</span><br><span class="line">			  <span class="keyword">var</span> srcArray = src.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">				<span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span> &amp;&amp; elem != <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">			  &#125;);</span><br><span class="line">			  <span class="keyword">if</span>(srcArray.<span class="property">length</span> &gt; <span class="number">1</span>)</span><br><span class="line">				srcArray.<span class="title function_">shift</span>();</span><br><span class="line">			  src = srcArray.<span class="title function_">join</span>(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">			  $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, config.<span class="property">root</span> + link + src);</span><br><span class="line">			  <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+config.<span class="property">root</span> + link + src);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">			<span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;no src attr, skipped...&quot;</span>);</span><br><span class="line">			<span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>($(<span class="variable language_">this</span>));</span><br><span class="line">		&#125;</span><br><span class="line">      &#125;);</span><br><span class="line">      data[key] = $.<span class="title function_">html</span>();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+<p>重新部署！图片正常显示！！！完美</p>
+ <img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128150713000.png" style="zoom:67%;">
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>教程</tag>
+        <tag>Hexo</tag>
       </tags>
   </entry>
   <entry>
@@ -665,48 +757,42 @@
       </tags>
   </entry>
   <entry>
-    <title>springBoot2中-Configuration注解新增的proxyBeanMehtods属性详解</title>
-    <url>/2021/11/22/springBoot2%E4%B8%AD-Configuration%E6%B3%A8%E8%A7%A3%E6%96%B0%E5%A2%9E%E7%9A%84proxyBeanMehtods%E5%B1%9E%E6%80%A7%E8%AF%A6%E8%A7%A3/</url>
-    <content><![CDATA[<h2 id="Configuration-proxyBeanMethods-x3D-true-x2F-false"><a href="#Configuration-proxyBeanMethods-x3D-true-x2F-false" class="headerlink" title="@Configuration(proxyBeanMethods &#x3D; true&#x2F;false)"></a>@Configuration(proxyBeanMethods &#x3D; true&#x2F;false)</h2><h3 id="1、Full模式（proxyBeanMethods-x3D-true）"><a href="#1、Full模式（proxyBeanMethods-x3D-true）" class="headerlink" title="1、Full模式（proxyBeanMethods&#x3D;true）"></a>1、Full模式（proxyBeanMethods&#x3D;true）</h3><p>proxyBeanMethods&#x3D;true 为Full模式（默认为true），此时在spring IOC容器中的<strong>此配置类是一个CGLIB代理类</strong>，并且调用此配置类的@Bean方法产生的bean是单例的，即<strong>每次调用标有@Bean注解方法都会检查IOC容器中是否有该bean组件</strong>，如果没有则调用方法创建，否则就直接从IOC容器中获取。</p>
-<h4 id="测试代码"><a href="#测试代码" class="headerlink" title="测试代码"></a>测试代码</h4><span id="more"></span>
+    <title>Git常用命令</title>
+    <url>/2022/05/10/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h2 id="Git基础命令"><a href="#Git基础命令" class="headerlink" title="Git基础命令"></a>Git基础命令</h2><ol>
+<li>克隆代码</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone xxx</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">克隆指定分支</span></span><br><span class="line">git clone -b branchName xxx</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ProxyBeanMethodTest</span> &#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> User <span class="title function_">user</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>拉取（更新）代码</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git pull origin</span><br><span class="line">git pull origin branchName</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">变基</span></span><br><span class="line">git pull --rebase origin branchName</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainApplication</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        <span class="type">ConfigurableApplicationContext</span> <span class="variable">run</span> <span class="operator">=</span> SpringApplication.run(MainApplication.class, args);</span><br><span class="line">        <span class="type">ProxyBeanMethodTest</span> <span class="variable">bean</span> <span class="operator">=</span> run.getBean(ProxyBeanMethodTest.class);</span><br><span class="line">        System.out.println(<span class="string">&quot;配置类：&quot;</span>+bean);</span><br><span class="line">        <span class="type">User</span> <span class="variable">user1</span> <span class="operator">=</span> bean.user();</span><br><span class="line">        <span class="type">User</span> <span class="variable">user2</span> <span class="operator">=</span> bean.user();</span><br><span class="line">        System.out.println(<span class="string">&quot;第一次调用配置类中的@Bean注解方法得到的bean组件：&quot;</span>+user1);</span><br><span class="line">        System.out.println(<span class="string">&quot;第二次调用配置类中的@Bean注解方法得到的bean组件：&quot;</span>+user2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<span id="more"></span>
 
-<h4 id="运行结果"><a href="#运行结果" class="headerlink" title="运行结果"></a>运行结果</h4><h4 id><a href="#" class="headerlink" title></a><img src="/2021/11/22/springBoot2%E4%B8%AD-Configuration%E6%B3%A8%E8%A7%A3%E6%96%B0%E5%A2%9E%E7%9A%84proxyBeanMehtods%E5%B1%9E%E6%80%A7%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/springBoot2中-Configuration注解新增的proxyBeanMehtods属性详解/image-20210427140058050.png"></h4><p><strong>两次调用user()方法得到的是同一个user对象</strong></p>
-<h3 id="2、Lite模式（proxyBeanMethods-x3D-false）"><a href="#2、Lite模式（proxyBeanMethods-x3D-false）" class="headerlink" title="2、Lite模式（proxyBeanMethods&#x3D;false）"></a>2、Lite模式（proxyBeanMethods&#x3D;false）</h3><p>proxyBeanMethods&#x3D;false 为Lite模式，此时在spring IOC容器中<strong>此配置类就是一个普通的类</strong>，每次调用此配置类中标有@Bean注解的方法时都会在IOC容器中注册新的bean组件，调用@Bean方法时无需检查IOC容器中是否存在该bean组件，<strong>可以提高效率，加速容器启动</strong></p>
-<h4 id="测试代码-1"><a href="#测试代码-1" class="headerlink" title="测试代码"></a>测试代码</h4><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = false)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ProxyBeanMethodTest</span> &#123;</span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> User <span class="title function_">user</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>提交代码</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit &quot;message&quot;</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainApplication</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span>&#123;</span><br><span class="line">        <span class="type">ConfigurableApplicationContext</span> <span class="variable">run</span> <span class="operator">=</span> SpringApplication.run(MainApplication.class, args);</span><br><span class="line">        <span class="type">ProxyBeanMethodTest</span> <span class="variable">bean</span> <span class="operator">=</span> run.getBean(ProxyBeanMethodTest.class);</span><br><span class="line">        System.out.println(<span class="string">&quot;配置类：&quot;</span>+bean);</span><br><span class="line">        <span class="type">User</span> <span class="variable">user1</span> <span class="operator">=</span> bean.user();</span><br><span class="line">        <span class="type">User</span> <span class="variable">user2</span> <span class="operator">=</span> bean.user();</span><br><span class="line">        System.out.println(<span class="string">&quot;第一次调用配置类中的@Bean注解方法得到的bean组件：&quot;</span>+user1);</span><br><span class="line">        System.out.println(<span class="string">&quot;第二次调用配置类中的@Bean注解方法得到的bean组件：&quot;</span>+user2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>推送远程分支</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git push origin head:branchName</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">强制推送</span></span><br><span class="line">git push -f origin head:branchName</span><br></pre></td></tr></table></figure>
 
-<h4 id="运行结果-1"><a href="#运行结果-1" class="headerlink" title="运行结果"></a>运行结果</h4><h4 id="-1"><a href="#-1" class="headerlink" title></a><img src="/2021/11/22/springBoot2%E4%B8%AD-Configuration%E6%B3%A8%E8%A7%A3%E6%96%B0%E5%A2%9E%E7%9A%84proxyBeanMehtods%E5%B1%9E%E6%80%A7%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/springBoot2中-Configuration注解新增的proxyBeanMehtods属性详解/image-20210427141917861.png"></h4><p><strong>两次调用user()方法得到的是不同的User对象</strong></p>
-<h3 id="3、Full模式和Lite模式优劣比较"><a href="#3、Full模式和Lite模式优劣比较" class="headerlink" title="3、Full模式和Lite模式优劣比较"></a>3、Full模式和Lite模式优劣比较</h3><p><strong>Full模式</strong>可以很好地处理<strong>组件之间相互依赖</strong>的问题</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ProxyBeanMethodTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> User <span class="title function_">user</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        user.setDog(dog());</span><br><span class="line">        <span class="keyword">return</span> user;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> Dog <span class="title function_">dog</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Dog</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>合并提交记录</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">合并近k条提交记录</span></span><br><span class="line">git rebase -i head~k</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">一般pick第一条，后面都squash</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">ConfigurableApplicationContext</span> <span class="variable">run</span> <span class="operator">=</span> SpringApplication.run(MainApplication.class, args);</span><br><span class="line">        </span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> run.getBean(User.class);</span><br><span class="line">        <span class="type">Dog</span> <span class="variable">dog1</span> <span class="operator">=</span> user.getDog();</span><br><span class="line">        <span class="type">Dog</span> <span class="variable">dog2</span> <span class="operator">=</span> run.getBean(Dog.class);</span><br><span class="line">        System.out.println(dog1 == dog2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>由以上结果可以看出，IOC容器中的Dog与User的属性Dog是同一个对象，也更加印证了当为User对象注入Dog属性时，此Dog是从IOC容器中获取的，而并非重新调用了dog()方法。从上面的测试代码中也可以看出，使用Full模式可以确保IOC容器中同一类型的对象始终是同一个，可以很好的处理组件依赖问题。</p>
-<p><strong>Lite模式</strong>免去了每次调用方法前去IOC容器中检查的过程，可以有效加速容器启动过程</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration(proxyBeanMethods = true)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ProxyBeanMethodTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> User <span class="title function_">user</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">User</span>();</span><br><span class="line">        user.setDog(dog());</span><br><span class="line">        <span class="keyword">return</span> user;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> Dog <span class="title function_">dog</span><span class="params">()</span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">Dog</span>();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@SpringBootApplication</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MainApplication</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">ConfigurableApplicationContext</span> <span class="variable">run</span> <span class="operator">=</span> SpringApplication.run(MainApplication.class, args);</span><br><span class="line">        </span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> run.getBean(User.class);</span><br><span class="line">        <span class="type">Dog</span> <span class="variable">dog1</span> <span class="operator">=</span> user.getDog();</span><br><span class="line">        <span class="type">Dog</span> <span class="variable">dog2</span> <span class="operator">=</span> run.getBean(Dog.class);</span><br><span class="line">        System.out.println(dog1 == dog2);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/11/22/springBoot2%E4%B8%AD-Configuration%E6%B3%A8%E8%A7%A3%E6%96%B0%E5%A2%9E%E7%9A%84proxyBeanMehtods%E5%B1%9E%E6%80%A7%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/springBoot2中-Configuration注解新增的proxyBeanMehtods属性详解/image-20210427144808890.png" align="left"><br></p>
-<h3 id="4、结论"><a href="#4、结论" class="headerlink" title="4、结论"></a>4、结论</h3><ul>
-<li>配置类组件之间无依赖关系时使用Lite模式，可以省去检查容器中是否已经存在同类型组件的过程，加速容器启动</li>
-<li>配置类组件之间有依赖关系，使用Full模式，方法调用得到容器中的单实例组件</li>
-</ul>
-<br>
-
-<h4 id="友情链接"><a href="#友情链接" class="headerlink" title="友情链接"></a>友情链接</h4><p>视频讲解内容可参考尚硅谷-SpringBoot2讲解视频：<a href="https://www.bilibili.com/video/BV19K4y1L7MT?p=8">https://www.bilibili.com/video/BV19K4y1L7MT?p=8</a></p>
+<p><img src="/2022/05/10/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20220510193114486.png"></p>
 ]]></content>
       <categories>
-        <category>Java</category>
+        <category>教程</category>
       </categories>
       <tags>
-        <tag>Java</tag>
-        <tag>Spring</tag>
+        <tag>Git</tag>
       </tags>
   </entry>
   <entry>
@@ -915,53 +1001,6 @@
       </tags>
   </entry>
   <entry>
-    <title>解决hexo搭建博客图片不显示问题</title>
-    <url>/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/</url>
-    <content><![CDATA[<h2 id="1-问题描述"><a href="#1-问题描述" class="headerlink" title="1. 问题描述"></a>1. 问题描述</h2><p>最近使用hexo搭建博客时，使用typora编辑完博客，在hexo上部署时发现图片都不能正常显示。图片采用复制粘贴的方式插入到.md文件中，图片格式：</p>
-<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128140607589.png"></p>
-<h2 id="2-初步探索"><a href="#2-初步探索" class="headerlink" title="2. 初步探索"></a>2. 初步探索</h2><ol>
-<li>更改typora设置</li>
-</ol>
-<p>按照网上的教程，先修改typora图片插入设置，打开typora设置 -&gt; 图像，按照下面方法设置。</p>
-<span id="more"></span>
-
-<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128141320644.png"> </p>
-<ol start="2">
-<li>修改配置文件，打开资源文件管理功能</li>
-</ol>
-<p>把博客根目录下的_config.yml中的<code>post_asset_folder</code>: 设置为<code>true</code></p>
-<p>Hexo将会在你每一次通过 <code>hexo new [layout] &lt;title&gt;</code> 命令创建新文章时自动创建一个文件夹。这个资源文件夹将会有与这个文章文件一样的名字。将所有与你的文章有关的资源放在这个关联文件夹中之后，你可以通过相对路径来引用它们，这样你就得到了一个更简单而且方便得多的工作流。</p>
-<ol start="3">
-<li>安装图片路径转换插件</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">**注意：插件不能安装最新的，安装老版本的**</span></span><br><span class="line">npm install https://github.com/EricGerry/hexo-asset-image-0.0.5.git --save</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">采用以下语句安装会出错</span></span><br><span class="line">npm install hexo-asset-image --save</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20220531012440436.png"></p>
-<p><strong>注意：按照<code>npm install https://github.com/EricGerry/hexo-asset-image-0.0.5.git --save</code>语句安装完成后无需进行后面的步骤！！！</strong></p>
-<br>
-
-<hr>
-<p>执行完上述操作，按照网上大多数的说法都是可以正常显示图片的，但很无奈，经过这番配置后，重新部署仍出现这样的结果：</p>
-<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128145011881.png"></p>
-<p>当场崩溃！！！ </p>
-<p><img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/038556f2580ddb0fc0ca3edb83219601.jpeg"></p>
-<h2 id="3-大功告成"><a href="#3-大功告成" class="headerlink" title="3. 大功告成"></a>3. 大功告成</h2><p>经过一大番折腾，在网上查阅各种大佬的帖子，最后发现是是这个图片路径转换插件<code>hexo-asset-image</code>有问题，需要进行修改。把文件<code>/node_modules/hexo-asset-image/index.js</code>中的内容全部替换成下面的内容，其中<code>/</code>为博客根目录 。</p>
-<figure class="highlight js"><table><tr><td class="code"><pre><span class="line"><span class="meta">&#x27;use strict&#x27;</span>;</span><br><span class="line"><span class="keyword">var</span> cheerio = <span class="built_in">require</span>(<span class="string">&#x27;cheerio&#x27;</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">// http://stackoverflow.com/questions/14480345/how-to-get-the-nth-occurrence-in-a-string</span></span><br><span class="line"><span class="keyword">function</span> <span class="title function_">getPosition</span>(<span class="params">str, m, i</span>) &#123;</span><br><span class="line">  <span class="keyword">return</span> str.<span class="title function_">split</span>(m, i).<span class="title function_">join</span>(m).<span class="property">length</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">var</span> version = <span class="title class_">String</span>(hexo.<span class="property">version</span>).<span class="title function_">split</span>(<span class="string">&#x27;.&#x27;</span>);</span><br><span class="line">hexo.<span class="property">extend</span>.<span class="property">filter</span>.<span class="title function_">register</span>(<span class="string">&#x27;after_post_render&#x27;</span>, <span class="keyword">function</span>(<span class="params">data</span>)&#123;</span><br><span class="line">  <span class="keyword">var</span> config = hexo.<span class="property">config</span>;</span><br><span class="line">  <span class="keyword">if</span>(config.<span class="property">post_asset_folder</span>)&#123;</span><br><span class="line">    	<span class="keyword">var</span> link = data.<span class="property">permalink</span>;</span><br><span class="line">	<span class="keyword">if</span>(version.<span class="property">length</span> &gt; <span class="number">0</span> &amp;&amp; <span class="title class_">Number</span>(version[<span class="number">0</span>]) == <span class="number">3</span>)</span><br><span class="line">	   <span class="keyword">var</span> beginPos = <span class="title function_">getPosition</span>(link, <span class="string">&#x27;/&#x27;</span>, <span class="number">1</span>) + <span class="number">1</span>;</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">	   <span class="keyword">var</span> beginPos = <span class="title function_">getPosition</span>(link, <span class="string">&#x27;/&#x27;</span>, <span class="number">3</span>) + <span class="number">1</span>;</span><br><span class="line">	<span class="comment">// In hexo 3.1.1, the permalink of &quot;about&quot; page is like &quot;.../about/index.html&quot;.</span></span><br><span class="line">	<span class="keyword">var</span> endPos = link.<span class="title function_">lastIndexOf</span>(<span class="string">&#x27;/&#x27;</span>) + <span class="number">1</span>;</span><br><span class="line">    link = link.<span class="title function_">substring</span>(beginPos, endPos);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">var</span> toprocess = [<span class="string">&#x27;excerpt&#x27;</span>, <span class="string">&#x27;more&#x27;</span>, <span class="string">&#x27;content&#x27;</span>];</span><br><span class="line">    <span class="keyword">for</span>(<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; toprocess.<span class="property">length</span>; i++)&#123;</span><br><span class="line">      <span class="keyword">var</span> key = toprocess[i];</span><br><span class="line"> </span><br><span class="line">      <span class="keyword">var</span> $ = cheerio.<span class="title function_">load</span>(data[key], &#123;</span><br><span class="line">        <span class="attr">ignoreWhitespace</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">xmlMode</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">lowerCaseTags</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="attr">decodeEntities</span>: <span class="literal">false</span></span><br><span class="line">      &#125;);</span><br><span class="line"></span><br><span class="line">      $(<span class="string">&#x27;img&#x27;</span>).<span class="title function_">each</span>(<span class="keyword">function</span>(<span class="params"></span>)&#123;</span><br><span class="line">		<span class="keyword">if</span> ($(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>))&#123;</span><br><span class="line">			<span class="comment">// For windows style path, we replace &#x27;\&#x27; to &#x27;/&#x27;.</span></span><br><span class="line">			<span class="keyword">var</span> src = $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>).<span class="title function_">replace</span>(<span class="string">&#x27;\\&#x27;</span>, <span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">			<span class="keyword">if</span>(!<span class="regexp">/http[s]*.*|\/\/.*/</span>.<span class="title function_">test</span>(src) &amp;&amp;</span><br><span class="line">			   !<span class="regexp">/^\s*\//</span>.<span class="title function_">test</span>(src)) &#123;</span><br><span class="line">			  <span class="comment">// For &quot;about&quot; page, the first part of &quot;src&quot; can&#x27;t be removed.</span></span><br><span class="line">			  <span class="comment">// In addition, to support multi-level local directory.</span></span><br><span class="line">			  <span class="keyword">var</span> linkArray = link.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">				<span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span>;</span><br><span class="line">			  &#125;);</span><br><span class="line">			  <span class="keyword">var</span> srcArray = src.<span class="title function_">split</span>(<span class="string">&#x27;/&#x27;</span>).<span class="title function_">filter</span>(<span class="keyword">function</span>(<span class="params">elem</span>)&#123;</span><br><span class="line">				<span class="keyword">return</span> elem != <span class="string">&#x27;&#x27;</span> &amp;&amp; elem != <span class="string">&#x27;.&#x27;</span>;</span><br><span class="line">			  &#125;);</span><br><span class="line">			  <span class="keyword">if</span>(srcArray.<span class="property">length</span> &gt; <span class="number">1</span>)</span><br><span class="line">				srcArray.<span class="title function_">shift</span>();</span><br><span class="line">			  src = srcArray.<span class="title function_">join</span>(<span class="string">&#x27;/&#x27;</span>);</span><br><span class="line">			  $(<span class="variable language_">this</span>).<span class="title function_">attr</span>(<span class="string">&#x27;src&#x27;</span>, config.<span class="property">root</span> + link + src);</span><br><span class="line">			  <span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;update link as:--&gt;&quot;</span>+config.<span class="property">root</span> + link + src);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;<span class="keyword">else</span>&#123;</span><br><span class="line">			<span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>(<span class="string">&quot;no src attr, skipped...&quot;</span>);</span><br><span class="line">			<span class="variable language_">console</span>.<span class="property">info</span>&amp;&amp;<span class="variable language_">console</span>.<span class="title function_">info</span>($(<span class="variable language_">this</span>));</span><br><span class="line">		&#125;</span><br><span class="line">      &#125;);</span><br><span class="line">      data[key] = $.<span class="title function_">html</span>();</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"></span><br></pre></td></tr></table></figure>
-
-
-
-<p>重新部署！图片正常显示！！！完美</p>
- <img src="/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/image-20211128150713000.png" style="zoom:67%;">
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>教程</tag>
-        <tag>Hexo</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Java异常：Exception与Error，checkedException与unCheckedException</title>
     <url>/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/</url>
     <content><![CDATA[<h3 id="1-Java异常类层级结构图"><a href="#1-Java异常类层级结构图" class="headerlink" title="1. Java异常类层级结构图"></a>1. Java异常类层级结构图</h3><p><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512152121807.png"></p>
@@ -1019,85 +1058,32 @@
       </tags>
   </entry>
   <entry>
-    <title>MySQL:InnoDB存储引擎和MyISAM的区别？</title>
-    <url>/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/</url>
-    <content><![CDATA[<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/mysql-logo-800-400.jpg"></p>
-<p>本文从<strong>事务</strong>，<strong>外键</strong>，<strong>索引</strong>， <strong>存储文件</strong>，<strong>日志</strong>，<strong>count行数</strong>，<strong>锁</strong>，<strong>主键</strong>八个方面系统地对比了在<code>MySQL</code>中<code>InnoDB</code>存储引擎和<code>MyISAM</code>存储引擎的区别。</p>
+    <title>BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？</title>
+    <url>/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/</url>
+    <content><![CDATA[<h3 id="问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数"><a href="#问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数" class="headerlink" title="问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数"></a>问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数</h3><p>解法：采用BitMap，每个整数分配2个bit</p>
+<blockquote>
+<p>00	&#x3D;&gt; 0	表示没出现过</p>
+<p>01	&#x3D;&gt; 1	表示出现过1次</p>
+<p>10	&#x3D;&gt;2	表示出现过多次</p>
+<p>11	&#x3D;&gt;3	表示无效数据。</p>
+</blockquote>
 <span id="more"></span>
 
-<h3 id="1-事务"><a href="#1-事务" class="headerlink" title="1. 事务"></a>1. 事务</h3><ul>
-<li><p><code>InnoDB</code>：支持事务。</p>
-</li>
-<li><p><code>MyISAM</code>：不支持事务，强调的是性能，每次查询具有原子性，一般情况下其查询数度比<code>InnoDB</code>更快，但是不提供事务支持。</p>
-</li>
-</ul>
-<blockquote>
-<p>一般情况下<code>MyISAM</code>查询速度比<code>InnoDB</code>快的原因：</p>
-<p>答：在查询的时候，InnoDB要维护的东西比MyISAM多很多，具体以下几点：</p>
 <ul>
-<li>InnoDB缓存数据块，MyISAM只缓存索引块， 这中间还有换进换出的减少；</li>
-<li>InnoDB寻址要映射到块，再到行，MyISAM记录的直接是文件的OFFSET，定位比InnoDB要快 </li>
-<li>InnoDB还需要维护MVCC一致； 虽然你的场景没有，但他还是需要去检查和维护</li>
+<li>内存分析</li>
 </ul>
-</blockquote>
-<h3 id="2-外键"><a href="#2-外键" class="headerlink" title="2. 外键"></a>2. 外键</h3><ul>
-<li><code>InnoDB</code>：支持外键</li>
-<li><code>MyISAM</code>：不支持外键，对一个包含外键的InnoDB表转为MyISAM会失败</li>
-</ul>
-<h3 id="3-索引"><a href="#3-索引" class="headerlink" title="3. 索引"></a>3. 索引</h3><ul>
-<li><code>InnoDB</code>：聚集索引，数据文件和索引存储在一起，必须要有主键，通过主键查询效率很高，一次查询即可得到完整的行数据。辅助索引存储的数据是对应的主键索引的值，通过辅助索引查询需要两次查询，根据辅助索引查询到对应的主键索引，再根据主键索引查询到对应的行数据（这一过程称之为<strong>回表</strong>）。</li>
-<li><code>MyISAM</code>：非聚集索引，索引和数据文件分开保存，索引保存的是数据文件的指针。主键索引和辅助索引相互独立。</li>
-</ul>
-<blockquote>
-<p>InnoDB的B+树主键索引的叶子节点就是数据文件，辅助索引的叶子节点是主键的值；而MyISAM的B+树主键索引和辅助索引的叶子节点都是数据文件的地址指针。</p>
-</blockquote>
-<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png"></p>
-<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130322302.png"></p>
-<h3 id="4-存储文件"><a href="#4-存储文件" class="headerlink" title="4. 存储文件"></a>4. 存储文件</h3><ul>
-<li><code>InnoDB</code>：存储文件有<strong>frm、ibd</strong>，<strong>frm</strong>是表定义文件，<strong>ibd</strong>是数据文件。</li>
-<li><code>MyISAM</code>：存储文件有<strong>frm、myd、myi</strong>，<strong>frm</strong>是表定义文件，<strong>myd</strong>是数据文件，<strong>myi</strong>是索引文件。</li>
-</ul>
-<h3 id="5-日志"><a href="#5-日志" class="headerlink" title="5. 日志"></a>5. 日志</h3><ul>
-<li><code>InnoDB</code>：有<code>redo log</code>，使用 InnoDB 的数据库在异常崩溃后，数据库重新启动的时候会保证数据库恢复到崩溃前的状态，这个恢复的过程依赖于 <code>redo log</code> 。 <code>redo log</code> 保证事务的持久性， <code>undo log</code> 保证事务的原子性。</li>
-<li><code>MyISAM</code>：没有<code>redo log</code>，不支持数据库异常崩溃后的安全恢复。</li>
-</ul>
-<h3 id="6-count"><a href="#6-count" class="headerlink" title="6. count"></a>6. count</h3><ul>
-<li><code>InnoDB</code>：不保存表的具体行数，如果使用<code>select count(*) from table</code>，就会遍历整个表，消耗相当大，但是在加了<code>where</code>条件后，myisam和innodb处理的方式都一样。</li>
-<li><code>MyISAM</code>：使用一个变量保存整个表的行数，如果使用<code>select count(*) from table</code>，会直接读取该变量。</li>
-</ul>
-<blockquote>
-<p> 因为InnoDB的事务特性，在同一时刻表中的行数对于不同的事务而言是不一样的，因此count统计会计算对于当前事务而言可以统计到的行数，而不是将总行数储存起来方便快速查询。</p>
-</blockquote>
-<h3 id="7-锁"><a href="#7-锁" class="headerlink" title="7. 锁"></a>7. 锁</h3><ul>
-<li><code>InnoDB</code>：支持行级锁和表锁。行锁是基于索引实现的，如果没有命中索引，也无法使用行锁，会退化到表锁。</li>
-<li><code>MyISAM</code>：仅支持表锁，不支持行锁。</li>
-</ul>
-<h3 id="8-主键"><a href="#8-主键" class="headerlink" title="8. 主键"></a>8. 主键</h3><ul>
-<li><code>InnoDB</code>：如果没有设定主键，会自动生成一个6字节的隐藏主键（用户不可见），数据保存在主键索引的叶子节点上。</li>
-<li><code>MyISAM</code>：允许不含有主键。</li>
-</ul>
-<blockquote>
-<p>删除部分自增主键后，二者的区别？</p>
-<ol>
-<li>不重启服务器</li>
-</ol>
-<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，插入一行新的数据，无论是<code>InnoDB</code>还是<code>MyISAM</code>都会从<code>6</code>开始插入。</p>
-<ol start="2">
-<li>重启服务器</li>
-</ol>
-<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，重启服务器，再插入一行新的数据，<code>InnoDB</code>主键会从<code>4</code>开始插入，而<code>MyISAM</code>会从<code>6</code>开始插入。</p>
-<blockquote>
-<p>原因：Innodb表把自增主键的最大ID记录到内存中，重启数据库后，都会导致最大自增ID重置；MyISAM表会把自增主键的最大ID记录到数据文件里，重启MySQL自增主键的最大ID也不会丢失。</p>
-</blockquote>
-<p><strong>说明：mysql8.0版本，重启数据库后，不会导致最大自增ID重置</strong></p>
-<p><strong>原因：</strong>在 MySQL 8.0 中，<code>AUTO_INCREMENT</code>计数器的逻辑变了，每当计数器的值有变，InnoDB 会将其写入 redo log，保存到引擎专用的系统表中。MySQL 正常关闭后重启：从系统表中获取计数器的值。MySQL 故障后重启：从系统表中获取计数器的值；从最后一个检查点开始扫描 redo log 中记录的计数器值；取这两者的最大值作为新值。</p>
-</blockquote>
+<p>每个无符号整数的取值范围为0~2^32-1，BitMap空间复杂度取决于MAX_VALUE，因此需要一个长度为2 ^ 32的BitMap，总占用空间为2^32 * 2bit &#x3D; 1 GB。</p>
+<h3 id="使用Java程序进行实现："><a href="#使用Java程序进行实现：" class="headerlink" title="使用Java程序进行实现："></a>使用Java程序进行实现：</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BitMapTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 00 没出现过</span></span><br><span class="line"><span class="comment">     * 01 出现过1次</span></span><br><span class="line"><span class="comment">     * 10 出现过多次</span></span><br><span class="line"><span class="comment">     * 11 无效表示</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 1 byte = 8 bit，可分配四个数字，长度为1000可覆盖4000个数字，因此我们设置输入整数不超过4000</span></span><br><span class="line"><span class="comment">     * 真实情况下该数组的长度应该为 2.5亿/4，才能覆盖所有无符号整数，此处测试用较小数字进行</span></span><br><span class="line"><span class="comment">     * flags默认初始值都为0</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |3 2 1 0| flag[0] 例如：10000100 表示3出现过多次, 2, 0都没有出现过，1出现过一次</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |7 6 5 4| flag[1]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="type">byte</span>[] flags = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1000</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] nums = <span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">2000</span>];  <span class="comment">// 2000个测试输入数据</span></span><br><span class="line">        <span class="comment">// 验证结果的正确性</span></span><br><span class="line">        Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(nums.length);</span><br><span class="line">        <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">        System.out.println(<span class="string">&quot;原始数据：&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="comment">// 填充随机数输入进行验证</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> random.nextInt(flags.length * <span class="number">4</span>);  <span class="comment">// flags长度为1000，整数最大只能为4000</span></span><br><span class="line">            nums[i] = num;</span><br><span class="line">            System.out.print(num + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            map.put(num, map.getOrDefault(num, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            setVal(num);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();</span><br><span class="line">        System.out.println(<span class="string">&quot;-------------------&quot;</span>);</span><br><span class="line">        List&lt;Integer&gt; bitMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        List&lt;Integer&gt; hashMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (getVal(nums[i]) == <span class="number">1</span>) &#123;</span><br><span class="line">                bitMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (map.getOrDefault(nums[i], <span class="number">0</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">                hashMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;只出现过一次的数据：&quot;</span>);</span><br><span class="line">        System.out.println(bitMapAns);</span><br><span class="line">        System.out.println(<span class="string">&quot;bitMapAns 是否和 hashMapAns相同：&quot;</span> + bitMapAns.equals(hashMapAns));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> getVal(idx);</span><br><span class="line">        <span class="keyword">if</span> (val &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="comment">// 11 或 10 表示出现过多次，保持不变即可</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        ~(3&lt;&lt;loc) =&gt; 11001111 即让2bit对应位置为0，其他都为1</span></span><br><span class="line"><span class="comment">        (flags[pos] &amp; ~(3&lt;&lt;loc)) =&gt; 效果就是让2bit对应位置置为00，其他为保持不变</span></span><br><span class="line"><span class="comment">        | ((val + 1) &lt;&lt; loc) =&gt; 效果就是让val+1的值填充2bit的位置</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">newVal</span> <span class="operator">=</span> (flags[pos] &amp; ~(<span class="number">3</span> &lt;&lt; (loc * <span class="number">2</span>))) | ((val + <span class="number">1</span>) &lt;&lt; (loc * <span class="number">2</span>));</span><br><span class="line">        flags[pos] = (<span class="type">byte</span>) newVal;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">getVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        flags[pos] &gt;&gt; (loc * 2)  =&gt; 00001001  (左边自动补0) 这个操作的效果是让2这个整数在bitmap中对应的两个bit移动到最右端</span></span><br><span class="line"><span class="comment">        拿上面的结果  (0b00001001) &amp; (byte)3  =&gt; (0b00001001) &amp; (0b00000011) =&gt; (0b00000001) 即可得到目标的两个bit对应的数字</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> (flags[pos] &gt;&gt; (loc * <span class="number">2</span>)) &amp; (<span class="type">byte</span>) <span class="number">3</span>;</span><br><span class="line">        <span class="keyword">return</span> val;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p><img src="/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/image-20220512221937915.png"></p>
+<p>上述通过<code>HashMap</code>的方案可以检验<code>BitMap</code>的答案是正确的，并且成功节省了内存空间。</p>
 ]]></content>
       <categories>
         <category>技术</category>
       </categories>
       <tags>
-        <tag>MySQL</tag>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -1193,7 +1179,28 @@
 </blockquote>
 <h2 id="MVCC（Multi-Version-Concurrency-Control）"><a href="#MVCC（Multi-Version-Concurrency-Control）" class="headerlink" title="MVCC（Multi-Version Concurrency Control）"></a>MVCC（Multi-Version Concurrency Control）</h2><p>MVCC最大的好处就是：读不加锁，读写不冲突。相比基于锁的并发控制，在读多写少的场景下，MVCC极大地提升了系统的并发性能。</p>
 <p>在MVCC并发控制中，读操作可以分为两类：快照读（Snapshot Read）和当前读（Current Read）。快照读，读取的是记录的可见版本（可能是历史版本），不用加锁；当前读，读取的是记录的最新版本，并且当前读返回的数据都会上锁，保证其他事务不会并发修改该记录。</p>
+<h3 id="在MySQL-InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？"><a href="#在MySQL-InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？" class="headerlink" title="在MySQL InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？"></a>在MySQL InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？</h3><ul>
+<li><p><strong>快照读：</strong>简单的select操作，属于快照读，不加锁。</p>
+<ul>
+<li>例如：select * from table where ?;</li>
+</ul>
+</li>
+<li><p><strong>当前读：</strong>特殊的读操作、插入&#x2F;更新&#x2F;删除操作，属于当前读，需要加锁。</p>
+<ul>
+<li>select * from table where ? lock in share mode;</li>
+<li>select * from table where ? for update;</li>
+<li>insert into table values (…);</li>
+<li>update table set ? where ?;</li>
+<li>delete from table where ?;</li>
+</ul>
+<p>以上语句都属于当前读，读取到记录的最新版本，并且会在读取到数据后，对数据进行加锁，以保证其他并发事务不会对当前数据进行修改。其中除了第一条语句，对读记录加<code>S锁</code>（共享锁）外，其他操作都是加<code>X锁</code>（排它锁）。</p>
+</li>
+</ul>
+<p><strong>为什么<code>插入/更新/删除</code>操作，都归为当前读?</strong></p>
+<p>当Update SQL发给MySQL后，MySQL server会根据where条件，读取到第一条满足条件的记录，然后InnoDB引擎会将第一条记录返回并加锁。待MysSQL server受到第一条记录后，会再发起一个Update请求，更新这条记录。一条记录操作完成后，会再读取下一条记录，直到没有满足条件的记录为止。因此Update操作内部就包含了一个当前读。同理Delete操作也一样。Insert操作会稍微不同，简单来讲，就是Insert操作可能会触发Unique Key的冲突检查，也会进行一下当前读。</p>
+<blockquote>
 <p>快照读中的记录快照就对应着前面提到的<code>Read View</code>，下面介绍MVCC的工作原理。</p>
+</blockquote>
 <h3 id="Read-View在MVCC中是如何工作的？"><a href="#Read-View在MVCC中是如何工作的？" class="headerlink" title="Read View在MVCC中是如何工作的？"></a>Read View在MVCC中是如何工作的？</h3><p>首先我们需要了解两个知识点：</p>
 <ul>
 <li>Read View中的四个字段，及其作用</li>
@@ -1283,71 +1290,157 @@
       </tags>
   </entry>
   <entry>
-    <title>Git常用命令</title>
-    <url>/2022/05/10/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<h2 id="Git基础命令"><a href="#Git基础命令" class="headerlink" title="Git基础命令"></a>Git基础命令</h2><ol>
-<li>克隆代码</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone xxx</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">克隆指定分支</span></span><br><span class="line">git clone -b branchName xxx</span><br></pre></td></tr></table></figure>
+    <title>Markdown如何实现页内跳转？</title>
+    <url>/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/</url>
+    <content><![CDATA[<h2 id="1-Markdown怎么实现页内跳转？"><a href="#1-Markdown怎么实现页内跳转？" class="headerlink" title="1. Markdown怎么实现页内跳转？"></a>1. Markdown怎么实现页内跳转？</h2><h3 id="1-利用Markdown语法"><a href="#1-利用Markdown语法" class="headerlink" title="1. 利用Markdown语法"></a>1. 利用Markdown语法</h3><p>格式：[描述文字] (#标题名称)</p>
+<span id="more"></span>
 
-<ol start="2">
-<li>拉取（更新）代码</li>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">实践：</span><br><span class="line"></span><br><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line"></span><br><span class="line">[点我去顶部](#1.-我是顶部（空格用`-`代替，转换为html时会跳转失败）)</span><br><span class="line"></span><br><span class="line">[点我去中部](#我是中部)</span><br><span class="line"></span><br><span class="line">##### 1. 我是顶部（空格用`-`代替，转换为html时会跳转失败）</span><br><span class="line"></span><br><span class="line">##### 我是中部</span><br></pre></td></tr></table></figure>
+
+<p><strong>效果展示：</strong></p>
+<hr>
+<p><a href="#1.-%E6%88%91%E6%98%AF%E9%A1%B6%E9%83%A8%EF%BC%88%E7%A9%BA%E6%A0%BC%E7%94%A8%60-%60%E4%BB%A3%E6%9B%BF%EF%BC%8C%E8%BD%AC%E6%8D%A2%E4%B8%BAhtml%E6%97%B6%E4%BC%9A%E8%B7%B3%E8%BD%AC%E5%A4%B1%E8%B4%A5%EF%BC%89">点我去顶部</a></p>
+<p><a href="#%E6%88%91%E6%98%AF%E4%B8%AD%E9%83%A8">点我去中部</a></p>
+<h5 id="1-我是顶部（空格用-代替，转换为html时会跳转失败）"><a href="#1-我是顶部（空格用-代替，转换为html时会跳转失败）" class="headerlink" title="1. 我是顶部（空格用-代替，转换为html时会跳转失败）"></a>1. 我是顶部（空格用<code>-</code>代替，转换为html时会跳转失败）</h5><h5 id="我是中部"><a href="#我是中部" class="headerlink" title="我是中部"></a>我是中部</h5><hr>
+<blockquote>
+<p>注意事项：标题名称要完全一样，标题中的空格要用 <code>-</code>代替，这种跳转方式只能局限于跳转到<code>#</code>目录</p>
+</blockquote>
+<h3 id="2-使用html标签"><a href="#2-使用html标签" class="headerlink" title="2. 使用html标签"></a>2. 使用html标签</h3><p>格式：</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">在需要被跳转到地方添加标签：&lt;a id=&quot;xxx&quot;&gt;&lt;/a&gt;</span><br><span class="line">在跳转的位置添加标签：[跳转名称](#xxx)</span><br></pre></td></tr></table></figure>
+
+<p>实践：</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line">[跳转到位置1](#a1)</span><br><span class="line"></span><br><span class="line">[跳转到地方2](#p2)</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;a id=&quot;a1&quot;&gt;位置1&lt;/a&gt;</span><br><span class="line"></span><br><span class="line">地方2&lt;a id=&quot;p2&quot;&gt;&lt;/a&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>效果展示：</strong></p>
+<hr>
+<p><a href="#a1">跳转到位置1</a></p>
+<p><a href="#p2">跳转到地方2</a></p>
+<br>
+
+<br>
+
+<p><a id="a1">位置1</a></p>
+<p>地方2<a id="p2"></a></p>
+<hr>
+<blockquote>
+<p>采用这种方式在转换为html时仍然生效，且可控制性高，推荐这种方式。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL:InnoDB存储引擎和MyISAM的区别？</title>
+    <url>/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/</url>
+    <content><![CDATA[<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/mysql-logo-800-400.jpg"></p>
+<p>本文从<strong>事务</strong>，<strong>外键</strong>，<strong>索引</strong>， <strong>存储文件</strong>，<strong>日志</strong>，<strong>count行数</strong>，<strong>锁</strong>，<strong>主键</strong>八个方面系统地对比了在<code>MySQL</code>中<code>InnoDB</code>存储引擎和<code>MyISAM</code>存储引擎的区别。</p>
+<span id="more"></span>
+
+<h3 id="1-事务"><a href="#1-事务" class="headerlink" title="1. 事务"></a>1. 事务</h3><ul>
+<li><p><code>InnoDB</code>：支持事务。</p>
+</li>
+<li><p><code>MyISAM</code>：不支持事务，强调的是性能，每次查询具有原子性，一般情况下其查询数度比<code>InnoDB</code>更快，但是不提供事务支持。</p>
+</li>
+</ul>
+<blockquote>
+<p>一般情况下<code>MyISAM</code>查询速度比<code>InnoDB</code>快的原因：</p>
+<p>答：在查询的时候，InnoDB要维护的东西比MyISAM多很多，具体以下几点：</p>
+<ul>
+<li>InnoDB缓存数据块，MyISAM只缓存索引块， 这中间还有换进换出的减少；</li>
+<li>InnoDB寻址要映射到块，再到行，MyISAM记录的直接是文件的OFFSET，定位比InnoDB要快 </li>
+<li>InnoDB还需要维护MVCC一致； 虽然你的场景没有，但他还是需要去检查和维护</li>
+</ul>
+</blockquote>
+<h3 id="2-外键"><a href="#2-外键" class="headerlink" title="2. 外键"></a>2. 外键</h3><ul>
+<li><code>InnoDB</code>：支持外键</li>
+<li><code>MyISAM</code>：不支持外键，对一个包含外键的InnoDB表转为MyISAM会失败</li>
+</ul>
+<h3 id="3-索引"><a href="#3-索引" class="headerlink" title="3. 索引"></a>3. 索引</h3><ul>
+<li><code>InnoDB</code>：聚集索引，数据文件和索引存储在一起，必须要有主键，通过主键查询效率很高，一次查询即可得到完整的行数据。辅助索引存储的数据是对应的主键索引的值，通过辅助索引查询需要两次查询，根据辅助索引查询到对应的主键索引，再根据主键索引查询到对应的行数据（这一过程称之为<strong>回表</strong>）。</li>
+<li><code>MyISAM</code>：非聚集索引，索引和数据文件分开保存，索引保存的是数据文件的指针。主键索引和辅助索引相互独立。</li>
+</ul>
+<blockquote>
+<p>InnoDB的B+树主键索引的叶子节点就是数据文件，辅助索引的叶子节点是主键的值；而MyISAM的B+树主键索引和辅助索引的叶子节点都是数据文件的地址指针。</p>
+</blockquote>
+<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png"></p>
+<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130322302.png"></p>
+<h3 id="4-存储文件"><a href="#4-存储文件" class="headerlink" title="4. 存储文件"></a>4. 存储文件</h3><ul>
+<li><code>InnoDB</code>：存储文件有<strong>frm、ibd</strong>，<strong>frm</strong>是表定义文件，<strong>ibd</strong>是数据文件。</li>
+<li><code>MyISAM</code>：存储文件有<strong>frm、myd、myi</strong>，<strong>frm</strong>是表定义文件，<strong>myd</strong>是数据文件，<strong>myi</strong>是索引文件。</li>
+</ul>
+<h3 id="5-日志"><a href="#5-日志" class="headerlink" title="5. 日志"></a>5. 日志</h3><ul>
+<li><code>InnoDB</code>：有<code>redo log</code>，使用 InnoDB 的数据库在异常崩溃后，数据库重新启动的时候会保证数据库恢复到崩溃前的状态，这个恢复的过程依赖于 <code>redo log</code> 。 <code>redo log</code> 保证事务的持久性， <code>undo log</code> 保证事务的原子性。</li>
+<li><code>MyISAM</code>：没有<code>redo log</code>，不支持数据库异常崩溃后的安全恢复。</li>
+</ul>
+<h3 id="6-count"><a href="#6-count" class="headerlink" title="6. count"></a>6. count</h3><ul>
+<li><code>InnoDB</code>：不保存表的具体行数，如果使用<code>select count(*) from table</code>，就会遍历整个表，消耗相当大，但是在加了<code>where</code>条件后，myisam和innodb处理的方式都一样。</li>
+<li><code>MyISAM</code>：使用一个变量保存整个表的行数，如果使用<code>select count(*) from table</code>，会直接读取该变量。</li>
+</ul>
+<blockquote>
+<p> 因为InnoDB的事务特性，在同一时刻表中的行数对于不同的事务而言是不一样的，因此count统计会计算对于当前事务而言可以统计到的行数，而不是将总行数储存起来方便快速查询。</p>
+</blockquote>
+<h3 id="7-锁"><a href="#7-锁" class="headerlink" title="7. 锁"></a>7. 锁</h3><ul>
+<li><code>InnoDB</code>：支持行级锁和表锁。行锁是基于索引实现的，如果没有命中索引，也无法使用行锁，会退化到表锁。</li>
+<li><code>MyISAM</code>：仅支持表锁，不支持行锁。</li>
+</ul>
+<h3 id="8-主键"><a href="#8-主键" class="headerlink" title="8. 主键"></a>8. 主键</h3><ul>
+<li><code>InnoDB</code>：如果没有设定主键，会自动生成一个6字节的隐藏主键（用户不可见），数据保存在主键索引的叶子节点上。</li>
+<li><code>MyISAM</code>：允许不含有主键。</li>
+</ul>
+<blockquote>
+<p>删除部分自增主键后，二者的区别？</p>
+<ol>
+<li>不重启服务器</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git pull origin</span><br><span class="line">git pull origin branchName</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">变基</span></span><br><span class="line">git pull --rebase origin branchName</span><br></pre></td></tr></table></figure>
+<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，插入一行新的数据，无论是<code>InnoDB</code>还是<code>MyISAM</code>都会从<code>6</code>开始插入。</p>
+<ol start="2">
+<li>重启服务器</li>
+</ol>
+<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，重启服务器，再插入一行新的数据，<code>InnoDB</code>主键会从<code>4</code>开始插入，而<code>MyISAM</code>会从<code>6</code>开始插入。</p>
+<blockquote>
+<p>原因：Innodb表把自增主键的最大ID记录到内存中，重启数据库后，都会导致最大自增ID重置；MyISAM表会把自增主键的最大ID记录到数据文件里，重启MySQL自增主键的最大ID也不会丢失。</p>
+</blockquote>
+<p><strong>说明：mysql8.0版本，重启数据库后，不会导致最大自增ID重置</strong></p>
+<p><strong>原因：</strong>在 MySQL 8.0 中，<code>AUTO_INCREMENT</code>计数器的逻辑变了，每当计数器的值有变，InnoDB 会将其写入 redo log，保存到引擎专用的系统表中。MySQL 正常关闭后重启：从系统表中获取计数器的值。MySQL 故障后重启：从系统表中获取计数器的值；从最后一个检查点开始扫描 redo log 中记录的计数器值；取这两者的最大值作为新值。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何配置git ssh</title>
+    <url>/2022/05/10/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgit-ssh/</url>
+    <content><![CDATA[<h3 id="1-检查用户名和邮箱"><a href="#1-检查用户名和邮箱" class="headerlink" title="1. 检查用户名和邮箱"></a>1. 检查用户名和邮箱</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看用户名</span></span><br><span class="line">git config user.name</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看邮箱</span></span><br><span class="line">git config user.email</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置用户名</span></span><br><span class="line">git config --global user.name &quot;xxx&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置邮箱</span></span><br><span class="line">git config --global user.email &quot;xxx&quot;</span><br></pre></td></tr></table></figure>
 
 <span id="more"></span>
 
-<ol start="3">
-<li>提交代码</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit &quot;message&quot;</span><br></pre></td></tr></table></figure>
+<h3 id="2-查看是否配置过SSH-Key"><a href="#2-查看是否配置过SSH-Key" class="headerlink" title="2. 查看是否配置过SSH Key"></a>2. 查看是否配置过SSH Key</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ls ~/.ssh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">hyunmin@HyunmindeMacBook-Air .ssh % <span class="built_in">ls</span> ~/.ssh</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">id_rsa      id_rsa.pub  known_hosts</span></span><br></pre></td></tr></table></figure>
 
-<ol start="4">
-<li>推送远程分支</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git push origin head:branchName</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">强制推送</span></span><br><span class="line">git push -f origin head:branchName</span><br></pre></td></tr></table></figure>
+<p>存在id_rsa      id_rsa.pub文件即证明已配置过SSH Key</p>
+<h3 id="3-生成SSH-Key（秘钥）"><a href="#3-生成SSH-Key（秘钥）" class="headerlink" title="3. 生成SSH Key（秘钥）"></a>3. 生成SSH Key（秘钥）</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t -rsa -C &quot;email&quot;</span><br></pre></td></tr></table></figure>
 
-<ol start="5">
-<li>合并提交记录</li>
+<h3 id="4-GitHub远程仓库添加公钥"><a href="#4-GitHub远程仓库添加公钥" class="headerlink" title="4. GitHub远程仓库添加公钥"></a>4. GitHub远程仓库添加公钥</h3><ol>
+<li><p>复制<code>~/.ssh/id_rsa.pub</code>文件内容，并粘贴到GitHub-&gt;settings-&gt;SSH and GPG keys</p>
+</li>
+<li><p>检查是否配置成功</p>
+</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">合并近k条提交记录</span></span><br><span class="line">git rebase -i head~k</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">一般pick第一条，后面都squash</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示如下内容则表示配置成功</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Hi Ysfun! You<span class="string">&#x27;ve successfully authenticated, but GitHub does not provide shell access.</span></span></span><br></pre></td></tr></table></figure>
 
-<p><img src="/2022/05/10/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20220510193114486.png"></p>
 ]]></content>
       <categories>
         <category>教程</category>
       </categories>
       <tags>
         <tag>Git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？</title>
-    <url>/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/</url>
-    <content><![CDATA[<h3 id="问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数"><a href="#问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数" class="headerlink" title="问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数"></a>问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数</h3><p>解法：采用BitMap，每个整数分配2个bit</p>
-<blockquote>
-<p>00	&#x3D;&gt; 0	表示没出现过</p>
-<p>01	&#x3D;&gt; 1	表示出现过1次</p>
-<p>10	&#x3D;&gt;2	表示出现过多次</p>
-<p>11	&#x3D;&gt;3	表示无效数据。</p>
-</blockquote>
-<span id="more"></span>
-
-<ul>
-<li>内存分析</li>
-</ul>
-<p>每个无符号整数的取值范围为0~2^32-1，BitMap空间复杂度取决于MAX_VALUE，因此需要一个长度为2 ^ 32的BitMap，总占用空间为2^32 * 2bit &#x3D; 1 GB。</p>
-<h3 id="使用Java程序进行实现："><a href="#使用Java程序进行实现：" class="headerlink" title="使用Java程序进行实现："></a>使用Java程序进行实现：</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BitMapTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 00 没出现过</span></span><br><span class="line"><span class="comment">     * 01 出现过1次</span></span><br><span class="line"><span class="comment">     * 10 出现过多次</span></span><br><span class="line"><span class="comment">     * 11 无效表示</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 1 byte = 8 bit，可分配四个数字，长度为1000可覆盖4000个数字，因此我们设置输入整数不超过4000</span></span><br><span class="line"><span class="comment">     * 真实情况下该数组的长度应该为 2.5亿/4，才能覆盖所有无符号整数，此处测试用较小数字进行</span></span><br><span class="line"><span class="comment">     * flags默认初始值都为0</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |3 2 1 0| flag[0] 例如：10000100 表示3出现过多次, 2, 0都没有出现过，1出现过一次</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |7 6 5 4| flag[1]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="type">byte</span>[] flags = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1000</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] nums = <span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">2000</span>];  <span class="comment">// 2000个测试输入数据</span></span><br><span class="line">        <span class="comment">// 验证结果的正确性</span></span><br><span class="line">        Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(nums.length);</span><br><span class="line">        <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">        System.out.println(<span class="string">&quot;原始数据：&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="comment">// 填充随机数输入进行验证</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> random.nextInt(flags.length * <span class="number">4</span>);  <span class="comment">// flags长度为1000，整数最大只能为4000</span></span><br><span class="line">            nums[i] = num;</span><br><span class="line">            System.out.print(num + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            map.put(num, map.getOrDefault(num, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            setVal(num);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();</span><br><span class="line">        System.out.println(<span class="string">&quot;-------------------&quot;</span>);</span><br><span class="line">        List&lt;Integer&gt; bitMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        List&lt;Integer&gt; hashMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (getVal(nums[i]) == <span class="number">1</span>) &#123;</span><br><span class="line">                bitMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (map.getOrDefault(nums[i], <span class="number">0</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">                hashMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;只出现过一次的数据：&quot;</span>);</span><br><span class="line">        System.out.println(bitMapAns);</span><br><span class="line">        System.out.println(<span class="string">&quot;bitMapAns 是否和 hashMapAns相同：&quot;</span> + bitMapAns.equals(hashMapAns));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> getVal(idx);</span><br><span class="line">        <span class="keyword">if</span> (val &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="comment">// 11 或 10 表示出现过多次，保持不变即可</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        ~(3&lt;&lt;loc) =&gt; 11001111 即让2bit对应位置为0，其他都为1</span></span><br><span class="line"><span class="comment">        (flags[pos] &amp; ~(3&lt;&lt;loc)) =&gt; 效果就是让2bit对应位置置为00，其他为保持不变</span></span><br><span class="line"><span class="comment">        | ((val + 1) &lt;&lt; loc) =&gt; 效果就是让val+1的值填充2bit的位置</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">newVal</span> <span class="operator">=</span> (flags[pos] &amp; ~(<span class="number">3</span> &lt;&lt; (loc * <span class="number">2</span>))) | ((val + <span class="number">1</span>) &lt;&lt; (loc * <span class="number">2</span>));</span><br><span class="line">        flags[pos] = (<span class="type">byte</span>) newVal;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">getVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        flags[pos] &gt;&gt; (loc * 2)  =&gt; 00001001  (左边自动补0) 这个操作的效果是让2这个整数在bitmap中对应的两个bit移动到最右端</span></span><br><span class="line"><span class="comment">        拿上面的结果  (0b00001001) &amp; (byte)3  =&gt; (0b00001001) &amp; (0b00000011) =&gt; (0b00000001) 即可得到目标的两个bit对应的数字</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> (flags[pos] &gt;&gt; (loc * <span class="number">2</span>)) &amp; (<span class="type">byte</span>) <span class="number">3</span>;</span><br><span class="line">        <span class="keyword">return</span> val;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>运行结果：</p>
-<p><img src="/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/image-20220512221937915.png"></p>
-<p>上述通过<code>HashMap</code>的方案可以检验<code>BitMap</code>的答案是正确的，并且成功节省了内存空间。</p>
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -1484,6 +1577,53 @@
       </tags>
   </entry>
   <entry>
+    <title>Redis过期key是否立马被删除？</title>
+    <url>/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/</url>
+    <content><![CDATA[<h3 id="Redis过期key是否立马被删除？"><a href="#Redis过期key是否立马被删除？" class="headerlink" title="Redis过期key是否立马被删除？"></a>Redis过期key是否立马被删除？</h3><p>答案是不会，Redis处理过期key主要有两种方式：</p>
+<ul>
+<li>惰性删除（客户端侧）</li>
+<li>定期随机删除（服务端侧）</li>
+</ul>
+<span id="more"></span>
+
+<h4 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h4><p>当客户端请求查询时，判断当前key已过期，则会删除该key，删除key的主动权交给每次访问的请求。</p>
+<p>弊端：只能处理还会访问的key，无法对一些不再会被访问的key进行删除。</p>
+<p>该实现通过<code>expiredIfNeeded</code>函数实现，源码路径：<code>src/db.c</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">expireIfNeeded</span><span class="params">(redisDb *db, robj *key, <span class="type">int</span> force_delete_expired)</span> &#123;</span><br><span class="line">   <span class="comment">// key 没有过期，return 0</span></span><br><span class="line">    <span class="keyword">if</span> (!keyIsExpired(db,key)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (server.masterhost != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (server.current_client == server.master) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (!force_delete_expired) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (checkClientPauseTimeoutAndReturnIfPaused()) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Delete the key */</span></span><br><span class="line">    deleteExpiredKeyAndPropagate(db,key);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h4><p>对于一些key过期后不再被访问，惰性删除永远无法对其进行删除，这会导致已过期的key不断积压，因此仅靠客户端侧的处理是不够的。</p>
+<ul>
+<li>如何让处理“占着茅坑不拉屎”的key?</li>
+</ul>
+<p>服务端进行定期删除，顾名思义就是Redis默认每100 ms 执行一次，随机抽取一些设置了过期时间的key，判断是否过期，如发现已过期就直接删除。</p>
+<blockquote>
+<p>注意：并不是检查所有key，而是随机抽取一定数量的key</p>
+</blockquote>
+<p>具体步骤如下：</p>
+<img src="/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/image-20220511000559696.png" style="zoom:70%">
+
+<p>该过程通过<code>activeExpireCycle</code>函数实现，源码路径：<code>src/expire.c</code></p>
+<ul>
+<li>为什么不检查所有设置过期时间的key？</li>
+</ul>
+<p>Redis中存放了数以万计的key，如果每隔100 ms 就要轮询检查所有设置过期时间的key，会非常耗费CPU</p>
+<ul>
+<li>删除如何做到主从同步？</li>
+</ul>
+<p>不论是惰性删除还是定期删除，当进行删除时，<code>master</code>会将删除指令记录到<code>AOF</code>和<code>slave</code>节点</p>
+<blockquote>
+<p><strong>如果过期数据太多，定时删除无法完全删除（每次删除完过期的key还是超过25%），同时这些key再也不会被客户端请求，即也无法通过惰性删除，该如何解决？</strong></p>
+<p>答：内存淘汰机制</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>String s=&quot;a&quot;+&quot;b&quot;+&quot;c&quot;到底创建了几个对象？</title>
     <url>/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/</url>
     <content><![CDATA[<p><strong>常量折叠技术</strong>：在编译期间，编译器会将<strong>编译器常</strong>的加减乘除运算过程在编译过程中折叠。编译器通过语法分析，将常量表达式计算求值，并用求出来的值替换表达式，而不必等到运行期间再进行运算处理，从而在运行期间节省处理器资源。</p>
@@ -1549,125 +1689,6 @@
       </categories>
       <tags>
         <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Markdown如何实现页内跳转？</title>
-    <url>/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/</url>
-    <content><![CDATA[<h2 id="1-Markdown怎么实现页内跳转？"><a href="#1-Markdown怎么实现页内跳转？" class="headerlink" title="1. Markdown怎么实现页内跳转？"></a>1. Markdown怎么实现页内跳转？</h2><h3 id="1-利用Markdown语法"><a href="#1-利用Markdown语法" class="headerlink" title="1. 利用Markdown语法"></a>1. 利用Markdown语法</h3><p>格式：[描述文字] (#标题名称)</p>
-<span id="more"></span>
-
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">实践：</span><br><span class="line"></span><br><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line"></span><br><span class="line">[点我去顶部](#1.-我是顶部（空格用`-`代替，转换为html时会跳转失败）)</span><br><span class="line"></span><br><span class="line">[点我去中部](#我是中部)</span><br><span class="line"></span><br><span class="line">##### 1. 我是顶部（空格用`-`代替，转换为html时会跳转失败）</span><br><span class="line"></span><br><span class="line">##### 我是中部</span><br></pre></td></tr></table></figure>
-
-<p><strong>效果展示：</strong></p>
-<hr>
-<p><a href="#1.-%E6%88%91%E6%98%AF%E9%A1%B6%E9%83%A8%EF%BC%88%E7%A9%BA%E6%A0%BC%E7%94%A8%60-%60%E4%BB%A3%E6%9B%BF%EF%BC%8C%E8%BD%AC%E6%8D%A2%E4%B8%BAhtml%E6%97%B6%E4%BC%9A%E8%B7%B3%E8%BD%AC%E5%A4%B1%E8%B4%A5%EF%BC%89">点我去顶部</a></p>
-<p><a href="#%E6%88%91%E6%98%AF%E4%B8%AD%E9%83%A8">点我去中部</a></p>
-<h5 id="1-我是顶部（空格用-代替，转换为html时会跳转失败）"><a href="#1-我是顶部（空格用-代替，转换为html时会跳转失败）" class="headerlink" title="1. 我是顶部（空格用-代替，转换为html时会跳转失败）"></a>1. 我是顶部（空格用<code>-</code>代替，转换为html时会跳转失败）</h5><h5 id="我是中部"><a href="#我是中部" class="headerlink" title="我是中部"></a>我是中部</h5><hr>
-<blockquote>
-<p>注意事项：标题名称要完全一样，标题中的空格要用 <code>-</code>代替，这种跳转方式只能局限于跳转到<code>#</code>目录</p>
-</blockquote>
-<h3 id="2-使用html标签"><a href="#2-使用html标签" class="headerlink" title="2. 使用html标签"></a>2. 使用html标签</h3><p>格式：</p>
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">在需要被跳转到地方添加标签：&lt;a id=&quot;xxx&quot;&gt;&lt;/a&gt;</span><br><span class="line">在跳转的位置添加标签：[跳转名称](#xxx)</span><br></pre></td></tr></table></figure>
-
-<p>实践：</p>
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line">[跳转到位置1](#a1)</span><br><span class="line"></span><br><span class="line">[跳转到地方2](#p2)</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;a id=&quot;a1&quot;&gt;位置1&lt;/a&gt;</span><br><span class="line"></span><br><span class="line">地方2&lt;a id=&quot;p2&quot;&gt;&lt;/a&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>效果展示：</strong></p>
-<hr>
-<p><a href="#a1">跳转到位置1</a></p>
-<p><a href="#p2">跳转到地方2</a></p>
-<br>
-
-<br>
-
-<p><a id="a1">位置1</a></p>
-<p>地方2<a id="p2"></a></p>
-<hr>
-<blockquote>
-<p>采用这种方式在转换为html时仍然生效，且可控制性高，推荐这种方式。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Markdown</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>如何配置git ssh</title>
-    <url>/2022/05/10/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgit-ssh/</url>
-    <content><![CDATA[<h3 id="1-检查用户名和邮箱"><a href="#1-检查用户名和邮箱" class="headerlink" title="1. 检查用户名和邮箱"></a>1. 检查用户名和邮箱</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看用户名</span></span><br><span class="line">git config user.name</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看邮箱</span></span><br><span class="line">git config user.email</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置用户名</span></span><br><span class="line">git config --global user.name &quot;xxx&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置邮箱</span></span><br><span class="line">git config --global user.email &quot;xxx&quot;</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<h3 id="2-查看是否配置过SSH-Key"><a href="#2-查看是否配置过SSH-Key" class="headerlink" title="2. 查看是否配置过SSH Key"></a>2. 查看是否配置过SSH Key</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ls ~/.ssh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">hyunmin@HyunmindeMacBook-Air .ssh % <span class="built_in">ls</span> ~/.ssh</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">id_rsa      id_rsa.pub  known_hosts</span></span><br></pre></td></tr></table></figure>
-
-<p>存在id_rsa      id_rsa.pub文件即证明已配置过SSH Key</p>
-<h3 id="3-生成SSH-Key（秘钥）"><a href="#3-生成SSH-Key（秘钥）" class="headerlink" title="3. 生成SSH Key（秘钥）"></a>3. 生成SSH Key（秘钥）</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t -rsa -C &quot;email&quot;</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-GitHub远程仓库添加公钥"><a href="#4-GitHub远程仓库添加公钥" class="headerlink" title="4. GitHub远程仓库添加公钥"></a>4. GitHub远程仓库添加公钥</h3><ol>
-<li><p>复制<code>~/.ssh/id_rsa.pub</code>文件内容，并粘贴到GitHub-&gt;settings-&gt;SSH and GPG keys</p>
-</li>
-<li><p>检查是否配置成功</p>
-</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示如下内容则表示配置成功</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Hi Ysfun! You<span class="string">&#x27;ve successfully authenticated, but GitHub does not provide shell access.</span></span></span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Redis过期key是否立马被删除？</title>
-    <url>/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/</url>
-    <content><![CDATA[<h3 id="Redis过期key是否立马被删除？"><a href="#Redis过期key是否立马被删除？" class="headerlink" title="Redis过期key是否立马被删除？"></a>Redis过期key是否立马被删除？</h3><p>答案是不会，Redis处理过期key主要有两种方式：</p>
-<ul>
-<li>惰性删除（客户端侧）</li>
-<li>定期随机删除（服务端侧）</li>
-</ul>
-<span id="more"></span>
-
-<h4 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h4><p>当客户端请求查询时，判断当前key已过期，则会删除该key，删除key的主动权交给每次访问的请求。</p>
-<p>弊端：只能处理还会访问的key，无法对一些不再会被访问的key进行删除。</p>
-<p>该实现通过<code>expiredIfNeeded</code>函数实现，源码路径：<code>src/db.c</code></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">expireIfNeeded</span><span class="params">(redisDb *db, robj *key, <span class="type">int</span> force_delete_expired)</span> &#123;</span><br><span class="line">   <span class="comment">// key 没有过期，return 0</span></span><br><span class="line">    <span class="keyword">if</span> (!keyIsExpired(db,key)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (server.masterhost != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (server.current_client == server.master) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (!force_delete_expired) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (checkClientPauseTimeoutAndReturnIfPaused()) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Delete the key */</span></span><br><span class="line">    deleteExpiredKeyAndPropagate(db,key);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h4><p>对于一些key过期后不再被访问，惰性删除永远无法对其进行删除，这会导致已过期的key不断积压，因此仅靠客户端侧的处理是不够的。</p>
-<ul>
-<li>如何让处理“占着茅坑不拉屎”的key?</li>
-</ul>
-<p>服务端进行定期删除，顾名思义就是Redis默认每100 ms 执行一次，随机抽取一些设置了过期时间的key，判断是否过期，如发现已过期就直接删除。</p>
-<blockquote>
-<p>注意：并不是检查所有key，而是随机抽取一定数量的key</p>
-</blockquote>
-<p>具体步骤如下：</p>
-<img src="/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/image-20220511000559696.png" style="zoom:70%">
-
-<p>该过程通过<code>activeExpireCycle</code>函数实现，源码路径：<code>src/expire.c</code></p>
-<ul>
-<li>为什么不检查所有设置过期时间的key？</li>
-</ul>
-<p>Redis中存放了数以万计的key，如果每隔100 ms 就要轮询检查所有设置过期时间的key，会非常耗费CPU</p>
-<ul>
-<li>删除如何做到主从同步？</li>
-</ul>
-<p>不论是惰性删除还是定期删除，当进行删除时，<code>master</code>会将删除指令记录到<code>AOF</code>和<code>slave</code>节点</p>
-<blockquote>
-<p><strong>如果过期数据太多，定时删除无法完全删除（每次删除完过期的key还是超过25%），同时这些key再也不会被客户端请求，即也无法通过惰性删除，该如何解决？</strong></p>
-<p>答：内存淘汰机制</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>Redis</tag>
       </tags>
   </entry>
 </search>

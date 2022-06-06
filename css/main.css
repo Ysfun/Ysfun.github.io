@@ -18,10 +18,10 @@
   --btn-default-hover-bg: #222;
   --btn-default-hover-color: #fff;
   --btn-default-hover-border-color: #222;
-  --highlight-background: #fff;
-  --highlight-foreground: #000;
-  --highlight-gutter-background: #e5e5e5;
-  --highlight-gutter-foreground: #191919;
+  --highlight-background: #f7f3f7;
+  --highlight-foreground: #695d69;
+  --highlight-gutter-background: #e8e4e8;
+  --highlight-gutter-foreground: #776c77;
   color-scheme: light;
 }
 html {
@@ -362,7 +362,13 @@ td {
   top: -5px;
   transform: rotate(-45deg);
 }
-pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{background:#fff;color:#000}.hljs-comment,.hljs-quote,.hljs-variable{color:green}.hljs-built_in,.hljs-keyword,.hljs-name,.hljs-selector-tag,.hljs-tag{color:#00f}.hljs-addition,.hljs-attribute,.hljs-literal,.hljs-section,.hljs-string,.hljs-template-tag,.hljs-template-variable,.hljs-title,.hljs-type{color:#a31515}.hljs-deletion,.hljs-meta,.hljs-selector-attr,.hljs-selector-pseudo{color:#2b91af}.hljs-doctag{color:grey}.hljs-attr{color:red}.hljs-bullet,.hljs-link,.hljs-symbol{color:#00b0e8}.hljs-emphasis{font-style:italic}.hljs-strong{font-weight:700}
+/*!
+  Theme: Atelier Heath Light
+  Author: Bram de Haan (http://atelierbramdehaan.nl)
+  License: ~ MIT (or more permissive) [via base16-schemes-source]
+  Maintainer: @highlightjs/core-team
+  Version: 2021.09.0
+*/pre code.hljs{display:block;overflow-x:auto;padding:1em}code.hljs{padding:3px 5px}.hljs{color:#695d69;background:#f7f3f7}.hljs ::selection,.hljs::selection{background-color:#ab9bab;color:#695d69}.hljs-comment{color:#9e8f9e}.hljs-tag{color:#776977}.hljs-operator,.hljs-punctuation,.hljs-subst{color:#695d69}.hljs-operator{opacity:.7}.hljs-bullet,.hljs-deletion,.hljs-name,.hljs-selector-tag,.hljs-template-variable,.hljs-variable{color:#ca402b}.hljs-attr,.hljs-link,.hljs-literal,.hljs-number,.hljs-symbol,.hljs-variable.constant_{color:#a65926}.hljs-class .hljs-title,.hljs-title,.hljs-title.class_{color:#bb8a35}.hljs-strong{font-weight:700;color:#bb8a35}.hljs-addition,.hljs-code,.hljs-string,.hljs-title.class_.inherited__{color:#918b3b}.hljs-built_in,.hljs-doctag,.hljs-keyword.hljs-atrule,.hljs-quote,.hljs-regexp{color:#159393}.hljs-attribute,.hljs-function .hljs-title,.hljs-section,.hljs-title.function_,.ruby .hljs-property{color:#516aec}.diff .hljs-meta,.hljs-keyword,.hljs-template-tag,.hljs-type{color:#7b59c0}.hljs-emphasis{color:#7b59c0;font-style:italic}.hljs-meta,.hljs-meta .hljs-keyword,.hljs-meta .hljs-string{color:#c3c}.hljs-meta .hljs-keyword,.hljs-meta-keyword{font-weight:700}
 .highlight:hover .copy-btn,
 pre:hover .copy-btn {
   opacity: 1;
@@ -1532,7 +1538,7 @@ header.header {
   white-space: nowrap;
 }
 .post-toc .nav .nav-child {
-  display: none;
+  display: block;
 }
 .post-toc .nav .active > .nav-child {
   display: block;

@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#3d85c6"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/avatar.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#3d85c6">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Noto+Serif+SC:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.ysfun.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":null,"post_header":null,"post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":null}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="题目对应LeetCode729. 我的日程安排表 I 731. 我的日程安排表 II 732. 我的日程安排表 III">
+<meta property="og:type" content="article">
+<meta property="og:title" content="刷题分享：LeetCode[729,731,732]我的日程安排表【TreeMap、查分数组、线段树】">
+<meta property="og:url" content="https://www.ysfun.cn/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/index.html">
+<meta property="og:site_name" content="Ysfun&#39;s blog">
+<meta property="og:description" content="题目对应LeetCode729. 我的日程安排表 I 731. 我的日程安排表 II 732. 我的日程安排表 III">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://www.ysfun.cn/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/leetcode-1.jpg">
+<meta property="og:image" content="https://www.ysfun.cn/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/image-20220606120852444.png">
+<meta property="article:published_time" content="2022-06-06T03:09:01.000Z">
+<meta property="article:modified_time" content="2022-06-06T15:05:47.374Z">
+<meta property="article:author" content="Ysfun">
+<meta property="article:tag" content="算法题">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.ysfun.cn/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/leetcode-1.jpg">
+
+
+<link rel="canonical" href="https://www.ysfun.cn/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.ysfun.cn/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/","path":"2022/06/06/刷题分享：TreeMap应用示例-LeetCode-我的日程安排表/","title":"刷题分享：LeetCode[729,731,732]我的日程安排表【TreeMap、查分数组、线段树】"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>刷题分享：LeetCode[729,731,732]我的日程安排表【TreeMap、查分数组、线段树】 | Ysfun's blog</title>
+  
+
+
+
+
+<link rel="dns-prefetch" href="waline-server-repo-six.vercel.app">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Ysfun's blog</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">16</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">28</span></a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8I"><span class="nav-number">1.</span> <span class="nav-text">我的日程安排表I</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0"><span class="nav-number">1.1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B"><span class="nav-number">1.2.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%98%E8%A7%A3%E3%80%90TreeMap%E3%80%91"><span class="nav-number">1.3.</span> <span class="nav-text">题解【TreeMap】</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%8D%E6%9D%82%E5%BA%A6%E5%88%86%E6%9E%90"><span class="nav-number">1.4.</span> <span class="nav-text">复杂度分析</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8II"><span class="nav-number">2.</span> <span class="nav-text">我的日程安排表II</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0-1"><span class="nav-number">2.1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B-1"><span class="nav-number">2.2.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%98%E8%A7%A3%E3%80%90%E5%B7%AE%E5%88%86%E6%95%B0%E7%BB%84%E6%80%9D%E6%83%B3%E3%80%81TreeMap%E3%80%91"><span class="nav-number">2.3.</span> <span class="nav-text">题解【差分数组思想、TreeMap】</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8III"><span class="nav-number">3.</span> <span class="nav-text">我的日程安排表III</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE%E6%8F%8F%E8%BF%B0-2"><span class="nav-number">3.1.</span> <span class="nav-text">题目描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A4%BA%E4%BE%8B-2"><span class="nav-number">3.2.</span> <span class="nav-text">示例</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A2%98%E8%A7%A3%E3%80%90%E7%BA%BF%E6%AE%B5%E6%A0%91%E3%80%91"><span class="nav-number">3.3.</span> <span class="nav-text">题解【线段树】</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%B8%80%EF%BC%9A%E5%B7%AE%E5%88%86%E6%95%B0%E7%BB%84"><span class="nav-number">3.4.</span> <span class="nav-text">方法一：差分数组</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%96%B9%E6%B3%95%E4%BA%8C%EF%BC%9A%E7%BA%BF%E6%AE%B5%E6%A0%91"><span class="nav-number">3.5.</span> <span class="nav-text">方法二：线段树</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Ysfun"
+      src="/avatar.png">
+  <p class="site-author-name" itemprop="name">Ysfun</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">16</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/ysfun" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;ysfun" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:s_hyunmin@163.com" title="E-Mail → mailto:s_hyunmin@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/ysfun" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.ysfun.cn/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="Ysfun">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Ysfun's blog">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="刷题分享：LeetCode[729,731,732]我的日程安排表【TreeMap、查分数组、线段树】 | Ysfun's blog">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          刷题分享：LeetCode[729,731,732]我的日程安排表【TreeMap、查分数组、线段树】
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2022-06-06 11:09:01 / 修改时间：23:05:47" itemprop="dateCreated datePublished" datetime="2022-06-06T11:09:01+08:00">2022-06-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/%E7%AE%97%E6%B3%95/" itemprop="url" rel="index"><span itemprop="name">算法</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item">
+        <a href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" rel="tag"><i class="fa fa-tag"></i> 算法题</a>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+    <span class="post-meta-item-icon">
+      <i class="far fa-comment"></i>
+    </span>
+    <span class="post-meta-item-text">Waline：</span>
+  
+    <a title="waline" href="/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/#waline" itemprop="discussionUrl">
+      <span class="post-comments-count waline-comment-count" data-path="/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.1k</span>
+    </span>
+
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><img src="/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/leetcode-1.jpg"></p>
+<p>题目对应<code>LeetCode</code><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/my-calendar-i/">729. 我的日程安排表 I</a> <a target="_blank" rel="noopener" href="https://leetcode.cn/problems/my-calendar-ii/">731. 我的日程安排表 II</a> <a target="_blank" rel="noopener" href="https://leetcode.cn/problems/my-calendar-iii/">732. 我的日程安排表 III</a></p>
+<span id="more"></span>
+
+<h2 id="我的日程安排表I"><a href="#我的日程安排表I" class="headerlink" title="我的日程安排表I"></a>我的日程安排表I</h2><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/my-calendar-i/">729. 我的日程安排表 I</a></p>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p>实现一个 MyCalendar 类来存放你的日程安排。如果要添加的日程安排不会造成 重复预订 ，则可以存储这个新的日程安排。</p>
+<p>当两个日程安排有一些时间上的交叉时（例如两个日程安排都在同一时间内），就会产生 重复预订 。</p>
+<p>日程可以用一对整数 start 和 end 表示，这里的时间是半开区间，即 [start, end), 实数 x 的范围为，  start &lt;&#x3D; x &lt; end 。</p>
+<p>实现 MyCalendar 类：</p>
+<p>MyCalendar() 初始化日历对象。<br>boolean book(int start, int end) 如果可以将日程安排成功添加到日历中而不会导致重复预订，返回 true 。否则，返回 false 并且不要将该日程安排添加到日历中。</p>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">输入：</span><br><span class="line">[&quot;MyCalendar&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;]</span><br><span class="line">[[], [10, 20], [15, 25], [20, 30]]</span><br><span class="line">输出：</span><br><span class="line">[null, true, false, true]</span><br><span class="line"></span><br><span class="line">解释：</span><br><span class="line">MyCalendar myCalendar = new MyCalendar();</span><br><span class="line">myCalendar.book(10, 20); // return True</span><br><span class="line">myCalendar.book(15, 25); // return False ，这个日程安排不能添加到日历中，因为时间 15 已经被另一个日程安排预订了。</span><br><span class="line">myCalendar.book(20, 30); // return True ，这个日程安排可以添加到日历中，因为第一个日程安排预订的每个时间都小于 20 ，且不包含时间 20 。</span><br></pre></td></tr></table></figure>
+
+<h3 id="题解【TreeMap】"><a href="#题解【TreeMap】" class="headerlink" title="题解【TreeMap】"></a>题解【TreeMap】</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendar</span> &#123;</span><br><span class="line">    TreeMap&lt;Integer, Integer&gt; treeMap;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendar</span><span class="params">()</span> &#123;</span><br><span class="line">        treeMap = <span class="keyword">new</span> <span class="title class_">TreeMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        Map.Entry&lt;Integer, Integer&gt; floor = treeMap.floorEntry(start);</span><br><span class="line">        Map.Entry&lt;Integer, Integer&gt; ceiling = treeMap.ceilingEntry(start);</span><br><span class="line">        <span class="keyword">if</span> (floor != <span class="literal">null</span> &amp;&amp; floor.getValue() &gt; start) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (ceiling != <span class="literal">null</span> &amp;&amp; ceiling.getKey() &lt; end) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        treeMap.put(start, end);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="复杂度分析"><a href="#复杂度分析" class="headerlink" title="复杂度分析"></a>复杂度分析</h3><p>在book()方法中，<code>TreeMap</code>是排序二叉树，<code>treeMap.floorEntry()</code>和<code>treeMap.ceilingEntry()</code>都是通过二分查找实现的，时间复杂度都是<code>o (log n)</code>.</p>
+<h2 id="我的日程安排表II"><a href="#我的日程安排表II" class="headerlink" title="我的日程安排表II"></a>我的日程安排表II</h2><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/my-calendar-ii/">731. 我的日程安排表 II</a></p>
+<h3 id="题目描述-1"><a href="#题目描述-1" class="headerlink" title="题目描述"></a>题目描述</h3><p>实现一个 MyCalendar 类来存放你的日程安排。如果要添加的时间内不会导致三重预订时，则可以存储这个新的日程安排。</p>
+<p>MyCalendar 有一个 book(int start, int end)方法。它意味着在 start 到 end 时间内增加一个日程安排，注意，这里的时间是半开区间，即 [start, end), 实数 x 的范围为，  start &lt;&#x3D; x &lt; end。</p>
+<p>当三个日程安排有一些时间上的交叉时（例如三个日程安排都在同一时间内），就会产生三重预订。</p>
+<p>每次调用 MyCalendar.book方法时，如果可以将日程安排成功添加到日历中而不会导致三重预订，返回 true。否则，返回 false 并且不要将该日程安排添加到日历中。</p>
+<p>请按照以下步骤调用MyCalendar 类: MyCalendar cal &#x3D; new MyCalendar(); MyCalendar.book(start, end)</p>
+<h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h3><figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">MyCalendar();</span><br><span class="line">MyCalendar.book(10, 20); // returns true</span><br><span class="line">MyCalendar.book(50, 60); // returns true</span><br><span class="line">MyCalendar.book(10, 40); // returns true</span><br><span class="line">MyCalendar.book(5, 15); // returns false</span><br><span class="line">MyCalendar.book(5, 10); // returns true</span><br><span class="line">MyCalendar.book(25, 55); // returns true</span><br><span class="line">解释： </span><br><span class="line">前两个日程安排可以添加至日历中。 第三个日程安排会导致双重预订，但可以添加至日历中。</span><br><span class="line">第四个日程安排活动（5,15）不能添加至日历中，因为它会导致三重预订。</span><br><span class="line">第五个日程安排（5,10）可以添加至日历中，因为它未使用已经双重预订的时间10。</span><br><span class="line">第六个日程安排（25,55）可以添加至日历中，因为时间 [25,40] 将和第三个日程安排双重预订；</span><br><span class="line">时间 [40,50] 将单独预订，时间 [50,55）将和第二个日程安排双重预订</span><br></pre></td></tr></table></figure>
+
+<h3 id="题解【差分数组思想、TreeMap】"><a href="#题解【差分数组思想、TreeMap】" class="headerlink" title="题解【差分数组思想、TreeMap】"></a>题解【差分数组思想、TreeMap】<a id="t2"></a></h3><p>边界计数，边界开始时计数加一<code>delta[start]++</code>，边界计数时计数减一<code>delta[end]--</code>，按照排序从小到达统计<code>count</code>之和，一旦<code>count==3</code>则表明当前区间有三次重叠。考虑到需要排序结构，delta使用TreeMap。</p>
+<p><strong>图解：</strong></p>
+<p><img src="/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/image-20220606120852444.png"></p>
+<p>注意：当<code>count==3</code>时应撤销添加日程</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendarTwo</span> &#123;</span><br><span class="line">    TreeMap&lt;Integer, Integer&gt; treeMap;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendarTwo</span><span class="params">()</span> &#123;</span><br><span class="line">        treeMap = <span class="keyword">new</span> <span class="title class_">TreeMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        treeMap.put(start, treeMap.getOrDefault(start, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">        treeMap.put(end, treeMap.getOrDefault(end, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">        <span class="type">int</span> <span class="variable">sum</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> count : treeMap.values()) &#123;</span><br><span class="line">            sum += count;</span><br><span class="line">            <span class="keyword">if</span> (sum &gt;= <span class="number">3</span>) &#123;</span><br><span class="line">                <span class="comment">// 出现三重预定，取消将该日程添加到日历</span></span><br><span class="line">                treeMap.put(start, treeMap.getOrDefault(start, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">                treeMap.put(end, treeMap.getOrDefault(end, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="我的日程安排表III"><a href="#我的日程安排表III" class="headerlink" title="我的日程安排表III"></a>我的日程安排表III</h2><p><a target="_blank" rel="noopener" href="https://leetcode.cn/problems/my-calendar-iii/">732. 我的日程安排表 III</a></p>
+<h3 id="题目描述-2"><a href="#题目描述-2" class="headerlink" title="题目描述"></a>题目描述</h3><p>当 k 个日程安排有一些时间上的交叉时（例如 k 个日程安排都在同一时间内），就会产生 k 次预订。</p>
+<p>给你一些日程安排 [start, end) ，请你在每个日程安排添加后，返回一个整数 k ，表示所有先前日程安排会产生的最大 k 次预订。</p>
+<p>实现一个 MyCalendarThree 类来存放你的日程安排，你可以一直添加新的日程安排。</p>
+<p>MyCalendarThree() 初始化对象。<br>int book(int start, int end) 返回一个整数 k ，表示日历中存在的 k 次预订的最大值。</p>
+<h3 id="示例-2"><a href="#示例-2" class="headerlink" title="示例"></a>示例</h3><figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">输入：</span><br><span class="line">[&quot;MyCalendarThree&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;]</span><br><span class="line">[[], [10, 20], [50, 60], [10, 40], [5, 15], [5, 10], [25, 55]]</span><br><span class="line">输出：</span><br><span class="line">[null, 1, 1, 2, 3, 3, 3]</span><br><span class="line"></span><br><span class="line">解释：</span><br><span class="line">MyCalendarThree myCalendarThree = new MyCalendarThree();</span><br><span class="line">myCalendarThree.book(10, 20); // 返回 1 ，第一个日程安排可以预订并且不存在相交，所以最大 k 次预订是 1 次预订。</span><br><span class="line">myCalendarThree.book(50, 60); // 返回 1 ，第二个日程安排可以预订并且不存在相交，所以最大 k 次预订是 1 次预订。</span><br><span class="line">myCalendarThree.book(10, 40); // 返回 2 ，第三个日程安排 [10, 40) 与第一个日程安排相交，所以最大 k 次预订是 2 次预订。</span><br><span class="line">myCalendarThree.book(5, 15); // 返回 3 ，剩下的日程安排的最大 k 次预订是 3 次预订。</span><br><span class="line">myCalendarThree.book(5, 10); // 返回 3</span><br><span class="line">myCalendarThree.book(25, 55); // 返回 3</span><br></pre></td></tr></table></figure>
+
+<h3 id="题解【线段树】"><a href="#题解【线段树】" class="headerlink" title="题解【线段树】"></a>题解【线段树】</h3><h3 id="方法一：差分数组"><a href="#方法一：差分数组" class="headerlink" title="方法一：差分数组"></a>方法一：差分数组</h3><p>采用差分数组解法，同<a href="#t2">我的日程安排表II</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendarThree</span> &#123;</span><br><span class="line">    TreeMap&lt;Integer, Integer&gt; delta;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendarThree</span><span class="params">()</span> &#123;</span><br><span class="line">        delta = <span class="keyword">new</span> <span class="title class_">TreeMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        delta.put(start, delta.getOrDefault(start, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">        delta.put(end, delta.getOrDefault(end, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">        <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>, maxCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> val : delta.values()) &#123;</span><br><span class="line">            count += val;</span><br><span class="line">            maxCount = Math.max(count, maxCount);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> maxCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="方法二：线段树"><a href="#方法二：线段树" class="headerlink" title="方法二：线段树"></a>方法二：线段树</h3><p>针对本题的线段树初级教程可以参考：<a target="_blank" rel="noopener" href="https://leetcode.cn/problems/my-calendar-iii/solution/xian-duan-shu-by-xiaohu9527-rfzj/">线段树 – 新手篇</a></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendarThree</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;Integer, Integer&gt; tree;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;Integer, Integer&gt; lazy;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendarThree</span><span class="params">()</span> &#123;</span><br><span class="line">        tree = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;Integer, Integer&gt;();</span><br><span class="line">        lazy = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;Integer, Integer&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        update(start, end - <span class="number">1</span>, <span class="number">0</span>, <span class="number">1000000000</span>, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">return</span> tree.getOrDefault(<span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">update</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (r &lt; start || end &lt; l) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125; </span><br><span class="line">        <span class="keyword">if</span> (start &lt;= l &amp;&amp; r &lt;= end) &#123;</span><br><span class="line">            tree.put(idx, tree.getOrDefault(idx, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            lazy.put(idx, lazy.getOrDefault(idx, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">mid</span> <span class="operator">=</span> (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            update(start, end, l, mid, <span class="number">2</span> * idx);</span><br><span class="line">            update(start, end, mid + <span class="number">1</span>, r, <span class="number">2</span> * idx + <span class="number">1</span>);</span><br><span class="line">            tree.put(idx, lazy.getOrDefault(idx, <span class="number">0</span>) + Math.max(tree.getOrDefault(<span class="number">2</span> * idx, <span class="number">0</span>), tree.getOrDefault(<span class="number">2</span> * idx + <span class="number">1</span>, <span class="number">0</span>)));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>后续会出一篇关于线段树的详细教程！！！</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+      
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+        <div class="popular-posts-date">2022-05-24</div>
+      <div class="popular-posts-title"><a href="/2022/05/24/刷题分享：LeetCode139-单词拆分【字典树，动态规划】/" rel="bookmark">刷题分享：LeetCode139.单词拆分【字典树，动态规划】</a></div>
+    </li>
+  </ul>
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Ysfun
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.ysfun.cn/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/" title="刷题分享：LeetCode[729,731,732]我的日程安排表【TreeMap、查分数组、线段树】">https://www.ysfun.cn/2022/06/06/刷题分享：TreeMap应用示例-LeetCode-我的日程安排表/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E7%AE%97%E6%B3%95%E9%A2%98/" rel="tag"><i class="fa fa-tag"></i> 算法题</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/" rel="prev" title="Hexo博客Next主题安装配置教程">
+                  <i class="fa fa-chevron-left"></i> Hexo博客Next主题安装配置教程
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="waline"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">赣ICP备2022004917号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ysfun</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">60k</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-cn","enable":true,"serverURL":"waline-server-repo-six.vercel.app","cssUrl":"https://unpkg.com/@waline/client@v2/dist/waline.css","commentCount":true,"pageview":false,"placeholder":"欢迎评论，为方便联系可设置姓名和邮箱","avatar":"mm","meta":["nick","mail"],"pageSize":10,"visitor":false,"comment_count":true,"requiredFields":[],"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","el":"#waline","comment":true,"path":"/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/"}</script>
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css">
+<script>
+document.addEventListener('page:loaded', () => {
+  NexT.utils.loadComments(CONFIG.waline.el).then(() =>
+    NexT.utils.getScript(CONFIG.waline.libUrl, { condition: window.Waline })
+  ).then(() => 
+    Waline.init(Object.assign({}, CONFIG.waline,{ el: document.querySelector(CONFIG.waline.el) }))
+  );
+});
+</script>
+
+</body>
+</html>

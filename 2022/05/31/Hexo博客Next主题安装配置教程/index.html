@@ -45,7 +45,7 @@
 <meta property="og:image" content="https://www.ysfun.cn/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220601014550281.png">
 <meta property="og:image" content="https://www.ysfun.cn/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220601014711402.png">
 <meta property="article:published_time" content="2022-05-31T05:36:02.000Z">
-<meta property="article:modified_time" content="2022-06-06T16:02:13.202Z">
+<meta property="article:modified_time" content="2022-06-06T17:17:46.975Z">
 <meta property="article:author" content="Ysfun">
 <meta property="article:tag" content="Hexo">
 <meta name="twitter:card" content="summary">
@@ -272,7 +272,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-06-07 00:02:13" itemprop="dateModified" datetime="2022-06-07T00:02:13+08:00">2022-06-07</time>
+      <time title="修改时间：2022-06-07 01:17:46" itemprop="dateModified" datetime="2022-06-07T01:17:46+08:00">2022-06-07</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -303,7 +303,7 @@
     <span class="post-meta-item-icon">
       <i class="far fa-comment"></i>
     </span>
-    <span class="post-meta-item-text">Waline：</span>
+    <span class="post-meta-item-text">评论数：</span>
   
     <a title="waline" href="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/#waline" itemprop="discussionUrl">
       <span class="post-comments-count waline-comment-count" data-path="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/" itemprop="commentCount"></span>
@@ -316,7 +316,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>7.7k</span>
+      <span>7.9k</span>
     </span>
 
 </div>
@@ -522,10 +522,22 @@
 <h3 id="15-首页和归档页单页显示数量"><a href="#15-首页和归档页单页显示数量" class="headerlink" title="15. 首页和归档页单页显示数量"></a>15. 首页和归档页单页显示数量</h3><p><code>_config.yml</code></p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Home page setting</span></span><br><span class="line"><span class="comment"># path: Root path for your blogs index page. (default = &#x27;&#x27;)</span></span><br><span class="line"><span class="comment"># per_page: Posts displayed per page. (0 = disable pagination)</span></span><br><span class="line"><span class="comment"># order_by: Posts order. (Order by date descending by default)</span></span><br><span class="line"><span class="attr">index_generator:</span></span><br><span class="line">  <span class="attr">path:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line">  <span class="attr">per_page:</span> <span class="number">5</span></span><br><span class="line">  <span class="attr">order_by:</span> <span class="string">-date</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 归档页面</span></span><br><span class="line"><span class="attr">archive_generator:</span></span><br><span class="line">  <span class="attr">per_page:</span> <span class="number">50</span></span><br><span class="line">  <span class="attr">yearly:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">monthly:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="16-添加Waline评论系统"><a href="#16-添加Waline评论系统" class="headerlink" title="16. 添加Waline评论系统"></a>16. 添加<code>Waline</code>评论系统</h3><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/jiunian_2761/article/details/122621667?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~aggregatepage~first_rank_ecpm_v1~rank_v31_ecpm-2-122621667-null-null.pc_agg_new_rank&utm_term=next%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0%E8%AF%84%E8%AE%BA%E7%B3%BB%E7%BB%9F&spm=1000.2123.3001.4430">配置教程</a></p>
+<h3 id="16-添加Waline评论系统"><a href="#16-添加Waline评论系统" class="headerlink" title="16. 添加Waline评论系统"></a>16. 添加<code>Waline</code>评论系统</h3><p><a target="_blank" rel="noopener" href="https://blog.csdn.net/jiunian_2761/article/details/122621667?utm_medium=distribute.pc_aggpage_search_result.none-task-blog-2~aggregatepage~first_rank_ecpm_v1~rank_v31_ecpm-2-122621667-null-null.pc_agg_new_rank&utm_term=next%E4%B8%BB%E9%A2%98%E6%B7%BB%E5%8A%A0%E8%AF%84%E8%AE%BA%E7%B3%BB%E7%BB%9F&spm=1000.2123.3001.4430">配置教程</a>  <a target="_blank" rel="noopener" href="https://waline.js.org/guide/get-started.html">Waline快速上手</a></p>
 <p><a target="_blank" rel="noopener" href="https://console.leancloud.app/apps/h0soSuJNhU2GGHG4pTu7Le4d-MdYXbMMI/">LearnCloud地址</a></p>
 <p><a target="_blank" rel="noopener" href="https://waline.js.org/">Waline地址</a></p>
 <p><a target="_blank" rel="noopener" href="https://vercel.com/">Vercel地址</a></p>
+<p><strong>评论管理 (管理端)</strong></p>
+<ol>
+<li>部署完成后，请访问 <code>&lt;serverURL&gt;/ui/register</code> 进行注册。首个注册的人会被设定成管理员。</li>
+<li>管理员登陆后，即可看到评论管理界面。在这里可以修改、标记或删除评论。</li>
+<li>用户也可通过评论框注册账号，登陆后会跳转到自己的档案页。</li>
+</ol>
+<p><code>Hexo-waline-next</code>插件使用<a target="_blank" rel="noopener" href="https://github.com/rqh656418510">rqh656418510</a>&#x2F;<strong><a target="_blank" rel="noopener" href="https://github.com/rqh656418510/hexo-waline-next">hexo-waline-next</a></strong></p>
+<p>安装插件：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-waline-next --save</span><br></pre></td></tr></table></figure>
+
+
+
 
     </div>
 
@@ -662,10 +674,19 @@
 
 
 
-<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-cn","enable":true,"serverURL":"waline-server-repo-six.vercel.app","cssUrl":"https://unpkg.com/@waline/client@v2/dist/waline.css","commentCount":true,"pageview":false,"placeholder":"欢迎评论，为方便联系可设置姓名和邮箱","avatar":"mm","meta":["nick","mail"],"pageSize":10,"visitor":false,"comment_count":true,"requiredFields":[],"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","el":"#waline","comment":true,"path":"/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/"}</script>
+
+<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-cn","enable":true,"serverURL":"waline-server-repo-six.vercel.app","cssUrl":"https://unpkg.com/@waline/client@v2/dist/waline.css","commentCount":true,"pageview":false,"copyright":true,"allowUploadImage":true,"locale":{"placeholder":"欢迎评论呀"},"avatar":"mm","meta":["nick","mail"],"pageSize":10,"requiredMeta":["nick"],"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","el":"#waline","comment":true,"path":"/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/","dark":"auto"}</script>
 <link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css">
 <script>
 document.addEventListener('page:loaded', () => {
+  if (!CONFIG.waline.allowUploadImage) {
+    CONFIG.waline.imageUploader = false;
+  }
+  else if (CONFIG.waline.qiniuDomain && CONFIG.waline.qiniuTokenUrl) {
+    CONFIG.waline.imageUploader = qiniuUploadImage;
+  } else {
+   CONFIG.waline.imageUploader = true;
+  }
   NexT.utils.loadComments(CONFIG.waline.el).then(() =>
     NexT.utils.getScript(CONFIG.waline.libUrl, { condition: window.Waline })
   ).then(() => 

@@ -119,82 +119,33 @@
       </tags>
   </entry>
   <entry>
-    <title>MyBatis中SqlSession创建过程详解</title>
-    <url>/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/</url>
-    <content><![CDATA[<h2 id="1、SqlSession接口介绍"><a href="#1、SqlSession接口介绍" class="headerlink" title="1、SqlSession接口介绍"></a>1、SqlSession接口介绍</h2><p>SqlSession是MyBatis的主要Java接口，通过这个接口可以执行命令、获取mappers、进行事务管理。</p>
-<p>接口的主要方法有：</p>
-<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505134423383.png">
-
-<p><strong>getMapper(Class<T>): T 规定了获取mapper的方法。</T></strong></p>
-<p>实现类：</p>
- <img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505134944251.png">
-
+    <title>mac上使用SublimeText</title>
+    <url>/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/</url>
+    <content><![CDATA[<blockquote>
+<p>官网地址：<a href="https://www.sublimetext.com/">Sublime Text</a></p>
+</blockquote>
+<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p><a href="https://www.sublimetext.com/download">官方下载地址</a></p>
+<p><a href="https://www.sublimetext.com/docs/index.html">Sublime Text文档</a></p>
 <span id="more"></span>
 
-<h2 id="2、SqlSessionFactory"><a href="#2、SqlSessionFactory" class="headerlink" title="2、SqlSessionFactory"></a>2、<code>SqlSessionFactory</code></h2><p>由<code>SqlSessionFactory</code>接口创建SqlSession，<code>SqlSessionFactory</code> 有一个唯一的必要属性：用于 JDBC 的 <code>DataSource</code>。这可以是任意的 <code>DataSource</code> 对象，它的配置方法和其它 Spring 数据库连接是一样的。</p>
-<p>在基础的 MyBatis 用法中，是通过 <code>SqlSessionFactoryBuilder</code> 来创建 <code>SqlSessionFactory</code> 的。而在 MyBatis-Spring 中，则使用 <code>SqlSessionFactoryBean</code> 来创建。</p>
-<p>示例代码如下：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyBatisConfig</span> &#123;</span><br><span class="line">  <span class="meta">@Bean</span></span><br><span class="line">  <span class="keyword">public</span> SqlSessionFactory <span class="title function_">sqlSessionFactory</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">SqlSessionFactoryBean</span> <span class="variable">factoryBean</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SqlSessionFactoryBean</span>();</span><br><span class="line">    factoryBean.setDataSource(dataSource());</span><br><span class="line">    <span class="keyword">return</span> factoryBean.getObject();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="使用技巧"><a href="#使用技巧" class="headerlink" title="使用技巧"></a>使用技巧</h2><h3 id="在Sublime-Text上运行Java程序"><a href="#在Sublime-Text上运行Java程序" class="headerlink" title="在Sublime Text上运行Java程序"></a>在Sublime Text上运行Java程序</h3><ol>
+<li>编译</li>
+</ol>
+<p><code>command+B</code></p>
+<ol start="2">
+<li>安装JDK环境</li>
+<li>打开 Sublime Text -&gt; Tools -&gt;Build System -&gt; New Build System…</li>
+<li>复制下面代码，并保存文件为java.sublime-build到默认的User文件夹即可</li>
+</ol>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;shell_cmd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;javac \&quot;$file\&quot; &amp;&amp; java \&quot;$file_base_name\&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;file_regex&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^(...*?):([0-9]*):?([0-9]*)&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;selector&quot;</span><span class="punctuation">:</span> <span class="string">&quot;source.java&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
 
-<p><code>SqlSessionFactoryBean</code>实现了Spring的<code>FactoryBean</code>接口。这意味着由Spring最终创建的bean并不是<code>SqlSessionFactoryBean</code>本身，而是工厂类(<code>SqlSessionFactoryBean</code>)的getObject()方法的返回结果。</p>
- <img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505142305469.png">
-
-<h2 id="3、追踪mapper的创建过程"><a href="#3、追踪mapper的创建过程" class="headerlink" title="3、追踪mapper的创建过程"></a>3、追踪mapper的创建过程</h2><p>通过MapperFactoryBean创建mapper的bean对象</p>
-<p>在容器注入MapperSessionFactoryBean</p>
-<p>xml方式：</p>
-<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;userMapper&quot;</span> <span class="attr">class</span>=<span class="string">&quot;org.mybatis.spring.mapper.MapperFactoryBean&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;mapperInterface&quot;</span> <span class="attr">value</span>=<span class="string">&quot;org.mybatis.spring.sample.mapper.UserMapper&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;sqlSessionFactory&quot;</span> <span class="attr">ref</span>=<span class="string">&quot;sqlSessionFactory&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
-
-<p>注解方式：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> MapperFactoryBean <span class="title function_">mapperFactoryBean</span><span class="params">()</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">    <span class="type">MapperFactoryBean</span> <span class="variable">mapperFactoryBean</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MapperFactoryBean</span>(PersonMapper.class);</span><br><span class="line">    <span class="type">SqlSessionFactory</span> <span class="variable">sqlSessionFactory</span> <span class="operator">=</span> SqlSessionFactory();</span><br><span class="line">    mapperFactoryBean.setSqlSessionFactory(sqlSessionFactory);</span><br><span class="line">    <span class="keyword">return</span> mapperFactoryBean;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>获取mapper</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> UserMapper userMapper&#123;</span><br><span class="line">    <span class="keyword">return</span> (UserMapper)mapperFactoryBean.getObect();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="源码解析"><a href="#源码解析" class="headerlink" title="源码解析"></a>源码解析</h3><p><strong>MapperFactoryBean</strong>类：</p>
-<p>继承自<code>SqlSessionDaoSupport</code></p>
-<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505144810017.png">
-
-<p>通过构造器将<code>UserMapper</code>接口的类型赋给mapperInterface属性</p>
-<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505144207877.png">
-
-<p>getObject()方法得到<code>UserMapper</code>接口的代理对象</p>
-<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505143732511.png">
-
-<p>getSqlSession()方法是父类<code>SqlSessionDaoSupport</code>的方法</p>
-<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505145007415.png">
-
-<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505145140277.png">
-
-<p>由上可知，<code>MapperFactoryBean.getObject()</code>方法的返回值等同于</p>
-<p><code>new SqlSessionTemplate(sqlSessionFactory).getMapper(mapperInterface)</code>的返回值</p>
-<p>注意：SqlSessionTemplate是SqlSession的实现类</p>
-<p>SqlSessionTemplate.getMapper(type)方法</p>
-<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505153356044.png">
-
-<p>Configuration.getMapper(type, sqlSession)方法</p>
-<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505153616988.png">
-
-<p>MapperRegistry.getMapper(type, sqlSession)方法</p>
-<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505153935293.png">
-
-<p>MapperProxyFactory.newInstance(sqlSession)方法，Proxy.newProxyInstance()是JDK动态代理的方法</p>
-<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505154127702.png">
-
-<p>由此可追踪到，mapper是实际上就是通过动态代理创建的代理对象。</p>
-<h2 id="3、mapper执行sql方法"><a href="#3、mapper执行sql方法" class="headerlink" title="3、mapper执行sql方法"></a>3、mapper执行sql方法</h2><p>MapperProxy.execute(sqlSession, args)方法</p>
-<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505155455637.png">
-
-<p>上图中的<code>sqlSession</code>为<code>SqlSessionTemplate</code>，SqlSessionTemplate.insert(statement, parameter)方法：</p>
-<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505155648618.png">
-
-<p>SqlSessionProxy的创建，SqlSessionProxy是SqlSession接口的代理对象：</p>
-<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505160016131.png">
-
-<p>SqlSessionTemplate.SqlSessionInterceptor.invoke()方法中完成事务事务管理<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505160517366.png"></p>
+<ol start="5">
+<li>选择Tools -&gt; Build System -&gt; java</li>
+</ol>
+<img src="/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/image-20211211145804287.png" style="zoom:50%;" align="left">
 ]]></content>
       <tags>
-        <tag>Java</tag>
-        <tag>MyBatis</tag>
+        <tag>教程</tag>
       </tags>
   </entry>
   <entry>
@@ -214,7 +165,7 @@
 
 <blockquote>
 <ol start="2">
-<li>安装<a href="mailto:&#x6d;&#x79;&#x73;&#113;&#108;&#x40;&#53;&#46;&#55;">&#x6d;&#x79;&#x73;&#113;&#108;&#x40;&#53;&#46;&#55;</a></li>
+<li>安装<a href="mailto:&#x6d;&#121;&#115;&#113;&#x6c;&#64;&#x35;&#46;&#x37;">&#x6d;&#121;&#115;&#113;&#x6c;&#64;&#x35;&#46;&#x37;</a></li>
 </ol>
 </blockquote>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew install mysql@5.7</span></span><br><span class="line"></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/manifests/5.7.36</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/blobs/sha256:e23df0f6e8bfc83fe2e982ec60e8</span><br><span class="line">==&gt; Downloading from https://pkg-containers.githubusercontent.com/ghcr1/blobs/sha256:e23df0f6e8bfc83</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Pouring mysql@5.7--5.7.36.arm64_big_sur.bottle.tar.gz</span><br><span class="line">==&gt; /opt/homebrew/Cellar/mysql@5.7/5.7.36/bin/mysqld --initialize-insecure --user=hyunmin --basedir=</span><br><span class="line">==&gt; Caveats</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
@@ -314,73 +265,6 @@
       </tags>
   </entry>
   <entry>
-    <title>mac上安装halo</title>
-    <url>/2021/11/22/mac%E4%B8%8A%E5%AE%89%E8%A3%85halo/</url>
-    <content><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><ul>
-<li>操作系统：macOS</li>
-<li>java环境：openjdk 11</li>
-<li>halo版本：1.4.13</li>
-</ul>
-<h2 id="2-下载并安装"><a href="#2-下载并安装" class="headerlink" title="2. 下载并安装"></a>2. 下载并安装</h2><p>halo首页地址：<a href="https://halo.run/">halo首页</a><br>halo Github地址：<a href="https://github.com/halo-dev/halo">halo github地址</a></p>
-<span id="more"></span>
-
-<h3 id="2-1-安装brew"><a href="#2-1-安装brew" class="headerlink" title="2.1 安装brew"></a>2.1 安装brew</h3><p>Homebrew是 mac的包管理器，仅需执行相应的命令,就能下载安装需要的软件包，可以省掉自己去下载、解压、拖拽(安装)等繁琐的步骤。 比如安装服务器 nginx，打开终端执行以下命令即可安装:</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">brew install nginx</span><br></pre></td></tr></table></figure>
-
-<p>mac终端运行下面命令安装brew，镜像地址下载安装，速度快</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://cdn.jsdelivr.net/gh/ineo6/homebrew-install/install)&quot;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-2-安装wget"><a href="#2-2-安装wget" class="headerlink" title="2.2 安装wget"></a>2.2 安装wget</h3><p>mac终端运行下面命令</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">brew install wget</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-3-下载安装halo"><a href="#2-3-下载安装halo" class="headerlink" title="2.3 下载安装halo"></a>2.3 下载安装halo</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">wget https://dl.halo.run/release/halo-1.4.13.jar</span><br><span class="line">java -jar halo-1.4.13.jar</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-4-访问halo"><a href="#2-4-访问halo" class="headerlink" title="2.4 访问halo"></a>2.4 访问halo</h3><ul>
-<li>注意⚠️：在访问halo期间，运行halo程序的终端不能关闭</li>
-</ul>
-<p>查看halo web页面，浏览器访问：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1:8090</span><br></pre></td></tr></table></figure>
-
-<p>查看halo管理页面，浏览器访问：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1:8090/admin</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-5-说明"><a href="#2-5-说明" class="headerlink" title="2.5 说明"></a>2.5 说明</h3><p>初次运行halo程序，会在 ~ 目录下创建一个.halo的文件夹，里面包含了博客内容以及账号信息，切记不要轻易删除此文件夹，否则账号信息以及博客内容都会被删除。</p>
-]]></content>
-      <tags>
-        <tag>教程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>mac上使用SublimeText</title>
-    <url>/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/</url>
-    <content><![CDATA[<blockquote>
-<p>官网地址：<a href="https://www.sublimetext.com/">Sublime Text</a></p>
-</blockquote>
-<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p><a href="https://www.sublimetext.com/download">官方下载地址</a></p>
-<p><a href="https://www.sublimetext.com/docs/index.html">Sublime Text文档</a></p>
-<span id="more"></span>
-
-<h2 id="使用技巧"><a href="#使用技巧" class="headerlink" title="使用技巧"></a>使用技巧</h2><h3 id="在Sublime-Text上运行Java程序"><a href="#在Sublime-Text上运行Java程序" class="headerlink" title="在Sublime Text上运行Java程序"></a>在Sublime Text上运行Java程序</h3><ol>
-<li>编译</li>
-</ol>
-<p><code>command+B</code></p>
-<ol start="2">
-<li>安装JDK环境</li>
-<li>打开 Sublime Text -&gt; Tools -&gt;Build System -&gt; New Build System…</li>
-<li>复制下面代码，并保存文件为java.sublime-build到默认的User文件夹即可</li>
-</ol>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;shell_cmd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;javac \&quot;$file\&quot; &amp;&amp; java \&quot;$file_base_name\&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;file_regex&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^(...*?):([0-9]*):?([0-9]*)&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;selector&quot;</span><span class="punctuation">:</span> <span class="string">&quot;source.java&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>选择Tools -&gt; Build System -&gt; java</li>
-</ol>
-<img src="/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/image-20211211145804287.png" style="zoom:50%;" align="left">
-]]></content>
-      <tags>
-        <tag>教程</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>springBoot2中-Configuration注解新增的proxyBeanMehtods属性详解</title>
     <url>/2021/11/22/springBoot2%E4%B8%AD-Configuration%E6%B3%A8%E8%A7%A3%E6%96%B0%E5%A2%9E%E7%9A%84proxyBeanMehtods%E5%B1%9E%E6%80%A7%E8%AF%A6%E8%A7%A3/</url>
     <content><![CDATA[<h2 id="Configuration-proxyBeanMethods-x3D-true-x2F-false"><a href="#Configuration-proxyBeanMethods-x3D-true-x2F-false" class="headerlink" title="@Configuration(proxyBeanMethods &#x3D; true&#x2F;false)"></a>@Configuration(proxyBeanMethods &#x3D; true&#x2F;false)</h2><h3 id="1、Full模式（proxyBeanMethods-x3D-true）"><a href="#1、Full模式（proxyBeanMethods-x3D-true）" class="headerlink" title="1、Full模式（proxyBeanMethods&#x3D;true）"></a>1、Full模式（proxyBeanMethods&#x3D;true）</h3><p>proxyBeanMethods&#x3D;true 为Full模式（默认为true），此时在spring IOC容器中的<strong>此配置类是一个CGLIB代理类</strong>，并且调用此配置类的@Bean方法产生的bean是单例的，即<strong>每次调用标有@Bean注解方法都会检查IOC容器中是否有该bean组件</strong>，如果没有则调用方法创建，否则就直接从IOC容器中获取。</p>
@@ -423,6 +307,176 @@
       <tags>
         <tag>Java</tag>
         <tag>Spring</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mac上安装halo</title>
+    <url>/2021/11/22/mac%E4%B8%8A%E5%AE%89%E8%A3%85halo/</url>
+    <content><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><ul>
+<li>操作系统：macOS</li>
+<li>java环境：openjdk 11</li>
+<li>halo版本：1.4.13</li>
+</ul>
+<h2 id="2-下载并安装"><a href="#2-下载并安装" class="headerlink" title="2. 下载并安装"></a>2. 下载并安装</h2><p>halo首页地址：<a href="https://halo.run/">halo首页</a><br>halo Github地址：<a href="https://github.com/halo-dev/halo">halo github地址</a></p>
+<span id="more"></span>
+
+<h3 id="2-1-安装brew"><a href="#2-1-安装brew" class="headerlink" title="2.1 安装brew"></a>2.1 安装brew</h3><p>Homebrew是 mac的包管理器，仅需执行相应的命令,就能下载安装需要的软件包，可以省掉自己去下载、解压、拖拽(安装)等繁琐的步骤。 比如安装服务器 nginx，打开终端执行以下命令即可安装:</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">brew install nginx</span><br></pre></td></tr></table></figure>
+
+<p>mac终端运行下面命令安装brew，镜像地址下载安装，速度快</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://cdn.jsdelivr.net/gh/ineo6/homebrew-install/install)&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-安装wget"><a href="#2-2-安装wget" class="headerlink" title="2.2 安装wget"></a>2.2 安装wget</h3><p>mac终端运行下面命令</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">brew install wget</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-下载安装halo"><a href="#2-3-下载安装halo" class="headerlink" title="2.3 下载安装halo"></a>2.3 下载安装halo</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">wget https://dl.halo.run/release/halo-1.4.13.jar</span><br><span class="line">java -jar halo-1.4.13.jar</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-访问halo"><a href="#2-4-访问halo" class="headerlink" title="2.4 访问halo"></a>2.4 访问halo</h3><ul>
+<li>注意⚠️：在访问halo期间，运行halo程序的终端不能关闭</li>
+</ul>
+<p>查看halo web页面，浏览器访问：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1:8090</span><br></pre></td></tr></table></figure>
+
+<p>查看halo管理页面，浏览器访问：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1:8090/admin</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-5-说明"><a href="#2-5-说明" class="headerlink" title="2.5 说明"></a>2.5 说明</h3><p>初次运行halo程序，会在 ~ 目录下创建一个.halo的文件夹，里面包含了博客内容以及账号信息，切记不要轻易删除此文件夹，否则账号信息以及博客内容都会被删除。</p>
+]]></content>
+      <tags>
+        <tag>教程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MyBatis中SqlSession创建过程详解</title>
+    <url>/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/</url>
+    <content><![CDATA[<h2 id="1、SqlSession接口介绍"><a href="#1、SqlSession接口介绍" class="headerlink" title="1、SqlSession接口介绍"></a>1、SqlSession接口介绍</h2><p>SqlSession是MyBatis的主要Java接口，通过这个接口可以执行命令、获取mappers、进行事务管理。</p>
+<p>接口的主要方法有：</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505134423383.png">
+
+<p><strong>getMapper(Class<T>): T 规定了获取mapper的方法。</T></strong></p>
+<p>实现类：</p>
+ <img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505134944251.png">
+
+<span id="more"></span>
+
+<h2 id="2、SqlSessionFactory"><a href="#2、SqlSessionFactory" class="headerlink" title="2、SqlSessionFactory"></a>2、<code>SqlSessionFactory</code></h2><p>由<code>SqlSessionFactory</code>接口创建SqlSession，<code>SqlSessionFactory</code> 有一个唯一的必要属性：用于 JDBC 的 <code>DataSource</code>。这可以是任意的 <code>DataSource</code> 对象，它的配置方法和其它 Spring 数据库连接是一样的。</p>
+<p>在基础的 MyBatis 用法中，是通过 <code>SqlSessionFactoryBuilder</code> 来创建 <code>SqlSessionFactory</code> 的。而在 MyBatis-Spring 中，则使用 <code>SqlSessionFactoryBean</code> 来创建。</p>
+<p>示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Configuration</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyBatisConfig</span> &#123;</span><br><span class="line">  <span class="meta">@Bean</span></span><br><span class="line">  <span class="keyword">public</span> SqlSessionFactory <span class="title function_">sqlSessionFactory</span><span class="params">()</span> &#123;</span><br><span class="line">    <span class="type">SqlSessionFactoryBean</span> <span class="variable">factoryBean</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">SqlSessionFactoryBean</span>();</span><br><span class="line">    factoryBean.setDataSource(dataSource());</span><br><span class="line">    <span class="keyword">return</span> factoryBean.getObject();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>SqlSessionFactoryBean</code>实现了Spring的<code>FactoryBean</code>接口。这意味着由Spring最终创建的bean并不是<code>SqlSessionFactoryBean</code>本身，而是工厂类(<code>SqlSessionFactoryBean</code>)的getObject()方法的返回结果。</p>
+ <img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505142305469.png">
+
+<h2 id="3、追踪mapper的创建过程"><a href="#3、追踪mapper的创建过程" class="headerlink" title="3、追踪mapper的创建过程"></a>3、追踪mapper的创建过程</h2><p>通过MapperFactoryBean创建mapper的bean对象</p>
+<p>在容器注入MapperSessionFactoryBean</p>
+<p>xml方式：</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">bean</span> <span class="attr">id</span>=<span class="string">&quot;userMapper&quot;</span> <span class="attr">class</span>=<span class="string">&quot;org.mybatis.spring.mapper.MapperFactoryBean&quot;</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;mapperInterface&quot;</span> <span class="attr">value</span>=<span class="string">&quot;org.mybatis.spring.sample.mapper.UserMapper&quot;</span> /&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span> <span class="attr">name</span>=<span class="string">&quot;sqlSessionFactory&quot;</span> <span class="attr">ref</span>=<span class="string">&quot;sqlSessionFactory&quot;</span> /&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">bean</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>注解方式：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> MapperFactoryBean <span class="title function_">mapperFactoryBean</span><span class="params">()</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">    <span class="type">MapperFactoryBean</span> <span class="variable">mapperFactoryBean</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MapperFactoryBean</span>(PersonMapper.class);</span><br><span class="line">    <span class="type">SqlSessionFactory</span> <span class="variable">sqlSessionFactory</span> <span class="operator">=</span> SqlSessionFactory();</span><br><span class="line">    mapperFactoryBean.setSqlSessionFactory(sqlSessionFactory);</span><br><span class="line">    <span class="keyword">return</span> mapperFactoryBean;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>获取mapper</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="meta">@Bean</span></span><br><span class="line"><span class="keyword">public</span> UserMapper userMapper&#123;</span><br><span class="line">    <span class="keyword">return</span> (UserMapper)mapperFactoryBean.getObect();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="源码解析"><a href="#源码解析" class="headerlink" title="源码解析"></a>源码解析</h3><p><strong>MapperFactoryBean</strong>类：</p>
+<p>继承自<code>SqlSessionDaoSupport</code></p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505144810017.png">
+
+<p>通过构造器将<code>UserMapper</code>接口的类型赋给mapperInterface属性</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505144207877.png">
+
+<p>getObject()方法得到<code>UserMapper</code>接口的代理对象</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505143732511.png">
+
+<p>getSqlSession()方法是父类<code>SqlSessionDaoSupport</code>的方法</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505145007415.png">
+
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505145140277.png">
+
+<p>由上可知，<code>MapperFactoryBean.getObject()</code>方法的返回值等同于</p>
+<p><code>new SqlSessionTemplate(sqlSessionFactory).getMapper(mapperInterface)</code>的返回值</p>
+<p>注意：SqlSessionTemplate是SqlSession的实现类</p>
+<p>SqlSessionTemplate.getMapper(type)方法</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505153356044.png">
+
+<p>Configuration.getMapper(type, sqlSession)方法</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505153616988.png">
+
+<p>MapperRegistry.getMapper(type, sqlSession)方法</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505153935293.png">
+
+<p>MapperProxyFactory.newInstance(sqlSession)方法，Proxy.newProxyInstance()是JDK动态代理的方法</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505154127702.png">
+
+<p>由此可追踪到，mapper是实际上就是通过动态代理创建的代理对象。</p>
+<h2 id="3、mapper执行sql方法"><a href="#3、mapper执行sql方法" class="headerlink" title="3、mapper执行sql方法"></a>3、mapper执行sql方法</h2><p>MapperProxy.execute(sqlSession, args)方法</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505155455637.png">
+
+<p>上图中的<code>sqlSession</code>为<code>SqlSessionTemplate</code>，SqlSessionTemplate.insert(statement, parameter)方法：</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505155648618.png">
+
+<p>SqlSessionProxy的创建，SqlSessionProxy是SqlSession接口的代理对象：</p>
+<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505160016131.png">
+
+<p>SqlSessionTemplate.SqlSessionInterceptor.invoke()方法中完成事务事务管理<img src="/2021/11/22/MyBatis%E4%B8%ADSqlSession%E5%88%9B%E5%BB%BA%E8%BF%87%E7%A8%8B%E8%AF%A6%E8%A7%A3/hyunmin/Desktop/MyBatis中SqlSession创建过程详解/image-20210505160517366.png"></p>
+]]></content>
+      <tags>
+        <tag>Java</tag>
+        <tag>MyBatis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>vim常用命令</title>
+    <url>/2021/11/28/vim%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h2 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h2><ol>
+<li>查找命令</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查找命令</span></span><br><span class="line">/xxx</span><br><span class="line">n  # 下一个</span><br><span class="line">N  # 上一个</span><br><span class="line">:set hls  # 高亮查找</span><br><span class="line">:set nohls  # 关闭高亮查找</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>显示行号</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">:set nu		# 显示行号</span><br><span class="line">:set nonu		# 取消显示行号</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<ol start="3">
+<li>跳转命令</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">跳转行尾</span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash"></span></span><br><span class="line"><span class="language-bash"><span class="comment"># 跳转行首</span></span></span><br><span class="line">0</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">光标行尾编辑</span></span><br><span class="line">A</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">光标行首编辑</span></span><br><span class="line">I</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">下一行编辑</span></span><br><span class="line">o</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>高亮显示</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">:syntax on	# 开启高亮</span><br><span class="line">:syntax off		# 关闭高亮</span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>代码块注释</li>
+</ol>
+<blockquote>
+<p>行首添加注释</p>
+</blockquote>
+<p>ctrl+v 进入列编辑模式,向下或向上移动光标,把需要注释的行的开头标记起来,然后按大写的I,再插入注释符,比如”#”,再按Esc,就会全部注释。</p>
+<blockquote>
+<p>行首删除注释符号</p>
+</blockquote>
+<p>先按v,进入visual模式,横向选中列的个数(如单个”#”注释符号),再按Esc,再按ctrl+v 进入列编辑模式,向下或向上移动光标,选中注释部分,然后按d, 就会删除注释符号（#）。</p>
+<p>个人理解就是按v的时候，横向确定代码块宽度（列数），C-v的时候纵向确定了代码块长度（行首）</p>
+<ol start="6">
+<li>缩进</li>
+</ol>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line"># 设置Tab键的宽度为4</span><br><span class="line">:set tabstop=4</span><br><span class="line"># 自动缩进</span><br><span class="line">set autoindent</span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li>复制粘贴</li>
+</ol>
+<h2 id="修改默认设置"><a href="#修改默认设置" class="headerlink" title="修改默认设置"></a>修改默认设置</h2><p>在当前用户<code>home</code>目录下创建一个.<code>vimrc</code>文件</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">&#x27;&#x27; 语法高亮</span><br><span class="line">syntax on</span><br><span class="line">&#x27;&#x27; 显示行号</span><br><span class="line">set nu</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <tags>
+        <tag>教程</tag>
+        <tag>vim</tag>
       </tags>
   </entry>
   <entry>
@@ -485,101 +539,6 @@
       </tags>
   </entry>
   <entry>
-    <title>vim常用命令</title>
-    <url>/2021/11/28/vim%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<h2 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h2><ol>
-<li>查找命令</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查找命令</span></span><br><span class="line">/xxx</span><br><span class="line">n  # 下一个</span><br><span class="line">N  # 上一个</span><br><span class="line">:set hls  # 高亮查找</span><br><span class="line">:set nohls  # 关闭高亮查找</span><br></pre></td></tr></table></figure>
-
-<ol start="2">
-<li>显示行号</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">:set nu		# 显示行号</span><br><span class="line">:set nonu		# 取消显示行号</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<ol start="3">
-<li>跳转命令</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">跳转行尾</span></span><br><span class="line"><span class="meta prompt_">$</span><span class="language-bash"></span></span><br><span class="line"><span class="language-bash"><span class="comment"># 跳转行首</span></span></span><br><span class="line">0</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">光标行尾编辑</span></span><br><span class="line">A</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">光标行首编辑</span></span><br><span class="line">I</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">下一行编辑</span></span><br><span class="line">o</span><br></pre></td></tr></table></figure>
-
-<ol start="4">
-<li>高亮显示</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">:syntax on	# 开启高亮</span><br><span class="line">:syntax off		# 关闭高亮</span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>代码块注释</li>
-</ol>
-<blockquote>
-<p>行首添加注释</p>
-</blockquote>
-<p>ctrl+v 进入列编辑模式,向下或向上移动光标,把需要注释的行的开头标记起来,然后按大写的I,再插入注释符,比如”#”,再按Esc,就会全部注释。</p>
-<blockquote>
-<p>行首删除注释符号</p>
-</blockquote>
-<p>先按v,进入visual模式,横向选中列的个数(如单个”#”注释符号),再按Esc,再按ctrl+v 进入列编辑模式,向下或向上移动光标,选中注释部分,然后按d, 就会删除注释符号（#）。</p>
-<p>个人理解就是按v的时候，横向确定代码块宽度（列数），C-v的时候纵向确定了代码块长度（行首）</p>
-<ol start="6">
-<li>缩进</li>
-</ol>
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line"># 设置Tab键的宽度为4</span><br><span class="line">:set tabstop=4</span><br><span class="line"># 自动缩进</span><br><span class="line">set autoindent</span><br></pre></td></tr></table></figure>
-
-<ol start="7">
-<li>复制粘贴</li>
-</ol>
-<h2 id="修改默认设置"><a href="#修改默认设置" class="headerlink" title="修改默认设置"></a>修改默认设置</h2><p>在当前用户<code>home</code>目录下创建一个.<code>vimrc</code>文件</p>
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">&#x27;&#x27; 语法高亮</span><br><span class="line">syntax on</span><br><span class="line">&#x27;&#x27; 显示行号</span><br><span class="line">set nu</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <tags>
-        <tag>教程</tag>
-        <tag>vim</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>孤儿进程和僵尸进程</title>
-    <url>/2022/05/25/%E5%AD%A4%E5%84%BF%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%83%B5%E5%B0%B8%E8%BF%9B%E7%A8%8B/</url>
-    <content><![CDATA[<p><img src="/2022/05/25/%E5%AD%A4%E5%84%BF%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%83%B5%E5%B0%B8%E8%BF%9B%E7%A8%8B/linux-1.jpg"></p>
-<h2 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. 基本概念</h2><p>操作系统允许一个进程创建另一个进程，而且允许子进程继承父进程所拥有的资源，当子进程被终止时，其在父进程处继承的资源应当还给父进程。同时，终止父进程时同时也会终止其所有的子进程。</p>
-<span id="more"></span>
-
-<blockquote>
-<p> 注意：Linux 操作系统对于终止有子进程的父进程，会把子进程交给 1 号进程接管。</p>
-</blockquote>
-<p>正常情况下：子进程由父进程创建，子进程再创建新的进程。父子进程是一个<strong>异步过程</strong>，父进程永远无法预测子进程的结束，所以，当子进程结束后，它的父进程会调用wait()或waitpid()取得子进程的终止状态，回收掉子进程的资源。</p>
-<h3 id="1-孤儿进程"><a href="#1-孤儿进程" class="headerlink" title="1. 孤儿进程"></a>1. 孤儿进程</h3><p><strong>孤儿进程</strong>：一个父进程退出，而它的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。孤儿进程将被init进程(进程号为1)所收养，并由init进程对它们完成状态收集工作。</p>
-<h3 id="2-僵尸进程"><a href="#2-僵尸进程" class="headerlink" title="2. 僵尸进程"></a>2. 僵尸进程</h3><p><strong>僵尸进程</strong>：一个进程使用fork创建子进程，如果子进程退出，而父进程并没有调用wait或waitpid获取子进程的状态信息，那么子进程的进程描述符仍然保存在系统中。这种进程称之为僵死进程。</p>
-<h2 id="2-问题危害"><a href="#2-问题危害" class="headerlink" title="2. 问题危害"></a>2. 问题危害</h2><p>注意：unix提供了一种保证父进程知道子进程状态信息的机制。</p>
-<p>这种机制是：在每个进程退出的时候，内核会释放所有的资源，包括打开的文件，占用的内存等。但是仍保留一部分信息(进程号PID，退出状态，运行时间等)。直到父进程通过wait或waitpid来取时才释放。</p>
-<p><strong>暴露的问题：如果父进程不调用wait或waitpid的话，那么保留的那部分信息就不会释放，进程号一直被占用着。但是系统所能使用的进程号是有限的，如果大量产生僵死进程，将因没有可用的进程号而导致系统无法产生新的进程，这就是僵尸进程的危害。</strong></p>
-<p>孤儿进程是没有父进程的进程，它由init进程循环的wait()回收资源，init进程充当父进程。因此孤儿进程并没有什么危害。</p>
-<blockquote>
-<p>补充：任何一个子进程(init除外)在exit()之后，并非马上就消失掉，而是留下一个称为僵尸进程的数据结构，等待父进程去处理。如果父进程在子进程exit()之后，没有及时处理，出现僵尸进程，并可以用ps命令去查看，它的状态是“Z”。</p>
-</blockquote>
-<p>如果父进程能及时处理，可能用<code>ps</code>命令就来不及看到子进程的僵尸状态，但这并不等于子进程不经过僵尸状态。  <strong>如果父进程在子进程结束之前退出，则子进程将由init接管。init将会以父进程的身份对僵尸状态的子进程进行处理。</strong></p>
-<h2 id="3-解决方案"><a href="#3-解决方案" class="headerlink" title="3. 解决方案"></a>3. 解决方案</h2><ol>
-<li>kill杀死元凶父进程（一般不用）</li>
-</ol>
-<p>严格的说，僵尸进程并不是问题的根源，罪魁祸首是产生大量僵死进程的父进程。因此，我们可以直接除掉元凶，通过kill发送SIGTERM或者SIGKILL信号。元凶死后，僵尸进程进程变成孤儿进程，由init充当父进程，并回收资源。</p>
-<ol start="2">
-<li>父进程用wait或waitpid去回收资源（方案不好）</li>
-</ol>
-<p>父进程通过wait或waitpid等函数去等待子进程结束，但是不好，会导致父进程一直等待被挂起，相当于一个进程在干活，没有起到多进程的作用。</p>
-<ol start="3">
-<li>通过信号机制，在处理函数中调用wait，回收资源</li>
-</ol>
-<p>通过信号机制，子进程退出时向父进程发送SIGCHLD信号，父进程调用signal(SIGCHLD,sig_child)去处理SIGCHLD信号，在信号处理函数sig_child()中调用wait进行处理僵尸进程。什么时候得到子进程信号，什么时候进行信号处理，父进程可以继续干其他活，不用去阻塞等待。</p>
-]]></content>
-      <categories>
-        <category>计算机基础</category>
-      </categories>
-      <tags>
-        <tag>操作系统</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>typora图片左对齐</title>
     <url>/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/</url>
     <content><![CDATA[<p>typora图片默认是剧中对齐的方式：</p>
@@ -598,35 +557,6 @@
       <tags>
         <tag>教程</tag>
         <tag>Typora</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>刷题分享：LeetCode139.单词拆分【字典树，动态规划】</title>
-    <url>/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/</url>
-    <content><![CDATA[<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/leetcode-1.jpg"></p>
-<p>题目对应<code>LeetCode</code><a href="https://leetcode.cn/problems/word-break/">139. 单词拆分</a></p>
-<span id="more"></span>
-
-<h3 id="1-题目描述"><a href="#1-题目描述" class="headerlink" title="1. 题目描述"></a>1. 题目描述</h3><p>给你一个字符串 s 和一个字符串列表 wordDict 作为字典。请你判断是否可以利用字典中出现的单词拼接出 s 。</p>
-<p>注意：不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。</p>
-<blockquote>
-<p>示例 1：</p>
-<p>输入: s &#x3D; “leetcode”, wordDict &#x3D; [“leet”, “code”]<br>输出: true<br>解释: 返回 true 因为 “leetcode” 可以由 “leet” 和 “code” 拼接成。</p>
-<p>示例 2：</p>
-<p>输入: s &#x3D; “applepenapple”, wordDict &#x3D; [“apple”, “pen”]<br>输出: true<br>解释: 返回 true 因为 “applepenapple” 可以由 “apple” “pen” “apple” 拼接成。<br>     注意，你可以重复使用字典中的单词。</p>
-<p>示例 3：</p>
-<p>输入: s &#x3D; “catsandog”, wordDict &#x3D; [“cats”, “dog”, “sand”, “and”, “cat”]<br>输出: false</p>
-</blockquote>
-<h3 id="2-代码分析"><a href="#2-代码分析" class="headerlink" title="2. 代码分析"></a>2. 代码分析</h3><p>【动态规划】+【字典树】</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">wordBreak</span><span class="params">(String s, List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> build(wordDict);</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> s.length();</span><br><span class="line">        <span class="comment">// 动态规划，转移方程：dp[i] = dp[i-k] &amp;&amp; (s[i-k,i] in wordDict)</span></span><br><span class="line">        <span class="type">boolean</span>[] dp = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;n; i++) &#123;</span><br><span class="line">            List&lt;Integer&gt; list = check(s, root, i);</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> idx : list) &#123;</span><br><span class="line">                <span class="comment">// 可能有多个位置匹配，只要存在一个k满足 dp[i-k] &amp;&amp; (s[i-k,i] in wordDict) == true，则dp[i]为true</span></span><br><span class="line">                <span class="keyword">if</span> (idx==<span class="number">0</span> || dp[idx-<span class="number">1</span>]) &#123;</span><br><span class="line">                    dp[i] = <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n-<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断是否满足最右匹配</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Integer&gt; <span class="title function_">check</span><span class="params">(String s, Trie root, <span class="type">int</span> lastIndex)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">        List&lt;Integer&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">while</span> (lastIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> s.charAt(lastIndex) - <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span> (node.children[index] == <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            node = node.children[index];</span><br><span class="line">            <span class="keyword">if</span> (node.isEnd) &#123;</span><br><span class="line">                <span class="comment">// 如果满足最右匹配，且到达单词末尾，将该Index加入List</span></span><br><span class="line">                list.add(lastIndex);</span><br><span class="line">            &#125;</span><br><span class="line">            lastIndex--;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 建立字典树，建立字典树的基本套路</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> Trie <span class="title function_">build</span><span class="params">(List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">        <span class="keyword">for</span> (String s : wordDict) &#123;</span><br><span class="line">            <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">            <span class="comment">// 这里需要注意，单词尾部向头部遍历，方便check时的最右匹配</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i=s.length()-<span class="number">1</span>; i&gt;=<span class="number">0</span>; i--) &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">idx</span> <span class="operator">=</span> s.charAt(i)-<span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">                <span class="keyword">if</span> (node.children[idx] == <span class="literal">null</span>) &#123;</span><br><span class="line">                    node.children[idx] = <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">                &#125;</span><br><span class="line">                node = node.children[idx];</span><br><span class="line">            &#125;</span><br><span class="line">            node.isEnd = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> root;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 字典树的典型结构</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Trie</span>&#123;</span><br><span class="line">    Trie[] children;</span><br><span class="line">    <span class="type">boolean</span> isEnd;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Trie</span><span class="params">()</span> &#123;</span><br><span class="line">        children = <span class="keyword">new</span> <span class="title class_">Trie</span>[<span class="number">26</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/image-20220524165305435.png"></p>
-]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>算法题</tag>
       </tags>
   </entry>
   <entry>
@@ -710,6 +640,35 @@
       </tags>
   </entry>
   <entry>
+    <title>刷题分享：LeetCode139.单词拆分【字典树，动态规划】</title>
+    <url>/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/</url>
+    <content><![CDATA[<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/leetcode-1.jpg"></p>
+<p>题目对应<code>LeetCode</code><a href="https://leetcode.cn/problems/word-break/">139. 单词拆分</a></p>
+<span id="more"></span>
+
+<h3 id="1-题目描述"><a href="#1-题目描述" class="headerlink" title="1. 题目描述"></a>1. 题目描述</h3><p>给你一个字符串 s 和一个字符串列表 wordDict 作为字典。请你判断是否可以利用字典中出现的单词拼接出 s 。</p>
+<p>注意：不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。</p>
+<blockquote>
+<p>示例 1：</p>
+<p>输入: s &#x3D; “leetcode”, wordDict &#x3D; [“leet”, “code”]<br>输出: true<br>解释: 返回 true 因为 “leetcode” 可以由 “leet” 和 “code” 拼接成。</p>
+<p>示例 2：</p>
+<p>输入: s &#x3D; “applepenapple”, wordDict &#x3D; [“apple”, “pen”]<br>输出: true<br>解释: 返回 true 因为 “applepenapple” 可以由 “apple” “pen” “apple” 拼接成。<br>     注意，你可以重复使用字典中的单词。</p>
+<p>示例 3：</p>
+<p>输入: s &#x3D; “catsandog”, wordDict &#x3D; [“cats”, “dog”, “sand”, “and”, “cat”]<br>输出: false</p>
+</blockquote>
+<h3 id="2-代码分析"><a href="#2-代码分析" class="headerlink" title="2. 代码分析"></a>2. 代码分析</h3><p>【动态规划】+【字典树】</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">wordBreak</span><span class="params">(String s, List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> build(wordDict);</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> s.length();</span><br><span class="line">        <span class="comment">// 动态规划，转移方程：dp[i] = dp[i-k] &amp;&amp; (s[i-k,i] in wordDict)</span></span><br><span class="line">        <span class="type">boolean</span>[] dp = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;n; i++) &#123;</span><br><span class="line">            List&lt;Integer&gt; list = check(s, root, i);</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> idx : list) &#123;</span><br><span class="line">                <span class="comment">// 可能有多个位置匹配，只要存在一个k满足 dp[i-k] &amp;&amp; (s[i-k,i] in wordDict) == true，则dp[i]为true</span></span><br><span class="line">                <span class="keyword">if</span> (idx==<span class="number">0</span> || dp[idx-<span class="number">1</span>]) &#123;</span><br><span class="line">                    dp[i] = <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n-<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断是否满足最右匹配</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Integer&gt; <span class="title function_">check</span><span class="params">(String s, Trie root, <span class="type">int</span> lastIndex)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">        List&lt;Integer&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">while</span> (lastIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> s.charAt(lastIndex) - <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span> (node.children[index] == <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            node = node.children[index];</span><br><span class="line">            <span class="keyword">if</span> (node.isEnd) &#123;</span><br><span class="line">                <span class="comment">// 如果满足最右匹配，且到达单词末尾，将该Index加入List</span></span><br><span class="line">                list.add(lastIndex);</span><br><span class="line">            &#125;</span><br><span class="line">            lastIndex--;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 建立字典树，建立字典树的基本套路</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> Trie <span class="title function_">build</span><span class="params">(List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">        <span class="keyword">for</span> (String s : wordDict) &#123;</span><br><span class="line">            <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">            <span class="comment">// 这里需要注意，单词尾部向头部遍历，方便check时的最右匹配</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i=s.length()-<span class="number">1</span>; i&gt;=<span class="number">0</span>; i--) &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">idx</span> <span class="operator">=</span> s.charAt(i)-<span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">                <span class="keyword">if</span> (node.children[idx] == <span class="literal">null</span>) &#123;</span><br><span class="line">                    node.children[idx] = <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">                &#125;</span><br><span class="line">                node = node.children[idx];</span><br><span class="line">            &#125;</span><br><span class="line">            node.isEnd = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> root;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 字典树的典型结构</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Trie</span>&#123;</span><br><span class="line">    Trie[] children;</span><br><span class="line">    <span class="type">boolean</span> isEnd;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Trie</span><span class="params">()</span> &#123;</span><br><span class="line">        children = <span class="keyword">new</span> <span class="title class_">Trie</span>[<span class="number">26</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/image-20220524165305435.png"></p>
+]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>算法题</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>解决hexo搭建博客图片不显示问题</title>
     <url>/2021/11/28/%E8%A7%A3%E5%86%B3hexo%E6%90%AD%E5%BB%BA%E5%8D%9A%E5%AE%A2%E5%9B%BE%E7%89%87%E4%B8%8D%E6%98%BE%E7%A4%BA%E9%97%AE%E9%A2%98/</url>
     <content><![CDATA[<h2 id="1-问题描述"><a href="#1-问题描述" class="headerlink" title="1. 问题描述"></a>1. 问题描述</h2><p>最近使用hexo搭建博客时，使用typora编辑完博客，在hexo上部署时发现图片都不能正常显示。图片采用复制粘贴的方式插入到.md文件中，图片格式：</p>
@@ -757,32 +716,102 @@
       </tags>
   </entry>
   <entry>
-    <title>BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？</title>
-    <url>/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/</url>
-    <content><![CDATA[<h3 id="问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数"><a href="#问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数" class="headerlink" title="问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数"></a>问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数</h3><p>解法：采用BitMap，每个整数分配2个bit</p>
-<blockquote>
-<p>00	&#x3D;&gt; 0	表示没出现过</p>
-<p>01	&#x3D;&gt; 1	表示出现过1次</p>
-<p>10	&#x3D;&gt;2	表示出现过多次</p>
-<p>11	&#x3D;&gt;3	表示无效数据。</p>
-</blockquote>
+    <title>刷题分享：LeetCode[729,731,732]我的日程安排表【TreeMap、查分数组、线段树】</title>
+    <url>/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/</url>
+    <content><![CDATA[<p><img src="/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/leetcode-1.jpg"></p>
+<p>题目对应<code>LeetCode</code><a href="https://leetcode.cn/problems/my-calendar-i/">729. 我的日程安排表 I</a> <a href="https://leetcode.cn/problems/my-calendar-ii/">731. 我的日程安排表 II</a> <a href="https://leetcode.cn/problems/my-calendar-iii/">732. 我的日程安排表 III</a></p>
 <span id="more"></span>
 
-<ul>
-<li>内存分析</li>
-</ul>
-<p>每个无符号整数的取值范围为0~2^32-1，BitMap空间复杂度取决于MAX_VALUE，因此需要一个长度为2 ^ 32的BitMap，总占用空间为2^32 * 2bit &#x3D; 1 GB。</p>
-<h3 id="使用Java程序进行实现："><a href="#使用Java程序进行实现：" class="headerlink" title="使用Java程序进行实现："></a>使用Java程序进行实现：</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BitMapTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 00 没出现过</span></span><br><span class="line"><span class="comment">     * 01 出现过1次</span></span><br><span class="line"><span class="comment">     * 10 出现过多次</span></span><br><span class="line"><span class="comment">     * 11 无效表示</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 1 byte = 8 bit，可分配四个数字，长度为1000可覆盖4000个数字，因此我们设置输入整数不超过4000</span></span><br><span class="line"><span class="comment">     * 真实情况下该数组的长度应该为 2.5亿/4，才能覆盖所有无符号整数，此处测试用较小数字进行</span></span><br><span class="line"><span class="comment">     * flags默认初始值都为0</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |3 2 1 0| flag[0] 例如：10000100 表示3出现过多次, 2, 0都没有出现过，1出现过一次</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |7 6 5 4| flag[1]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="type">byte</span>[] flags = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1000</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] nums = <span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">2000</span>];  <span class="comment">// 2000个测试输入数据</span></span><br><span class="line">        <span class="comment">// 验证结果的正确性</span></span><br><span class="line">        Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(nums.length);</span><br><span class="line">        <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">        System.out.println(<span class="string">&quot;原始数据：&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="comment">// 填充随机数输入进行验证</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> random.nextInt(flags.length * <span class="number">4</span>);  <span class="comment">// flags长度为1000，整数最大只能为4000</span></span><br><span class="line">            nums[i] = num;</span><br><span class="line">            System.out.print(num + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            map.put(num, map.getOrDefault(num, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            setVal(num);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();</span><br><span class="line">        System.out.println(<span class="string">&quot;-------------------&quot;</span>);</span><br><span class="line">        List&lt;Integer&gt; bitMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        List&lt;Integer&gt; hashMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (getVal(nums[i]) == <span class="number">1</span>) &#123;</span><br><span class="line">                bitMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (map.getOrDefault(nums[i], <span class="number">0</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">                hashMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;只出现过一次的数据：&quot;</span>);</span><br><span class="line">        System.out.println(bitMapAns);</span><br><span class="line">        System.out.println(<span class="string">&quot;bitMapAns 是否和 hashMapAns相同：&quot;</span> + bitMapAns.equals(hashMapAns));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> getVal(idx);</span><br><span class="line">        <span class="keyword">if</span> (val &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="comment">// 11 或 10 表示出现过多次，保持不变即可</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        ~(3&lt;&lt;loc) =&gt; 11001111 即让2bit对应位置为0，其他都为1</span></span><br><span class="line"><span class="comment">        (flags[pos] &amp; ~(3&lt;&lt;loc)) =&gt; 效果就是让2bit对应位置置为00，其他为保持不变</span></span><br><span class="line"><span class="comment">        | ((val + 1) &lt;&lt; loc) =&gt; 效果就是让val+1的值填充2bit的位置</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">newVal</span> <span class="operator">=</span> (flags[pos] &amp; ~(<span class="number">3</span> &lt;&lt; (loc * <span class="number">2</span>))) | ((val + <span class="number">1</span>) &lt;&lt; (loc * <span class="number">2</span>));</span><br><span class="line">        flags[pos] = (<span class="type">byte</span>) newVal;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">getVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        flags[pos] &gt;&gt; (loc * 2)  =&gt; 00001001  (左边自动补0) 这个操作的效果是让2这个整数在bitmap中对应的两个bit移动到最右端</span></span><br><span class="line"><span class="comment">        拿上面的结果  (0b00001001) &amp; (byte)3  =&gt; (0b00001001) &amp; (0b00000011) =&gt; (0b00000001) 即可得到目标的两个bit对应的数字</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> (flags[pos] &gt;&gt; (loc * <span class="number">2</span>)) &amp; (<span class="type">byte</span>) <span class="number">3</span>;</span><br><span class="line">        <span class="keyword">return</span> val;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="我的日程安排表I"><a href="#我的日程安排表I" class="headerlink" title="我的日程安排表I"></a>我的日程安排表I</h2><p><a href="https://leetcode.cn/problems/my-calendar-i/">729. 我的日程安排表 I</a></p>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p>实现一个 MyCalendar 类来存放你的日程安排。如果要添加的日程安排不会造成 重复预订 ，则可以存储这个新的日程安排。</p>
+<p>当两个日程安排有一些时间上的交叉时（例如两个日程安排都在同一时间内），就会产生 重复预订 。</p>
+<p>日程可以用一对整数 start 和 end 表示，这里的时间是半开区间，即 [start, end), 实数 x 的范围为，  start &lt;&#x3D; x &lt; end 。</p>
+<p>实现 MyCalendar 类：</p>
+<p>MyCalendar() 初始化日历对象。<br>boolean book(int start, int end) 如果可以将日程安排成功添加到日历中而不会导致重复预订，返回 true 。否则，返回 false 并且不要将该日程安排添加到日历中。</p>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">输入：</span><br><span class="line">[&quot;MyCalendar&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;]</span><br><span class="line">[[], [10, 20], [15, 25], [20, 30]]</span><br><span class="line">输出：</span><br><span class="line">[null, true, false, true]</span><br><span class="line"></span><br><span class="line">解释：</span><br><span class="line">MyCalendar myCalendar = new MyCalendar();</span><br><span class="line">myCalendar.book(10, 20); // return True</span><br><span class="line">myCalendar.book(15, 25); // return False ，这个日程安排不能添加到日历中，因为时间 15 已经被另一个日程安排预订了。</span><br><span class="line">myCalendar.book(20, 30); // return True ，这个日程安排可以添加到日历中，因为第一个日程安排预订的每个时间都小于 20 ，且不包含时间 20 。</span><br></pre></td></tr></table></figure>
 
-<p>运行结果：</p>
-<p><img src="/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/image-20220512221937915.png"></p>
-<p>上述通过<code>HashMap</code>的方案可以检验<code>BitMap</code>的答案是正确的，并且成功节省了内存空间。</p>
+<h3 id="题解【TreeMap】"><a href="#题解【TreeMap】" class="headerlink" title="题解【TreeMap】"></a>题解【TreeMap】</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendar</span> &#123;</span><br><span class="line">    TreeMap&lt;Integer, Integer&gt; treeMap;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendar</span><span class="params">()</span> &#123;</span><br><span class="line">        treeMap = <span class="keyword">new</span> <span class="title class_">TreeMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        Map.Entry&lt;Integer, Integer&gt; floor = treeMap.floorEntry(start);</span><br><span class="line">        Map.Entry&lt;Integer, Integer&gt; ceiling = treeMap.ceilingEntry(start);</span><br><span class="line">        <span class="keyword">if</span> (floor != <span class="literal">null</span> &amp;&amp; floor.getValue() &gt; start) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (ceiling != <span class="literal">null</span> &amp;&amp; ceiling.getKey() &lt; end) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        treeMap.put(start, end);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="复杂度分析"><a href="#复杂度分析" class="headerlink" title="复杂度分析"></a>复杂度分析</h3><p>在book()方法中，<code>TreeMap</code>是排序二叉树，<code>treeMap.floorEntry()</code>和<code>treeMap.ceilingEntry()</code>都是通过二分查找实现的，时间复杂度都是<code>o (log n)</code>.</p>
+<h2 id="我的日程安排表II"><a href="#我的日程安排表II" class="headerlink" title="我的日程安排表II"></a>我的日程安排表II</h2><p><a href="https://leetcode.cn/problems/my-calendar-ii/">731. 我的日程安排表 II</a></p>
+<h3 id="题目描述-1"><a href="#题目描述-1" class="headerlink" title="题目描述"></a>题目描述</h3><p>实现一个 MyCalendar 类来存放你的日程安排。如果要添加的时间内不会导致三重预订时，则可以存储这个新的日程安排。</p>
+<p>MyCalendar 有一个 book(int start, int end)方法。它意味着在 start 到 end 时间内增加一个日程安排，注意，这里的时间是半开区间，即 [start, end), 实数 x 的范围为，  start &lt;&#x3D; x &lt; end。</p>
+<p>当三个日程安排有一些时间上的交叉时（例如三个日程安排都在同一时间内），就会产生三重预订。</p>
+<p>每次调用 MyCalendar.book方法时，如果可以将日程安排成功添加到日历中而不会导致三重预订，返回 true。否则，返回 false 并且不要将该日程安排添加到日历中。</p>
+<p>请按照以下步骤调用MyCalendar 类: MyCalendar cal &#x3D; new MyCalendar(); MyCalendar.book(start, end)</p>
+<h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">MyCalendar();</span><br><span class="line">MyCalendar.book(10, 20); // returns true</span><br><span class="line">MyCalendar.book(50, 60); // returns true</span><br><span class="line">MyCalendar.book(10, 40); // returns true</span><br><span class="line">MyCalendar.book(5, 15); // returns false</span><br><span class="line">MyCalendar.book(5, 10); // returns true</span><br><span class="line">MyCalendar.book(25, 55); // returns true</span><br><span class="line">解释： </span><br><span class="line">前两个日程安排可以添加至日历中。 第三个日程安排会导致双重预订，但可以添加至日历中。</span><br><span class="line">第四个日程安排活动（5,15）不能添加至日历中，因为它会导致三重预订。</span><br><span class="line">第五个日程安排（5,10）可以添加至日历中，因为它未使用已经双重预订的时间10。</span><br><span class="line">第六个日程安排（25,55）可以添加至日历中，因为时间 [25,40] 将和第三个日程安排双重预订；</span><br><span class="line">时间 [40,50] 将单独预订，时间 [50,55）将和第二个日程安排双重预订</span><br></pre></td></tr></table></figure>
+
+<h3 id="题解【差分数组思想、TreeMap】"><a href="#题解【差分数组思想、TreeMap】" class="headerlink" title="题解【差分数组思想、TreeMap】"></a>题解【差分数组思想、TreeMap】<a id="t2"></a></h3><p>边界计数，边界开始时计数加一<code>delta[start]++</code>，边界计数时计数减一<code>delta[end]--</code>，按照排序从小到达统计<code>count</code>之和，一旦<code>count==3</code>则表明当前区间有三次重叠。考虑到需要排序结构，delta使用TreeMap。</p>
+<p><strong>图解：</strong></p>
+<p><img src="/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/image-20220606120852444.png"></p>
+<p>注意：当<code>count==3</code>时应撤销添加日程</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendarTwo</span> &#123;</span><br><span class="line">    TreeMap&lt;Integer, Integer&gt; treeMap;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendarTwo</span><span class="params">()</span> &#123;</span><br><span class="line">        treeMap = <span class="keyword">new</span> <span class="title class_">TreeMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        treeMap.put(start, treeMap.getOrDefault(start, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">        treeMap.put(end, treeMap.getOrDefault(end, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">        <span class="type">int</span> <span class="variable">sum</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> count : treeMap.values()) &#123;</span><br><span class="line">            sum += count;</span><br><span class="line">            <span class="keyword">if</span> (sum &gt;= <span class="number">3</span>) &#123;</span><br><span class="line">                <span class="comment">// 出现三重预定，取消将该日程添加到日历</span></span><br><span class="line">                treeMap.put(start, treeMap.getOrDefault(start, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">                treeMap.put(end, treeMap.getOrDefault(end, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="我的日程安排表III"><a href="#我的日程安排表III" class="headerlink" title="我的日程安排表III"></a>我的日程安排表III</h2><p><a href="https://leetcode.cn/problems/my-calendar-iii/">732. 我的日程安排表 III</a></p>
+<h3 id="题目描述-2"><a href="#题目描述-2" class="headerlink" title="题目描述"></a>题目描述</h3><p>当 k 个日程安排有一些时间上的交叉时（例如 k 个日程安排都在同一时间内），就会产生 k 次预订。</p>
+<p>给你一些日程安排 [start, end) ，请你在每个日程安排添加后，返回一个整数 k ，表示所有先前日程安排会产生的最大 k 次预订。</p>
+<p>实现一个 MyCalendarThree 类来存放你的日程安排，你可以一直添加新的日程安排。</p>
+<p>MyCalendarThree() 初始化对象。<br>int book(int start, int end) 返回一个整数 k ，表示日历中存在的 k 次预订的最大值。</p>
+<h3 id="示例-2"><a href="#示例-2" class="headerlink" title="示例"></a>示例</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">输入：</span><br><span class="line">[&quot;MyCalendarThree&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;]</span><br><span class="line">[[], [10, 20], [50, 60], [10, 40], [5, 15], [5, 10], [25, 55]]</span><br><span class="line">输出：</span><br><span class="line">[null, 1, 1, 2, 3, 3, 3]</span><br><span class="line"></span><br><span class="line">解释：</span><br><span class="line">MyCalendarThree myCalendarThree = new MyCalendarThree();</span><br><span class="line">myCalendarThree.book(10, 20); // 返回 1 ，第一个日程安排可以预订并且不存在相交，所以最大 k 次预订是 1 次预订。</span><br><span class="line">myCalendarThree.book(50, 60); // 返回 1 ，第二个日程安排可以预订并且不存在相交，所以最大 k 次预订是 1 次预订。</span><br><span class="line">myCalendarThree.book(10, 40); // 返回 2 ，第三个日程安排 [10, 40) 与第一个日程安排相交，所以最大 k 次预订是 2 次预订。</span><br><span class="line">myCalendarThree.book(5, 15); // 返回 3 ，剩下的日程安排的最大 k 次预订是 3 次预订。</span><br><span class="line">myCalendarThree.book(5, 10); // 返回 3</span><br><span class="line">myCalendarThree.book(25, 55); // 返回 3</span><br></pre></td></tr></table></figure>
+
+<h3 id="题解【线段树】"><a href="#题解【线段树】" class="headerlink" title="题解【线段树】"></a>题解【线段树】</h3><h3 id="方法一：差分数组"><a href="#方法一：差分数组" class="headerlink" title="方法一：差分数组"></a>方法一：差分数组</h3><p>采用差分数组解法，同<a href="#t2">我的日程安排表II</a></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendarThree</span> &#123;</span><br><span class="line">    TreeMap&lt;Integer, Integer&gt; delta;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendarThree</span><span class="params">()</span> &#123;</span><br><span class="line">        delta = <span class="keyword">new</span> <span class="title class_">TreeMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        delta.put(start, delta.getOrDefault(start, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">        delta.put(end, delta.getOrDefault(end, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">        <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>, maxCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> val : delta.values()) &#123;</span><br><span class="line">            count += val;</span><br><span class="line">            maxCount = Math.max(count, maxCount);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> maxCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="方法二：线段树"><a href="#方法二：线段树" class="headerlink" title="方法二：线段树"></a>方法二：线段树</h3><p>针对本题的线段树初级教程可以参考：<a href="https://leetcode.cn/problems/my-calendar-iii/solution/xian-duan-shu-by-xiaohu9527-rfzj/">线段树 – 新手篇</a></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendarThree</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;Integer, Integer&gt; tree;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;Integer, Integer&gt; lazy;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendarThree</span><span class="params">()</span> &#123;</span><br><span class="line">        tree = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;Integer, Integer&gt;();</span><br><span class="line">        lazy = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;Integer, Integer&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        update(start, end - <span class="number">1</span>, <span class="number">0</span>, <span class="number">1000000000</span>, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">return</span> tree.getOrDefault(<span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">update</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (r &lt; start || end &lt; l) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125; </span><br><span class="line">        <span class="keyword">if</span> (start &lt;= l &amp;&amp; r &lt;= end) &#123;</span><br><span class="line">            tree.put(idx, tree.getOrDefault(idx, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            lazy.put(idx, lazy.getOrDefault(idx, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">mid</span> <span class="operator">=</span> (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            update(start, end, l, mid, <span class="number">2</span> * idx);</span><br><span class="line">            update(start, end, mid + <span class="number">1</span>, r, <span class="number">2</span> * idx + <span class="number">1</span>);</span><br><span class="line">            tree.put(idx, lazy.getOrDefault(idx, <span class="number">0</span>) + Math.max(tree.getOrDefault(<span class="number">2</span> * idx, <span class="number">0</span>), tree.getOrDefault(<span class="number">2</span> * idx + <span class="number">1</span>, <span class="number">0</span>)));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>后续会出一篇关于线段树的详细教程！！！</p>
+</blockquote>
 ]]></content>
       <categories>
-        <category>技术</category>
+        <category>算法</category>
       </categories>
       <tags>
-        <tag>Java</tag>
+        <tag>算法题</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>孤儿进程和僵尸进程</title>
+    <url>/2022/05/25/%E5%AD%A4%E5%84%BF%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%83%B5%E5%B0%B8%E8%BF%9B%E7%A8%8B/</url>
+    <content><![CDATA[<p><img src="/2022/05/25/%E5%AD%A4%E5%84%BF%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%83%B5%E5%B0%B8%E8%BF%9B%E7%A8%8B/linux-1.jpg"></p>
+<h2 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. 基本概念</h2><p>操作系统允许一个进程创建另一个进程，而且允许子进程继承父进程所拥有的资源，当子进程被终止时，其在父进程处继承的资源应当还给父进程。同时，终止父进程时同时也会终止其所有的子进程。</p>
+<span id="more"></span>
+
+<blockquote>
+<p> 注意：Linux 操作系统对于终止有子进程的父进程，会把子进程交给 1 号进程接管。</p>
+</blockquote>
+<p>正常情况下：子进程由父进程创建，子进程再创建新的进程。父子进程是一个<strong>异步过程</strong>，父进程永远无法预测子进程的结束，所以，当子进程结束后，它的父进程会调用wait()或waitpid()取得子进程的终止状态，回收掉子进程的资源。</p>
+<h3 id="1-孤儿进程"><a href="#1-孤儿进程" class="headerlink" title="1. 孤儿进程"></a>1. 孤儿进程</h3><p><strong>孤儿进程</strong>：一个父进程退出，而它的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。孤儿进程将被init进程(进程号为1)所收养，并由init进程对它们完成状态收集工作。</p>
+<h3 id="2-僵尸进程"><a href="#2-僵尸进程" class="headerlink" title="2. 僵尸进程"></a>2. 僵尸进程</h3><p><strong>僵尸进程</strong>：一个进程使用fork创建子进程，如果子进程退出，而父进程并没有调用wait或waitpid获取子进程的状态信息，那么子进程的进程描述符仍然保存在系统中。这种进程称之为僵死进程。</p>
+<h2 id="2-问题危害"><a href="#2-问题危害" class="headerlink" title="2. 问题危害"></a>2. 问题危害</h2><p>注意：unix提供了一种保证父进程知道子进程状态信息的机制。</p>
+<p>这种机制是：在每个进程退出的时候，内核会释放所有的资源，包括打开的文件，占用的内存等。但是仍保留一部分信息(进程号PID，退出状态，运行时间等)。直到父进程通过wait或waitpid来取时才释放。</p>
+<p><strong>暴露的问题：如果父进程不调用wait或waitpid的话，那么保留的那部分信息就不会释放，进程号一直被占用着。但是系统所能使用的进程号是有限的，如果大量产生僵死进程，将因没有可用的进程号而导致系统无法产生新的进程，这就是僵尸进程的危害。</strong></p>
+<p>孤儿进程是没有父进程的进程，它由init进程循环的wait()回收资源，init进程充当父进程。因此孤儿进程并没有什么危害。</p>
+<blockquote>
+<p>补充：任何一个子进程(init除外)在exit()之后，并非马上就消失掉，而是留下一个称为僵尸进程的数据结构，等待父进程去处理。如果父进程在子进程exit()之后，没有及时处理，出现僵尸进程，并可以用ps命令去查看，它的状态是“Z”。</p>
+</blockquote>
+<p>如果父进程能及时处理，可能用<code>ps</code>命令就来不及看到子进程的僵尸状态，但这并不等于子进程不经过僵尸状态。  <strong>如果父进程在子进程结束之前退出，则子进程将由init接管。init将会以父进程的身份对僵尸状态的子进程进行处理。</strong></p>
+<h2 id="3-解决方案"><a href="#3-解决方案" class="headerlink" title="3. 解决方案"></a>3. 解决方案</h2><ol>
+<li>kill杀死元凶父进程（一般不用）</li>
+</ol>
+<p>严格的说，僵尸进程并不是问题的根源，罪魁祸首是产生大量僵死进程的父进程。因此，我们可以直接除掉元凶，通过kill发送SIGTERM或者SIGKILL信号。元凶死后，僵尸进程进程变成孤儿进程，由init充当父进程，并回收资源。</p>
+<ol start="2">
+<li>父进程用wait或waitpid去回收资源（方案不好）</li>
+</ol>
+<p>父进程通过wait或waitpid等函数去等待子进程结束，但是不好，会导致父进程一直等待被挂起，相当于一个进程在干活，没有起到多进程的作用。</p>
+<ol start="3">
+<li>通过信号机制，在处理函数中调用wait，回收资源</li>
+</ol>
+<p>通过信号机制，子进程退出时向父进程发送SIGCHLD信号，父进程调用signal(SIGCHLD,sig_child)去处理SIGCHLD信号，在信号处理函数sig_child()中调用wait进行处理僵尸进程。什么时候得到子进程信号，什么时候进行信号处理，父进程可以继续干其他活，不用去阻塞等待。</p>
+]]></content>
+      <categories>
+        <category>计算机基础</category>
+      </categories>
+      <tags>
+        <tag>操作系统</tag>
       </tags>
   </entry>
   <entry>
@@ -825,91 +854,29 @@
       </tags>
   </entry>
   <entry>
-    <title>Java异常：Exception与Error，checkedException与unCheckedException</title>
-    <url>/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/</url>
-    <content><![CDATA[<h3 id="1-Java异常类层级结构图"><a href="#1-Java异常类层级结构图" class="headerlink" title="1. Java异常类层级结构图"></a>1. Java异常类层级结构图</h3><p><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512152121807.png"></p>
-<p><code>java.lang.Throwable</code>是Java异常的顶级接口，<code>Exception</code>和<code>Error</code>均继承自<code>Throwable</code>。</p>
-<span id="more"></span>
-
-<h3 id="2-Exception和Error有什么区别？"><a href="#2-Exception和Error有什么区别？" class="headerlink" title="2. Exception和Error有什么区别？"></a>2. Exception和Error有什么区别？</h3><ul>
-<li>Exception：程序本身可以处理的异常，可以通过<code>try-catch</code>进行捕获。<code>Exception</code>又可分为<code>CheckedException</code>（受检异常）和<code>unCheckedException</code>（非受检异常）。</li>
-<li><code>Error</code>：程序本身无法处理的异常，<del>无法通过<code>catch</code>进行捕获</del>不建议通过<code>catch</code>进行捕获。例如上图展示的<code>OutOfMemoryError</code>。这类异常发生时，会导致程序终止运行（线程终止）。</li>
-</ul>
-<h3 id="3-CheckedException和unCheckedException有什么区别？"><a href="#3-CheckedException和unCheckedException有什么区别？" class="headerlink" title="3. CheckedException和unCheckedException有什么区别？"></a>3. <code>CheckedException</code>和<code>unCheckedException</code>有什么区别？</h3><blockquote>
-<p> 二者只是逻辑上的分类，并不存在<code>CheckedException</code>或<code>unCheckedException</code>接口或类</p>
-</blockquote>
-<ul>
-<li><code>CheckedException</code>即受检查异常：Java代码在编译过程中，如果受检查异常没有被<code>catch</code>或者<code>throws</code>关键字处理的话，就没法通过编译。除了<code>RuntimeException</code>及其子类，其他的<code>Exception</code>类及其子类都是受检查异常，常见的有：<code>IoException</code>、<code>ClassNotFoundException</code>、<code>SQLException</code>等。</li>
-<li><code>unCheckedException</code>即非受检查异常：Java代码在编译过程中，即使我们不对其进行处理，编译也可以通过。<code>RuntimeException</code>及其子类都是非受检查异常，常见的有：<code>NullPointException</code>、<code>IllegalArgumentException</code>、<code>NumberFormatException</code>等。</li>
-</ul>
-<p><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512152237987.png"></p>
-<h3 id="4-Throwable有哪些常用方法？"><a href="#4-Throwable有哪些常用方法？" class="headerlink" title="4. Throwable有哪些常用方法？"></a>4. <code>Throwable</code>有哪些常用方法？</h3><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512152739565.png" style="zoom:40%" align="center">
-
-
-
-<ul>
-<li><code>String getMessage()</code>：返回异常描述信息</li>
-</ul>
-<p><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512153002731.png"></p>
-<ul>
-<li><code>void printStackTrace()</code>：在控制台打印<code>Throwable</code>对象封装的异常信息</li>
-</ul>
-<h3 id="5-try-with-resources代替try-catch-finally进行资源释放"><a href="#5-try-with-resources代替try-catch-finally进行资源释放" class="headerlink" title="5. try-with-resources代替try-catch-finally进行资源释放"></a>5. <code>try-with-resources</code>代替<code>try-catch-finally</code>进行资源释放</h3><p><code>try-with-resources</code>是JDK1.7推出的一种资源释放的方式。</p>
-<ol>
-<li>适用范围：资源的定义，任何实现<code>java.lang.AutoCloseable</code>或<code>java.lang.Closeable</code>接口的对象。</li>
-<li>关闭资源和finally块的执行顺序：在<code>try-with-resources</code>语句中，任何catch或finally块在声明的资源关闭后运行。</li>
-<li>使用说明：只需在<code>try</code>后面跟上小括号<code>()</code>括号中对资源进行定义，无需使用<code>finally</code>手动释放资源。</li>
-</ol>
-<p><strong>《Effective Java》</strong>中明确指出：</p>
+    <title>BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？</title>
+    <url>/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/</url>
+    <content><![CDATA[<h3 id="问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数"><a href="#问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数" class="headerlink" title="问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数"></a>问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数</h3><p>解法：采用BitMap，每个整数分配2个bit</p>
 <blockquote>
-<p>面对必须要关闭的资源，我们总是优先使用<code>try-with-resources</code>而不是<code>finally</code>。随之产生的代码更简短，更清晰。</p>
+<p>00	&#x3D;&gt; 0	表示没出现过</p>
+<p>01	&#x3D;&gt; 1	表示出现过1次</p>
+<p>10	&#x3D;&gt;2	表示出现过多次</p>
+<p>11	&#x3D;&gt;3	表示无效数据。</p>
 </blockquote>
-<p>Java中类似于<code>InputStream</code>、<code>OutputStream</code>、<code>Scanner</code>、<code>PrintWriter</code>等资源都需要我们调用<code>close()</code>方法进行手动关闭资源，一般情况下我们可以使用<code>try-catch-finally</code>来实现：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">Scanner</span> <span class="variable">scanner</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  scanner = <span class="keyword">new</span> <span class="title class_">Scanner</span>(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;read.txt&quot;</span>));</span><br><span class="line">&#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">  e.printStackTrace();</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (scanner != <span class="literal">null</span>) &#123;</span><br><span class="line">    scanner.close();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>JDK1.7后使用<code>try-with-resources</code>实现：</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span> (<span class="type">Scanner</span> <span class="variable">scanner</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;read.txt&quot;</span>)))&#123;</span><br><span class="line">  <span class="keyword">while</span> (scanner.hasNext()) &#123;</span><br><span class="line">    System.out.println(scanner.nextLine());</span><br><span class="line">  &#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">  e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>涉及到多个资源的定义，使用分号<code>;</code>进行分隔</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span> (<span class="type">Scanner</span> <span class="variable">scanner</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;read.txt&quot;</span>)); </span><br><span class="line">     <span class="type">OutputStream</span> <span class="variable">outputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;output.txt&quot;</span>))&#123;</span><br><span class="line">  <span class="keyword">while</span> (scanner.hasNext()) &#123;</span><br><span class="line">    outputStream.write(scanner.nextLine().getBytes(StandardCharsets.UTF_8));</span><br><span class="line">  &#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">  e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>Java</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Java小知识</title>
-    <url>/2022/05/11/Java%E5%B0%8F%E7%9F%A5%E8%AF%86/</url>
-    <content><![CDATA[<ol>
-<li>使用<code>String.split(expr)</code>方法时，要注意<code>expr</code>是否是正则表达式的通配符，如 <code>.</code>, <code>$</code>等，要使用双反斜杠进行转译<code>\\</code>，<code>\</code>要使用<code>\\\\</code>进行转译</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;abc.def.ghi&quot;</span>;</span><br><span class="line">String[] split = s.split(<span class="string">&quot;\\.&quot;</span>);</span><br><span class="line">System.out.println(Arrays.toString(split));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行结果</span></span><br><span class="line">[abc, def, ghi]</span><br></pre></td></tr></table></figure>
-
 <span id="more"></span>
 
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;abc\\def\\ghi&quot;</span>;</span><br><span class="line">System.out.println(<span class="string">&quot;s:\t\t&quot;</span> + s);</span><br><span class="line">String[] split = s.split(<span class="string">&quot;\\\\&quot;</span>);</span><br><span class="line">System.out.println(<span class="string">&quot;split:\t&quot;</span> + Arrays.toString(split));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行结果</span></span><br><span class="line">s:			abc\def\ghi</span><br><span class="line">split:	[abc, def, ghi]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>内存分析</li>
+</ul>
+<p>每个无符号整数的取值范围为0~2^32-1，BitMap空间复杂度取决于MAX_VALUE，因此需要一个长度为2 ^ 32的BitMap，总占用空间为2^32 * 2bit &#x3D; 1 GB。</p>
+<h3 id="使用Java程序进行实现："><a href="#使用Java程序进行实现：" class="headerlink" title="使用Java程序进行实现："></a>使用Java程序进行实现：</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BitMapTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 00 没出现过</span></span><br><span class="line"><span class="comment">     * 01 出现过1次</span></span><br><span class="line"><span class="comment">     * 10 出现过多次</span></span><br><span class="line"><span class="comment">     * 11 无效表示</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 1 byte = 8 bit，可分配四个数字，长度为1000可覆盖4000个数字，因此我们设置输入整数不超过4000</span></span><br><span class="line"><span class="comment">     * 真实情况下该数组的长度应该为 2.5亿/4，才能覆盖所有无符号整数，此处测试用较小数字进行</span></span><br><span class="line"><span class="comment">     * flags默认初始值都为0</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |3 2 1 0| flag[0] 例如：10000100 表示3出现过多次, 2, 0都没有出现过，1出现过一次</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |7 6 5 4| flag[1]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="type">byte</span>[] flags = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1000</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] nums = <span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">2000</span>];  <span class="comment">// 2000个测试输入数据</span></span><br><span class="line">        <span class="comment">// 验证结果的正确性</span></span><br><span class="line">        Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(nums.length);</span><br><span class="line">        <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">        System.out.println(<span class="string">&quot;原始数据：&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="comment">// 填充随机数输入进行验证</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> random.nextInt(flags.length * <span class="number">4</span>);  <span class="comment">// flags长度为1000，整数最大只能为4000</span></span><br><span class="line">            nums[i] = num;</span><br><span class="line">            System.out.print(num + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            map.put(num, map.getOrDefault(num, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            setVal(num);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();</span><br><span class="line">        System.out.println(<span class="string">&quot;-------------------&quot;</span>);</span><br><span class="line">        List&lt;Integer&gt; bitMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        List&lt;Integer&gt; hashMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (getVal(nums[i]) == <span class="number">1</span>) &#123;</span><br><span class="line">                bitMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (map.getOrDefault(nums[i], <span class="number">0</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">                hashMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;只出现过一次的数据：&quot;</span>);</span><br><span class="line">        System.out.println(bitMapAns);</span><br><span class="line">        System.out.println(<span class="string">&quot;bitMapAns 是否和 hashMapAns相同：&quot;</span> + bitMapAns.equals(hashMapAns));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> getVal(idx);</span><br><span class="line">        <span class="keyword">if</span> (val &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="comment">// 11 或 10 表示出现过多次，保持不变即可</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        ~(3&lt;&lt;loc) =&gt; 11001111 即让2bit对应位置为0，其他都为1</span></span><br><span class="line"><span class="comment">        (flags[pos] &amp; ~(3&lt;&lt;loc)) =&gt; 效果就是让2bit对应位置置为00，其他为保持不变</span></span><br><span class="line"><span class="comment">        | ((val + 1) &lt;&lt; loc) =&gt; 效果就是让val+1的值填充2bit的位置</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">newVal</span> <span class="operator">=</span> (flags[pos] &amp; ~(<span class="number">3</span> &lt;&lt; (loc * <span class="number">2</span>))) | ((val + <span class="number">1</span>) &lt;&lt; (loc * <span class="number">2</span>));</span><br><span class="line">        flags[pos] = (<span class="type">byte</span>) newVal;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">getVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        flags[pos] &gt;&gt; (loc * 2)  =&gt; 00001001  (左边自动补0) 这个操作的效果是让2这个整数在bitmap中对应的两个bit移动到最右端</span></span><br><span class="line"><span class="comment">        拿上面的结果  (0b00001001) &amp; (byte)3  =&gt; (0b00001001) &amp; (0b00000011) =&gt; (0b00000001) 即可得到目标的两个bit对应的数字</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> (flags[pos] &gt;&gt; (loc * <span class="number">2</span>)) &amp; (<span class="type">byte</span>) <span class="number">3</span>;</span><br><span class="line">        <span class="keyword">return</span> val;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<ol start="2">
-<li>集合new对象时添加元素</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// new对象的时候添加元素</span></span><br><span class="line">Map&lt;String, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, Integer&gt;()&#123;&#123;</span><br><span class="line">  put(<span class="string">&quot;a&quot;</span>, <span class="number">0</span>);</span><br><span class="line">  put(<span class="string">&quot;b&quot;</span>, <span class="number">1</span>);</span><br><span class="line">&#125;&#125;;</span><br><span class="line">System.out.println(map);</span><br><span class="line"><span class="comment">// 正常添加元素</span></span><br><span class="line">map.put(<span class="string">&quot;c&quot;</span>, <span class="number">2</span>);</span><br><span class="line">System.out.println(map);</span><br></pre></td></tr></table></figure>
-
-<p>输出结果：</p>
-<p><img src="/2022/05/11/Java%E5%B0%8F%E7%9F%A5%E8%AF%86/image-20211129213733732.png"> </p>
-<ol start="3">
-<li>查看Java版本信息</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">System.out.println(System.getProperty(<span class="string">&quot;java.version&quot;</span>));</span><br></pre></td></tr></table></figure>
-
-
-
+<p>运行结果：</p>
+<p><img src="/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/image-20220512221937915.png"></p>
+<p>上述通过<code>HashMap</code>的方案可以检验<code>BitMap</code>的答案是正确的，并且成功节省了内存空间。</p>
 ]]></content>
       <categories>
-        <category>Java</category>
+        <category>技术</category>
       </categories>
       <tags>
         <tag>Java</tag>
@@ -1137,6 +1104,312 @@
       </tags>
   </entry>
   <entry>
+    <title>Java异常：Exception与Error，checkedException与unCheckedException</title>
+    <url>/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/</url>
+    <content><![CDATA[<h3 id="1-Java异常类层级结构图"><a href="#1-Java异常类层级结构图" class="headerlink" title="1. Java异常类层级结构图"></a>1. Java异常类层级结构图</h3><p><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512152121807.png"></p>
+<p><code>java.lang.Throwable</code>是Java异常的顶级接口，<code>Exception</code>和<code>Error</code>均继承自<code>Throwable</code>。</p>
+<span id="more"></span>
+
+<h3 id="2-Exception和Error有什么区别？"><a href="#2-Exception和Error有什么区别？" class="headerlink" title="2. Exception和Error有什么区别？"></a>2. Exception和Error有什么区别？</h3><ul>
+<li>Exception：程序本身可以处理的异常，可以通过<code>try-catch</code>进行捕获。<code>Exception</code>又可分为<code>CheckedException</code>（受检异常）和<code>unCheckedException</code>（非受检异常）。</li>
+<li><code>Error</code>：程序本身无法处理的异常，<del>无法通过<code>catch</code>进行捕获</del>不建议通过<code>catch</code>进行捕获。例如上图展示的<code>OutOfMemoryError</code>。这类异常发生时，会导致程序终止运行（线程终止）。</li>
+</ul>
+<h3 id="3-CheckedException和unCheckedException有什么区别？"><a href="#3-CheckedException和unCheckedException有什么区别？" class="headerlink" title="3. CheckedException和unCheckedException有什么区别？"></a>3. <code>CheckedException</code>和<code>unCheckedException</code>有什么区别？</h3><blockquote>
+<p> 二者只是逻辑上的分类，并不存在<code>CheckedException</code>或<code>unCheckedException</code>接口或类</p>
+</blockquote>
+<ul>
+<li><code>CheckedException</code>即受检查异常：Java代码在编译过程中，如果受检查异常没有被<code>catch</code>或者<code>throws</code>关键字处理的话，就没法通过编译。除了<code>RuntimeException</code>及其子类，其他的<code>Exception</code>类及其子类都是受检查异常，常见的有：<code>IoException</code>、<code>ClassNotFoundException</code>、<code>SQLException</code>等。</li>
+<li><code>unCheckedException</code>即非受检查异常：Java代码在编译过程中，即使我们不对其进行处理，编译也可以通过。<code>RuntimeException</code>及其子类都是非受检查异常，常见的有：<code>NullPointException</code>、<code>IllegalArgumentException</code>、<code>NumberFormatException</code>等。</li>
+</ul>
+<p><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512152237987.png"></p>
+<h3 id="4-Throwable有哪些常用方法？"><a href="#4-Throwable有哪些常用方法？" class="headerlink" title="4. Throwable有哪些常用方法？"></a>4. <code>Throwable</code>有哪些常用方法？</h3><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512152739565.png" style="zoom:40%" align="center">
+
+
+
+<ul>
+<li><code>String getMessage()</code>：返回异常描述信息</li>
+</ul>
+<p><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512153002731.png"></p>
+<ul>
+<li><code>void printStackTrace()</code>：在控制台打印<code>Throwable</code>对象封装的异常信息</li>
+</ul>
+<h3 id="5-try-with-resources代替try-catch-finally进行资源释放"><a href="#5-try-with-resources代替try-catch-finally进行资源释放" class="headerlink" title="5. try-with-resources代替try-catch-finally进行资源释放"></a>5. <code>try-with-resources</code>代替<code>try-catch-finally</code>进行资源释放</h3><p><code>try-with-resources</code>是JDK1.7推出的一种资源释放的方式。</p>
+<ol>
+<li>适用范围：资源的定义，任何实现<code>java.lang.AutoCloseable</code>或<code>java.lang.Closeable</code>接口的对象。</li>
+<li>关闭资源和finally块的执行顺序：在<code>try-with-resources</code>语句中，任何catch或finally块在声明的资源关闭后运行。</li>
+<li>使用说明：只需在<code>try</code>后面跟上小括号<code>()</code>括号中对资源进行定义，无需使用<code>finally</code>手动释放资源。</li>
+</ol>
+<p><strong>《Effective Java》</strong>中明确指出：</p>
+<blockquote>
+<p>面对必须要关闭的资源，我们总是优先使用<code>try-with-resources</code>而不是<code>finally</code>。随之产生的代码更简短，更清晰。</p>
+</blockquote>
+<p>Java中类似于<code>InputStream</code>、<code>OutputStream</code>、<code>Scanner</code>、<code>PrintWriter</code>等资源都需要我们调用<code>close()</code>方法进行手动关闭资源，一般情况下我们可以使用<code>try-catch-finally</code>来实现：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">Scanner</span> <span class="variable">scanner</span> <span class="operator">=</span> <span class="literal">null</span>;</span><br><span class="line"><span class="keyword">try</span> &#123;</span><br><span class="line">  scanner = <span class="keyword">new</span> <span class="title class_">Scanner</span>(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;read.txt&quot;</span>));</span><br><span class="line">&#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">  e.printStackTrace();</span><br><span class="line">&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (scanner != <span class="literal">null</span>) &#123;</span><br><span class="line">    scanner.close();</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>JDK1.7后使用<code>try-with-resources</code>实现：</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span> (<span class="type">Scanner</span> <span class="variable">scanner</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;read.txt&quot;</span>)))&#123;</span><br><span class="line">  <span class="keyword">while</span> (scanner.hasNext()) &#123;</span><br><span class="line">    System.out.println(scanner.nextLine());</span><br><span class="line">  &#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (FileNotFoundException e) &#123;</span><br><span class="line">  e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>涉及到多个资源的定义，使用分号<code>;</code>进行分隔</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">try</span> (<span class="type">Scanner</span> <span class="variable">scanner</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Scanner</span>(<span class="keyword">new</span> <span class="title class_">File</span>(<span class="string">&quot;read.txt&quot;</span>)); </span><br><span class="line">     <span class="type">OutputStream</span> <span class="variable">outputStream</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">FileOutputStream</span>(<span class="string">&quot;output.txt&quot;</span>))&#123;</span><br><span class="line">  <span class="keyword">while</span> (scanner.hasNext()) &#123;</span><br><span class="line">    outputStream.write(scanner.nextLine().getBytes(StandardCharsets.UTF_8));</span><br><span class="line">  &#125;</span><br><span class="line">&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">  e.printStackTrace();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Java小知识</title>
+    <url>/2022/05/11/Java%E5%B0%8F%E7%9F%A5%E8%AF%86/</url>
+    <content><![CDATA[<ol>
+<li>使用<code>String.split(expr)</code>方法时，要注意<code>expr</code>是否是正则表达式的通配符，如 <code>.</code>, <code>$</code>等，要使用双反斜杠进行转译<code>\\</code>，<code>\</code>要使用<code>\\\\</code>进行转译</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;abc.def.ghi&quot;</span>;</span><br><span class="line">String[] split = s.split(<span class="string">&quot;\\.&quot;</span>);</span><br><span class="line">System.out.println(Arrays.toString(split));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行结果</span></span><br><span class="line">[abc, def, ghi]</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;abc\\def\\ghi&quot;</span>;</span><br><span class="line">System.out.println(<span class="string">&quot;s:\t\t&quot;</span> + s);</span><br><span class="line">String[] split = s.split(<span class="string">&quot;\\\\&quot;</span>);</span><br><span class="line">System.out.println(<span class="string">&quot;split:\t&quot;</span> + Arrays.toString(split));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行结果</span></span><br><span class="line">s:			abc\def\ghi</span><br><span class="line">split:	[abc, def, ghi]</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>集合new对象时添加元素</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// new对象的时候添加元素</span></span><br><span class="line">Map&lt;String, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, Integer&gt;()&#123;&#123;</span><br><span class="line">  put(<span class="string">&quot;a&quot;</span>, <span class="number">0</span>);</span><br><span class="line">  put(<span class="string">&quot;b&quot;</span>, <span class="number">1</span>);</span><br><span class="line">&#125;&#125;;</span><br><span class="line">System.out.println(map);</span><br><span class="line"><span class="comment">// 正常添加元素</span></span><br><span class="line">map.put(<span class="string">&quot;c&quot;</span>, <span class="number">2</span>);</span><br><span class="line">System.out.println(map);</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<p><img src="/2022/05/11/Java%E5%B0%8F%E7%9F%A5%E8%AF%86/image-20211129213733732.png"> </p>
+<ol start="3">
+<li>查看Java版本信息</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">System.out.println(System.getProperty(<span class="string">&quot;java.version&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+
+
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL:InnoDB存储引擎和MyISAM的区别？</title>
+    <url>/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/</url>
+    <content><![CDATA[<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/mysql-logo-800-400.jpg"></p>
+<p>本文从<strong>事务</strong>，<strong>外键</strong>，<strong>索引</strong>， <strong>存储文件</strong>，<strong>日志</strong>，<strong>count行数</strong>，<strong>锁</strong>，<strong>主键</strong>八个方面系统地对比了在<code>MySQL</code>中<code>InnoDB</code>存储引擎和<code>MyISAM</code>存储引擎的区别。</p>
+<span id="more"></span>
+
+<h3 id="1-事务"><a href="#1-事务" class="headerlink" title="1. 事务"></a>1. 事务</h3><ul>
+<li><p><code>InnoDB</code>：支持事务。</p>
+</li>
+<li><p><code>MyISAM</code>：不支持事务，强调的是性能，每次查询具有原子性，一般情况下其查询数度比<code>InnoDB</code>更快，但是不提供事务支持。</p>
+</li>
+</ul>
+<blockquote>
+<p>一般情况下<code>MyISAM</code>查询速度比<code>InnoDB</code>快的原因：</p>
+<p>答：在查询的时候，InnoDB要维护的东西比MyISAM多很多，具体以下几点：</p>
+<ul>
+<li>InnoDB缓存数据块，MyISAM只缓存索引块， 这中间还有换进换出的减少；</li>
+<li>InnoDB寻址要映射到块，再到行，MyISAM记录的直接是文件的OFFSET，定位比InnoDB要快 </li>
+<li>InnoDB还需要维护MVCC一致； 虽然你的场景没有，但他还是需要去检查和维护</li>
+</ul>
+</blockquote>
+<h3 id="2-外键"><a href="#2-外键" class="headerlink" title="2. 外键"></a>2. 外键</h3><ul>
+<li><code>InnoDB</code>：支持外键</li>
+<li><code>MyISAM</code>：不支持外键，对一个包含外键的InnoDB表转为MyISAM会失败</li>
+</ul>
+<h3 id="3-索引"><a href="#3-索引" class="headerlink" title="3. 索引"></a>3. 索引</h3><ul>
+<li><code>InnoDB</code>：聚集索引，数据文件和索引存储在一起，必须要有主键，通过主键查询效率很高，一次查询即可得到完整的行数据。辅助索引存储的数据是对应的主键索引的值，通过辅助索引查询需要两次查询，根据辅助索引查询到对应的主键索引，再根据主键索引查询到对应的行数据（这一过程称之为<strong>回表</strong>）。</li>
+<li><code>MyISAM</code>：非聚集索引，索引和数据文件分开保存，索引保存的是数据文件的指针。主键索引和辅助索引相互独立。</li>
+</ul>
+<blockquote>
+<p>InnoDB的B+树主键索引的叶子节点就是数据文件，辅助索引的叶子节点是主键的值；而MyISAM的B+树主键索引和辅助索引的叶子节点都是数据文件的地址指针。</p>
+</blockquote>
+<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png"></p>
+<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130322302.png"></p>
+<h3 id="4-存储文件"><a href="#4-存储文件" class="headerlink" title="4. 存储文件"></a>4. 存储文件</h3><ul>
+<li><code>InnoDB</code>：存储文件有<strong>frm、ibd</strong>，<strong>frm</strong>是表定义文件，<strong>ibd</strong>是数据文件。</li>
+<li><code>MyISAM</code>：存储文件有<strong>frm、myd、myi</strong>，<strong>frm</strong>是表定义文件，<strong>myd</strong>是数据文件，<strong>myi</strong>是索引文件。</li>
+</ul>
+<h3 id="5-日志"><a href="#5-日志" class="headerlink" title="5. 日志"></a>5. 日志</h3><ul>
+<li><code>InnoDB</code>：有<code>redo log</code>，使用 InnoDB 的数据库在异常崩溃后，数据库重新启动的时候会保证数据库恢复到崩溃前的状态，这个恢复的过程依赖于 <code>redo log</code> 。 <code>redo log</code> 保证事务的持久性， <code>undo log</code> 保证事务的原子性。</li>
+<li><code>MyISAM</code>：没有<code>redo log</code>，不支持数据库异常崩溃后的安全恢复。</li>
+</ul>
+<h3 id="6-count"><a href="#6-count" class="headerlink" title="6. count"></a>6. count</h3><ul>
+<li><code>InnoDB</code>：不保存表的具体行数，如果使用<code>select count(*) from table</code>，就会遍历整个表，消耗相当大，但是在加了<code>where</code>条件后，myisam和innodb处理的方式都一样。</li>
+<li><code>MyISAM</code>：使用一个变量保存整个表的行数，如果使用<code>select count(*) from table</code>，会直接读取该变量。</li>
+</ul>
+<blockquote>
+<p> 因为InnoDB的事务特性，在同一时刻表中的行数对于不同的事务而言是不一样的，因此count统计会计算对于当前事务而言可以统计到的行数，而不是将总行数储存起来方便快速查询。</p>
+</blockquote>
+<h3 id="7-锁"><a href="#7-锁" class="headerlink" title="7. 锁"></a>7. 锁</h3><ul>
+<li><code>InnoDB</code>：支持行级锁和表锁。行锁是基于索引实现的，如果没有命中索引，也无法使用行锁，会退化到表锁。</li>
+<li><code>MyISAM</code>：仅支持表锁，不支持行锁。</li>
+</ul>
+<h3 id="8-主键"><a href="#8-主键" class="headerlink" title="8. 主键"></a>8. 主键</h3><ul>
+<li><code>InnoDB</code>：如果没有设定主键，会自动生成一个6字节的隐藏主键（用户不可见），数据保存在主键索引的叶子节点上。</li>
+<li><code>MyISAM</code>：允许不含有主键。</li>
+</ul>
+<blockquote>
+<p>删除部分自增主键后，二者的区别？</p>
+<ol>
+<li>不重启服务器</li>
+</ol>
+<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，插入一行新的数据，无论是<code>InnoDB</code>还是<code>MyISAM</code>都会从<code>6</code>开始插入。</p>
+<ol start="2">
+<li>重启服务器</li>
+</ol>
+<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，重启服务器，再插入一行新的数据，<code>InnoDB</code>主键会从<code>4</code>开始插入，而<code>MyISAM</code>会从<code>6</code>开始插入。</p>
+<blockquote>
+<p>原因：Innodb表把自增主键的最大ID记录到内存中，重启数据库后，都会导致最大自增ID重置；MyISAM表会把自增主键的最大ID记录到数据文件里，重启MySQL自增主键的最大ID也不会丢失。</p>
+</blockquote>
+<p><strong>说明：mysql8.0版本，重启数据库后，不会导致最大自增ID重置</strong></p>
+<p><strong>原因：</strong>在 MySQL 8.0 中，<code>AUTO_INCREMENT</code>计数器的逻辑变了，每当计数器的值有变，InnoDB 会将其写入 redo log，保存到引擎专用的系统表中。MySQL 正常关闭后重启：从系统表中获取计数器的值。MySQL 故障后重启：从系统表中获取计数器的值；从最后一个检查点开始扫描 redo log 中记录的计数器值；取这两者的最大值作为新值。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL:总算把B+树搞明白了</title>
+    <url>/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/</url>
+    <content><![CDATA[<p><img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/mysql-logo-800-400.jpg"></p>
+<h2 id="1-MySQL索引为何使用B-树"><a href="#1-MySQL索引为何使用B-树" class="headerlink" title="1. MySQL索引为何使用B+树"></a>1. MySQL索引为何使用B+树</h2><p><code>MySQL</code>索引是提升数据库查询效率的最强武器，那么为何索引能够提升数据库查询速度？为何<code>MySQL</code>采用<code>B+树</code>来实现索引？</p>
+<span id="more"></span>
+
+<h3 id="1-为何索引能提升查询性能？"><a href="#1-为何索引能提升查询性能？" class="headerlink" title="1. 为何索引能提升查询性能？"></a>1. 为何索引能提升查询性能？</h3><p>第一个问题可以用一个比较通俗的说法来回答，数据库索引相当于给一本书加了一个目录。</p>
+<p>问题来了，为什么有了”目录“就能提升数据库查询效率呢？</p>
+<p>比较简单的解释，通过目录查找的过程可以近似理解为<code>二分查找</code>查找的过程，我们知道<code>二分查找</code>可以将遍历查询的时间复杂度从<code>o(n)</code>降为<code>o(log n)</code>。</p>
+<p>数据库利用索引查询数据的具体过程，后文会进行详细描述。</p>
+<h3 id="2-为何MySQL不用二叉树来实现索引？"><a href="#2-为何MySQL不用二叉树来实现索引？" class="headerlink" title="2. 为何MySQL不用二叉树来实现索引？"></a>2. 为何<code>MySQL</code>不用<code>二叉树</code>来实现索引？</h3><p>我们知道通过排序二叉树（也叫二分查找树）可以实现<code>o(log n)</code>的时间复杂度进行查询，相比于<code>o(n)</code>的时间复杂度已经有了极大的提升。</p>
+<p><strong><code>MySQL</code>为何没有采用二分查找树作为索引呢？</strong></p>
+<p>要解答这个问题，就必须介绍那些因素对数据库查询过程中起到了制约作用。我们都知道<code>CPU</code>的数据处理性能远远比<code>磁盘I/O</code>的速度快，因此要提升查询性能，较少<code>I/O</code>次数就至关重要了。通过<code>树</code>查找的过程，树的层数基本就等于<code>磁盘I/O</code>的次数，因此要尽可能降低树的高度。</p>
+<p>我们知道，对于一颗满二叉树，假设树的高度为<code>n</code>，那么这棵树的节点个数为<code>2^n-1</code>个，即对于一个含有<code>n</code>个节点的二叉树，其高度至少为<code>log n</code>，对于数据库百万千万的数据，如果要经历<code>log n</code>次的<code>I/O</code>，其查询耗时则可想而知。</p>
+<p>至此，我们知道，之所以不采用<code>二叉树</code>来实现数据库索引，是因为二叉树的高度太大，而每次查询经历的<code>磁盘I/O</code>的次数和树的高度相等，导致查询速度过慢。</p>
+<h3 id="3-为何使用B-树？"><a href="#3-为何使用B-树？" class="headerlink" title="3. 为何使用B+树？"></a>3. 为何使用<code>B+</code>树？</h3><p>前面提到，为了减少<code>磁盘I/O</code>的次数，就必须降低树的高度，比较容易想到降低树的高度的方法：增加树的分叉！不难计算，对于一颗具有<code>n</code>个节点的<code>k</code>叉树，其树的高度为$log_k n$。</p>
+<p>多叉树里有两种较为常见的，分别为<code>B-</code>树（又称为<code>B</code>树）和<code>B+</code>树。这二者的区别可参考<a href="https://www.jianshu.com/p/ace3cd6526c4">B+树和B树的区别</a>，我们这里主要提三点：</p>
+<ul>
+<li><code>B+</code>树的data数据只存放在叶子节点，非叶子节点只存储树的索引信息；而<code>B-</code>树的叶子节点和非叶子节点都存放实际的数据。</li>
+<li><code>B+</code>树的叶子节点增加了前后指针，分别指向前一个叶子节点和后一个叶子结点，可以理解为维护了一个双向链表。</li>
+<li>由于<code>B+</code>树的实际数据都保存在叶子结点，且所有叶子节点都在同一层，所以使用<code>B+</code>树进行查询所经历的<code>I/O</code>次数固定为树的高度；而由于<code>B-</code>树非叶子节点也存放数据，则其查询时间是不固定的。</li>
+</ul>
+<p><strong><code>B+</code>树和<code>B-</code>树中，为何选择<code>B+</code>树？</strong><a id="1"></a></p>
+<p>我们知道要提升数据库查询效率，就要尽可能降低树的高度，即对应相同的数据量，应尽可能使树变得”胖“一些。由于<code>B+</code>树非叶子节点不存储实际数据，对于一个非叶子节点（MySQL数据是分页保存，每页默认16kB，即树的每个节点的大小为16kB），能够有更多的”分叉“，因此可以让树变得更”宽矮“一些，即相比于<code>B-</code>树，同样高度的<code>B+</code>树能保存更多的数据页，因此MySQL采用<code>B+</code>树来实现索引。</p>
+<h2 id="2-InnoDB是如何存储数据的？"><a href="#2-InnoDB是如何存储数据的？" class="headerlink" title="2. InnoDB是如何存储数据的？"></a>2. <code>InnoDB</code>是如何存储数据的？</h2><blockquote>
+<p>MySQL 支持多种存储引擎，不同的存储引擎，存储数据的方式也是不同的，我们最常使用的是 InnoDB 存储引擎，下面介绍下InnoDB 是如何存储数据的。</p>
+</blockquote>
+<p>磁盘读写的最小单位是<strong>扇区</strong>，扇区的大小只有 <code>512B</code> 大小，操作系统一次会读写多个扇区，所以<strong>操作系统的最小读写单位是块（Block）。Linux 中的块大小为 <code>4KB</code><strong>，也就是一次磁盘  I&#x2F;O 操作会直接读写 8 个扇区。同样的，MySQL保存的记录是以「行」为单位的，但是数据库的读取并不以「行」为单位，否则一次读取（也就是一次 I&#x2F;O 操作）只能处理一行数据，效率会非常低。</strong>InnoDB 的数据是按「数据页」为单位来读写的</strong>，也就是说，当需要读一条记录的时候，并不是将这个记录本身从磁盘读出来，而是以页为单位，将其整体读入内存。</p>
+<p><code>InnoDB</code>保存的数据文件是后缀为<code>.ibd</code>的文件，其含义是<code>InnoDB data</code>文件，又叫<code>表空间</code>。虽然在数据表里，它们看起来是挨在一起的。但实际上在<code>xx.ibd</code>里他们被分成很多小份的<strong>数据页</strong>，每份默认大小为<code>16kB</code>。类似如下结构：</p>
+<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223121145.png" style="zoom:60%">
+
+<p>数据库<code>I/O</code>操作的最小单位是<strong>页</strong>，<strong>InnoDB 数据页的默认大小是 16KB</strong>，意味着数据库每次读写都是以 16KB 为单位的，一次最少从磁盘中读取 16K 的内容到内存中，一次最少把内存中的 16K 内容刷新到磁盘中。</p>
+<p>数据页主要包括七个部分，<strong>数据页结构图</strong><a id="2"></a>如下：</p>
+<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221149949.png" style="zoom:40%">
+
+<p>各部分的作用：</p>
+<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221347217.png" style="zoom:50%">
+
+<p>在 File Header 中有两个指针，分别指向上一个数据页和下一个数据页，连接起来的页相当于一个双向的链表，如下图所示：</p>
+<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221521045.png" style="zoom:60%">
+
+<blockquote>
+<p>采用链表的结构是让数据页之间不需要是物理上的连续的，而是逻辑上的连续。</p>
+</blockquote>
+<p><strong>数据页中的记录按照「主键」顺序组成单向链表</strong>，单向链表的特点就是插入、删除非常方便，但是检索效率不高，最差的情况下需要遍历链表上的所有节点才能完成检索。</p>
+<p>因此，数据页中有一个<strong>页目录</strong>，起到记录的索引作用，就像我们书那样，针对书中内容的每个章节设立了一个目录，想看某个章节的时候，可以查看目录，快速找到对应的章节的页数，而数据页中的页目录就是为了能快速找到记录。通过<strong>页目录</strong>可以使数据页内查询记录的时间复杂度从<code>o(n)</code>变为<code>o(log n)</code>，提升页内查询效率。</p>
+<h2 id="3-B-树是如何进行查询的？"><a href="#3-B-树是如何进行查询的？" class="headerlink" title="3. B+树是如何进行查询的？"></a>3. <code>B+</code>树是如何进行查询的？</h2><p>在<code>InnoDB</code>中一个<strong>数据页</strong>默认的大小为<code>16 kB</code>，当面对大数据量时，需要多个数据页共同存放数据，如何建立合适的索引，才能快速的定位到记录所在的页。因此，<code>MySQL</code>采用<code>B+</code>树作为索引。</p>
+<p>InnoDB 里的 B+ 树中的<strong>每个节点都是一个数据页</strong>，结构示意图如下：</p>
+<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223718982.png" style="zoom:80%">
+
+<p>通过上图，我们看出  B+ 树的特点：</p>
+<ul>
+<li>只有叶子节点（最底层的节点）才存放了数据，非叶子节点（其他上层节）仅用来存放目录项作为索引。</li>
+<li>非叶子节点分为不同层次，通过分层来降低每一层的搜索量；</li>
+<li>所有节点按照索引键大小排序，构成一个双向链表，便于范围查询；</li>
+</ul>
+<p>我们再看看 B+ 树如何实现快速查找主键为 6 的记录，以上图为例子：</p>
+<ul>
+<li>从根节点开始，通过二分法快速定位到符合页内范围包含查询值的页，因为查询的主键值为 6，在[1, 7)范围之间，所以到页 30 中查找更详细的目录项；</li>
+<li>在非叶子节点（页30）中，继续通过二分法快速定位到符合页内范围包含查询值的页，主键值大于 5，所以就到叶子节点（页16）查找记录；</li>
+<li>接着，在叶子节点（页16）中，通过槽查找记录时，使用二分法快速定位要查询的记录在哪个槽（哪个记录分组），定位到槽后，再遍历槽内的所有记录，找到主键为 6 的记录。</li>
+</ul>
+<h2 id="4-聚集索引和二级索引"><a href="#4-聚集索引和二级索引" class="headerlink" title="4. 聚集索引和二级索引"></a>4. 聚集索引和二级索引</h2><p>索引又可以分为聚集索引和二级索引，其区别在于叶子节点存放了什么数据。</p>
+<ul>
+<li>聚集索引叶子节点存放了实际数据，所有完整的数据记录都保存在聚集索引的叶子节点；</li>
+<li>二级索引叶子节点存放了主键值，而不是实际数据</li>
+</ul>
+<p>因为表的数据都是存放在聚集索引的叶子节点里，所以 InnoDB 存储引擎一定会为表创建一个聚集索引，且由于数据在物理上只会保存一份，所以聚簇索引只能有一个。</p>
+<p>InnoDB 在创建聚簇索引时，会根据不同的场景选择不同的列作为索引：</p>
+<ul>
+<li>如果有主键，默认会使用主键作为聚簇索引的索引键；</li>
+<li>如果没有主键，就选择第一个不包含 NULL 值的唯一列作为聚簇索引的索引键；</li>
+<li>在上面两个都没有的情况下，InnoDB 将自动生成一个隐式自增 id 列作为聚簇索引的索引键；</li>
+</ul>
+<p>一张表只能有一个聚簇索引，那为了实现非主键字段的快速搜索，就引出了二级索引（非聚簇索引&#x2F;辅助索引），它也是利用了 B+ 树的数据结构，但是二级索引的叶子节点存放的是主键值，不是实际数据。</p>
+<blockquote>
+<p>如果某个查询语句使用了二级索引，但是查询的数据不是主键值，这时在二级索引找到主键值后，需要去聚簇索引中获得数据行，这个过程就叫作「<strong>回表</strong>」，也就是说要查两个 B+ 树才能查到数据。不过，当查询的数据是主键值时，因为只在二级索引就能查询到，不用再去聚簇索引查，这个过程就叫作「<strong>索引覆盖</strong>」，也就是只需要查一个 B+ 树就能找到数据。</p>
+</blockquote>
+<h2 id="5-一颗B-树可以存放多少行数据？"><a href="#5-一颗B-树可以存放多少行数据？" class="headerlink" title="5. 一颗B+树可以存放多少行数据？"></a>5. 一颗<code>B+</code>树可以存放多少行数据？</h2><p>前面提到，<code>B+</code>树的每个节点是一个<strong>数据页</strong>，默认大小<code>16kB</code>。前面<a href="#2"> 数据页结构图</a>已经介绍了每个数据页的结构，除去页头页尾及其它描述信息，真正存放用户记录的<code>User Records</code>部分还不足<code>16kB</code>。</p>
+<h3 id="1-叶子节点和非叶子节点分别存放多少数据？"><a href="#1-叶子节点和非叶子节点分别存放多少数据？" class="headerlink" title="1. 叶子节点和非叶子节点分别存放多少数据？"></a>1. 叶子节点和非叶子节点分别存放多少数据？</h3><p>B+树的<strong>最末级叶子结点</strong>里放了record数据。而<strong>非叶子结点</strong>里则放了用来加速查询的索引数据。</p>
+<p><img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517235249221.png" alt="三层B+树"></p>
+<p>同样一个16kB的页，非叶子节点里每一条数据都指向一个新的页，而新的页有两种可能。</p>
+<ul>
+<li>如果是末级叶子节点的话，那么里面放的就是一行行record数据。</li>
+<li>如果是非叶子节点，那么就会循环继续指向新的数据页。</li>
+</ul>
+<h3 id="2-B-树总行数的计算公式"><a href="#2-B-树总行数的计算公式" class="headerlink" title="2. B+树总行数的计算公式"></a>2. <strong>B+树总行数的计算公式</strong></h3><p>假设</p>
+<ul>
+<li>非叶子结点内指向其他内存页的指针数量为<code>x</code></li>
+<li>叶子节点内能容纳的record数量为<code>y</code></li>
+<li>B+树的层数为<code>z</code></li>
+</ul>
+<p>那这棵B+树放的<strong>行数据总量</strong>等于 <code>(x ^ (z-1)) * y</code>。</p>
+<p><strong><code>x</code>怎么算？</strong></p>
+<p><img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517235825563.png" alt="数据页的结构"></p>
+<p>非叶子节点里主要放索引查询相关的数据，放的是主键和指向页号。</p>
+<p>主键假设是<code>bigint（8Byte）</code>，而页号在源码里叫<code>FIL_PAGE_OFFSET（4Byte）</code>，那么非叶子节点里的一条数据是<code>12Byte</code>左右。</p>
+<p>整个数据页<code>16k</code>， 页头页尾那部分数据全加起来大概<code>128Byte</code>，加上页目录毛估占<code>1k</code>吧。那剩下的<code>15kB</code>除以<code>12Byte</code>，等于<code>1280</code>，也就是可以指向<strong>x&#x3D;1280页</strong>。</p>
+<p>我们常说的二叉树指的是一个结点可以发散出两个新的结点。m叉树一个节点能指向m个新的结点。这个指向新节点的操作就叫<strong>扇出（fanout）</strong>。</p>
+<p>而上面的B+树，它能指向1280个新的节点，恐怖如斯，可以说<strong>扇出非常高</strong>了。</p>
+<p> <strong><code>y</code>怎么算？</strong></p>
+<p>叶子节点和非叶子节点的数据结构是一样的，所以也假设剩下<code>15kB</code>可以发挥。</p>
+<p>叶子节点里放的是真正的行数据。假设一条行数据<code>1kB</code>，所以一页里能放<strong>y&#x3D;15行</strong>。</p>
+<p><strong>行总数计算</strong></p>
+<p>回到  <code>(x ^ (z-1)) * y</code> 这个公式。</p>
+<p>已知<code>x=1280</code>，<code>y=15</code>。</p>
+<p>假设B+树是<strong>两层</strong>，那<code>z=2</code>。则是<code>(1280 ^ (2-1)) * 15 ≈ 2w</code></p>
+<p>假设B+树是<strong>三层</strong>，那<code>z=3</code>。则是<code>(1280 ^ (3-1)) * 15 ≈ 2.5kw</code></p>
+<p><strong>这个2.5kw，就是我们常说的单表建议最大行数2kw的由来。</strong>毕竟再加一层，数据就大得有点离谱了。三层数据页对应最多三次磁盘IO，也比较合理。</p>
+<h3 id="3-行数超过1亿查询速度就慢吗？"><a href="#3-行数超过1亿查询速度就慢吗？" class="headerlink" title="3. 行数超过1亿查询速度就慢吗？"></a>3. 行数超过1亿查询速度就慢吗？</h3><p>上面假设单行数据用了1kb，所以一个数据页能放个15行数据。</p>
+<p>如果我单行数据用不了这么多，比如只用了<code>250byte</code>。那么单个数据页能放60行数据。</p>
+<p>那同样是三层B+树，单表支持的行数就是 <code>(1280 ^ (3-1)) * 60 ≈ 1个亿</code>。</p>
+<p>你看我一个亿的数据，其实也就三层B+树，在这个B+树里要查到某行数据，最多也是三次磁盘IO。所以并不慢。</p>
+<h3 id="4-B树存放多少行数据"><a href="#4-B树存放多少行数据" class="headerlink" title="4. B树存放多少行数据"></a>4. B树存放多少行数据</h3><p>B树将行数据都存在非叶子节点上，假设每个数据页还是16kB，掐头去尾每页剩15kB，并且一条数据表行数据还是占1kb，就算不考虑各种页指针的情况下，也只能放个15条数据。<strong>数据页扇出明显变少了。</strong></p>
+<p>B树可承载的总行数的公式也变成了一个<strong>等比数列</strong>。</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">15 + 15^2 +15^3 + ... + 15^z</span><br></pre></td></tr></table></figure>
+
+<p>其中<strong>z还是层数</strong>的意思。</p>
+<p>为了能放<code>2kw</code>左右的数据，需要<code>z&gt;=6</code>。也就是树需要有6层，查一次要访问6个页。假设这6个页并不连续，为了查询其中一条数据，最坏情况需要进行<strong>6次磁盘IO</strong>。</p>
+<p>而B+树同样情况下放2kw数据左右，查一次最多是<strong>3次磁盘IO。</strong></p>
+<p>磁盘IO越多则越慢，这两者在性能上差距略大。</p>
+<p>为此，我们可以更明确地回答<a href="#1"><code>B+</code>树和<code>B-</code>树中，为何选择<code>B+</code>树？</a>，<strong>B+树比B树更适合成为mysql的索引。</strong></p>
+<p>参考资料：</p>
+<p>《MYSQL内核：INNODB存储引擎 卷1》</p>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>MySQL:事务&amp;MVCC详解</title>
     <url>/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/</url>
     <content><![CDATA[<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/mysql-logo-800-400.jpg"></p>
@@ -1306,136 +1579,50 @@
       </tags>
   </entry>
   <entry>
-    <title>MySQL:总算把B+树搞明白了</title>
-    <url>/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/</url>
-    <content><![CDATA[<p><img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/mysql-logo-800-400.jpg"></p>
-<h2 id="1-MySQL索引为何使用B-树"><a href="#1-MySQL索引为何使用B-树" class="headerlink" title="1. MySQL索引为何使用B+树"></a>1. MySQL索引为何使用B+树</h2><p><code>MySQL</code>索引是提升数据库查询效率的最强武器，那么为何索引能够提升数据库查询速度？为何<code>MySQL</code>采用<code>B+树</code>来实现索引？</p>
+    <title>Redis过期key是否立马被删除？</title>
+    <url>/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/</url>
+    <content><![CDATA[<h3 id="Redis过期key是否立马被删除？"><a href="#Redis过期key是否立马被删除？" class="headerlink" title="Redis过期key是否立马被删除？"></a>Redis过期key是否立马被删除？</h3><p>答案是不会，Redis处理过期key主要有两种方式：</p>
+<ul>
+<li>惰性删除（客户端侧）</li>
+<li>定期随机删除（服务端侧）</li>
+</ul>
 <span id="more"></span>
 
-<h3 id="1-为何索引能提升查询性能？"><a href="#1-为何索引能提升查询性能？" class="headerlink" title="1. 为何索引能提升查询性能？"></a>1. 为何索引能提升查询性能？</h3><p>第一个问题可以用一个比较通俗的说法来回答，数据库索引相当于给一本书加了一个目录。</p>
-<p>问题来了，为什么有了”目录“就能提升数据库查询效率呢？</p>
-<p>比较简单的解释，通过目录查找的过程可以近似理解为<code>二分查找</code>查找的过程，我们知道<code>二分查找</code>可以将遍历查询的时间复杂度从<code>o(n)</code>降为<code>o(log n)</code>。</p>
-<p>数据库利用索引查询数据的具体过程，后文会进行详细描述。</p>
-<h3 id="2-为何MySQL不用二叉树来实现索引？"><a href="#2-为何MySQL不用二叉树来实现索引？" class="headerlink" title="2. 为何MySQL不用二叉树来实现索引？"></a>2. 为何<code>MySQL</code>不用<code>二叉树</code>来实现索引？</h3><p>我们知道通过排序二叉树（也叫二分查找树）可以实现<code>o(log n)</code>的时间复杂度进行查询，相比于<code>o(n)</code>的时间复杂度已经有了极大的提升。</p>
-<p><strong><code>MySQL</code>为何没有采用二分查找树作为索引呢？</strong></p>
-<p>要解答这个问题，就必须介绍那些因素对数据库查询过程中起到了制约作用。我们都知道<code>CPU</code>的数据处理性能远远比<code>磁盘I/O</code>的速度快，因此要提升查询性能，较少<code>I/O</code>次数就至关重要了。通过<code>树</code>查找的过程，树的层数基本就等于<code>磁盘I/O</code>的次数，因此要尽可能降低树的高度。</p>
-<p>我们知道，对于一颗满二叉树，假设树的高度为<code>n</code>，那么这棵树的节点个数为<code>2^n-1</code>个，即对于一个含有<code>n</code>个节点的二叉树，其高度至少为<code>log n</code>，对于数据库百万千万的数据，如果要经历<code>log n</code>次的<code>I/O</code>，其查询耗时则可想而知。</p>
-<p>至此，我们知道，之所以不采用<code>二叉树</code>来实现数据库索引，是因为二叉树的高度太大，而每次查询经历的<code>磁盘I/O</code>的次数和树的高度相等，导致查询速度过慢。</p>
-<h3 id="3-为何使用B-树？"><a href="#3-为何使用B-树？" class="headerlink" title="3. 为何使用B+树？"></a>3. 为何使用<code>B+</code>树？</h3><p>前面提到，为了减少<code>磁盘I/O</code>的次数，就必须降低树的高度，比较容易想到降低树的高度的方法：增加树的分叉！不难计算，对于一颗具有<code>n</code>个节点的<code>k</code>叉树，其树的高度为$log_k n$。</p>
-<p>多叉树里有两种较为常见的，分别为<code>B-</code>树（又称为<code>B</code>树）和<code>B+</code>树。这二者的区别可参考<a href="https://www.jianshu.com/p/ace3cd6526c4">B+树和B树的区别</a>，我们这里主要提三点：</p>
+<h4 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h4><p>当客户端请求查询时，判断当前key已过期，则会删除该key，删除key的主动权交给每次访问的请求。</p>
+<p>弊端：只能处理还会访问的key，无法对一些不再会被访问的key进行删除。</p>
+<p>该实现通过<code>expiredIfNeeded</code>函数实现，源码路径：<code>src/db.c</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">expireIfNeeded</span><span class="params">(redisDb *db, robj *key, <span class="type">int</span> force_delete_expired)</span> &#123;</span><br><span class="line">   <span class="comment">// key 没有过期，return 0</span></span><br><span class="line">    <span class="keyword">if</span> (!keyIsExpired(db,key)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (server.masterhost != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (server.current_client == server.master) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (!force_delete_expired) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (checkClientPauseTimeoutAndReturnIfPaused()) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Delete the key */</span></span><br><span class="line">    deleteExpiredKeyAndPropagate(db,key);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h4><p>对于一些key过期后不再被访问，惰性删除永远无法对其进行删除，这会导致已过期的key不断积压，因此仅靠客户端侧的处理是不够的。</p>
 <ul>
-<li><code>B+</code>树的data数据只存放在叶子节点，非叶子节点只存储树的索引信息；而<code>B-</code>树的叶子节点和非叶子节点都存放实际的数据。</li>
-<li><code>B+</code>树的叶子节点增加了前后指针，分别指向前一个叶子节点和后一个叶子结点，可以理解为维护了一个双向链表。</li>
-<li>由于<code>B+</code>树的实际数据都保存在叶子结点，且所有叶子节点都在同一层，所以使用<code>B+</code>树进行查询所经历的<code>I/O</code>次数固定为树的高度；而由于<code>B-</code>树非叶子节点也存放数据，则其查询时间是不固定的。</li>
+<li>如何让处理“占着茅坑不拉屎”的key?</li>
 </ul>
-<p><strong><code>B+</code>树和<code>B-</code>树中，为何选择<code>B+</code>树？</strong><a id="1"></a></p>
-<p>我们知道要提升数据库查询效率，就要尽可能降低树的高度，即对应相同的数据量，应尽可能使树变得”胖“一些。由于<code>B+</code>树非叶子节点不存储实际数据，对于一个非叶子节点（MySQL数据是分页保存，每页默认16kB，即树的每个节点的大小为16kB），能够有更多的”分叉“，因此可以让树变得更”宽矮“一些，即相比于<code>B-</code>树，同样高度的<code>B+</code>树能保存更多的数据页，因此MySQL采用<code>B+</code>树来实现索引。</p>
-<h2 id="2-InnoDB是如何存储数据的？"><a href="#2-InnoDB是如何存储数据的？" class="headerlink" title="2. InnoDB是如何存储数据的？"></a>2. <code>InnoDB</code>是如何存储数据的？</h2><blockquote>
-<p>MySQL 支持多种存储引擎，不同的存储引擎，存储数据的方式也是不同的，我们最常使用的是 InnoDB 存储引擎，下面介绍下InnoDB 是如何存储数据的。</p>
-</blockquote>
-<p>磁盘读写的最小单位是<strong>扇区</strong>，扇区的大小只有 <code>512B</code> 大小，操作系统一次会读写多个扇区，所以<strong>操作系统的最小读写单位是块（Block）。Linux 中的块大小为 <code>4KB</code><strong>，也就是一次磁盘  I&#x2F;O 操作会直接读写 8 个扇区。同样的，MySQL保存的记录是以「行」为单位的，但是数据库的读取并不以「行」为单位，否则一次读取（也就是一次 I&#x2F;O 操作）只能处理一行数据，效率会非常低。</strong>InnoDB 的数据是按「数据页」为单位来读写的</strong>，也就是说，当需要读一条记录的时候，并不是将这个记录本身从磁盘读出来，而是以页为单位，将其整体读入内存。</p>
-<p><code>InnoDB</code>保存的数据文件是后缀为<code>.ibd</code>的文件，其含义是<code>InnoDB data</code>文件，又叫<code>表空间</code>。虽然在数据表里，它们看起来是挨在一起的。但实际上在<code>xx.ibd</code>里他们被分成很多小份的<strong>数据页</strong>，每份默认大小为<code>16kB</code>。类似如下结构：</p>
-<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223121145.png" style="zoom:60%">
-
-<p>数据库<code>I/O</code>操作的最小单位是<strong>页</strong>，<strong>InnoDB 数据页的默认大小是 16KB</strong>，意味着数据库每次读写都是以 16KB 为单位的，一次最少从磁盘中读取 16K 的内容到内存中，一次最少把内存中的 16K 内容刷新到磁盘中。</p>
-<p>数据页主要包括七个部分，<strong>数据页结构图</strong><a id="2"></a>如下：</p>
-<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221149949.png" style="zoom:40%">
-
-<p>各部分的作用：</p>
-<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221347217.png" style="zoom:50%">
-
-<p>在 File Header 中有两个指针，分别指向上一个数据页和下一个数据页，连接起来的页相当于一个双向的链表，如下图所示：</p>
-<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221521045.png" style="zoom:60%">
-
+<p>服务端进行定期删除，顾名思义就是Redis默认每100 ms 执行一次，随机抽取一些设置了过期时间的key，判断是否过期，如发现已过期就直接删除。</p>
 <blockquote>
-<p>采用链表的结构是让数据页之间不需要是物理上的连续的，而是逻辑上的连续。</p>
+<p>注意：并不是检查所有key，而是随机抽取一定数量的key</p>
 </blockquote>
-<p><strong>数据页中的记录按照「主键」顺序组成单向链表</strong>，单向链表的特点就是插入、删除非常方便，但是检索效率不高，最差的情况下需要遍历链表上的所有节点才能完成检索。</p>
-<p>因此，数据页中有一个<strong>页目录</strong>，起到记录的索引作用，就像我们书那样，针对书中内容的每个章节设立了一个目录，想看某个章节的时候，可以查看目录，快速找到对应的章节的页数，而数据页中的页目录就是为了能快速找到记录。通过<strong>页目录</strong>可以使数据页内查询记录的时间复杂度从<code>o(n)</code>变为<code>o(log n)</code>，提升页内查询效率。</p>
-<h2 id="3-B-树是如何进行查询的？"><a href="#3-B-树是如何进行查询的？" class="headerlink" title="3. B+树是如何进行查询的？"></a>3. <code>B+</code>树是如何进行查询的？</h2><p>在<code>InnoDB</code>中一个<strong>数据页</strong>默认的大小为<code>16 kB</code>，当面对大数据量时，需要多个数据页共同存放数据，如何建立合适的索引，才能快速的定位到记录所在的页。因此，<code>MySQL</code>采用<code>B+</code>树作为索引。</p>
-<p>InnoDB 里的 B+ 树中的<strong>每个节点都是一个数据页</strong>，结构示意图如下：</p>
-<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223718982.png" style="zoom:80%">
+<p>具体步骤如下：</p>
+<img src="/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/image-20220511000559696.png" style="zoom:70%">
 
-<p>通过上图，我们看出  B+ 树的特点：</p>
+<p>该过程通过<code>activeExpireCycle</code>函数实现，源码路径：<code>src/expire.c</code></p>
 <ul>
-<li>只有叶子节点（最底层的节点）才存放了数据，非叶子节点（其他上层节）仅用来存放目录项作为索引。</li>
-<li>非叶子节点分为不同层次，通过分层来降低每一层的搜索量；</li>
-<li>所有节点按照索引键大小排序，构成一个双向链表，便于范围查询；</li>
+<li>为什么不检查所有设置过期时间的key？</li>
 </ul>
-<p>我们再看看 B+ 树如何实现快速查找主键为 6 的记录，以上图为例子：</p>
+<p>Redis中存放了数以万计的key，如果每隔100 ms 就要轮询检查所有设置过期时间的key，会非常耗费CPU</p>
 <ul>
-<li>从根节点开始，通过二分法快速定位到符合页内范围包含查询值的页，因为查询的主键值为 6，在[1, 7)范围之间，所以到页 30 中查找更详细的目录项；</li>
-<li>在非叶子节点（页30）中，继续通过二分法快速定位到符合页内范围包含查询值的页，主键值大于 5，所以就到叶子节点（页16）查找记录；</li>
-<li>接着，在叶子节点（页16）中，通过槽查找记录时，使用二分法快速定位要查询的记录在哪个槽（哪个记录分组），定位到槽后，再遍历槽内的所有记录，找到主键为 6 的记录。</li>
+<li>删除如何做到主从同步？</li>
 </ul>
-<h2 id="4-聚集索引和二级索引"><a href="#4-聚集索引和二级索引" class="headerlink" title="4. 聚集索引和二级索引"></a>4. 聚集索引和二级索引</h2><p>索引又可以分为聚集索引和二级索引，其区别在于叶子节点存放了什么数据。</p>
-<ul>
-<li>聚集索引叶子节点存放了实际数据，所有完整的数据记录都保存在聚集索引的叶子节点；</li>
-<li>二级索引叶子节点存放了主键值，而不是实际数据</li>
-</ul>
-<p>因为表的数据都是存放在聚集索引的叶子节点里，所以 InnoDB 存储引擎一定会为表创建一个聚集索引，且由于数据在物理上只会保存一份，所以聚簇索引只能有一个。</p>
-<p>InnoDB 在创建聚簇索引时，会根据不同的场景选择不同的列作为索引：</p>
-<ul>
-<li>如果有主键，默认会使用主键作为聚簇索引的索引键；</li>
-<li>如果没有主键，就选择第一个不包含 NULL 值的唯一列作为聚簇索引的索引键；</li>
-<li>在上面两个都没有的情况下，InnoDB 将自动生成一个隐式自增 id 列作为聚簇索引的索引键；</li>
-</ul>
-<p>一张表只能有一个聚簇索引，那为了实现非主键字段的快速搜索，就引出了二级索引（非聚簇索引&#x2F;辅助索引），它也是利用了 B+ 树的数据结构，但是二级索引的叶子节点存放的是主键值，不是实际数据。</p>
+<p>不论是惰性删除还是定期删除，当进行删除时，<code>master</code>会将删除指令记录到<code>AOF</code>和<code>slave</code>节点</p>
 <blockquote>
-<p>如果某个查询语句使用了二级索引，但是查询的数据不是主键值，这时在二级索引找到主键值后，需要去聚簇索引中获得数据行，这个过程就叫作「<strong>回表</strong>」，也就是说要查两个 B+ 树才能查到数据。不过，当查询的数据是主键值时，因为只在二级索引就能查询到，不用再去聚簇索引查，这个过程就叫作「<strong>索引覆盖</strong>」，也就是只需要查一个 B+ 树就能找到数据。</p>
+<p><strong>如果过期数据太多，定时删除无法完全删除（每次删除完过期的key还是超过25%），同时这些key再也不会被客户端请求，即也无法通过惰性删除，该如何解决？</strong></p>
+<p>答：内存淘汰机制</p>
 </blockquote>
-<h2 id="5-一颗B-树可以存放多少行数据？"><a href="#5-一颗B-树可以存放多少行数据？" class="headerlink" title="5. 一颗B+树可以存放多少行数据？"></a>5. 一颗<code>B+</code>树可以存放多少行数据？</h2><p>前面提到，<code>B+</code>树的每个节点是一个<strong>数据页</strong>，默认大小<code>16kB</code>。前面<a href="#2"> 数据页结构图</a>已经介绍了每个数据页的结构，除去页头页尾及其它描述信息，真正存放用户记录的<code>User Records</code>部分还不足<code>16kB</code>。</p>
-<h3 id="1-叶子节点和非叶子节点分别存放多少数据？"><a href="#1-叶子节点和非叶子节点分别存放多少数据？" class="headerlink" title="1. 叶子节点和非叶子节点分别存放多少数据？"></a>1. 叶子节点和非叶子节点分别存放多少数据？</h3><p>B+树的<strong>最末级叶子结点</strong>里放了record数据。而<strong>非叶子结点</strong>里则放了用来加速查询的索引数据。</p>
-<p><img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517235249221.png" alt="三层B+树"></p>
-<p>同样一个16kB的页，非叶子节点里每一条数据都指向一个新的页，而新的页有两种可能。</p>
-<ul>
-<li>如果是末级叶子节点的话，那么里面放的就是一行行record数据。</li>
-<li>如果是非叶子节点，那么就会循环继续指向新的数据页。</li>
-</ul>
-<h3 id="2-B-树总行数的计算公式"><a href="#2-B-树总行数的计算公式" class="headerlink" title="2. B+树总行数的计算公式"></a>2. <strong>B+树总行数的计算公式</strong></h3><p>假设</p>
-<ul>
-<li>非叶子结点内指向其他内存页的指针数量为<code>x</code></li>
-<li>叶子节点内能容纳的record数量为<code>y</code></li>
-<li>B+树的层数为<code>z</code></li>
-</ul>
-<p>那这棵B+树放的<strong>行数据总量</strong>等于 <code>(x ^ (z-1)) * y</code>。</p>
-<p><strong><code>x</code>怎么算？</strong></p>
-<p><img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517235825563.png" alt="数据页的结构"></p>
-<p>非叶子节点里主要放索引查询相关的数据，放的是主键和指向页号。</p>
-<p>主键假设是<code>bigint（8Byte）</code>，而页号在源码里叫<code>FIL_PAGE_OFFSET（4Byte）</code>，那么非叶子节点里的一条数据是<code>12Byte</code>左右。</p>
-<p>整个数据页<code>16k</code>， 页头页尾那部分数据全加起来大概<code>128Byte</code>，加上页目录毛估占<code>1k</code>吧。那剩下的<code>15kB</code>除以<code>12Byte</code>，等于<code>1280</code>，也就是可以指向<strong>x&#x3D;1280页</strong>。</p>
-<p>我们常说的二叉树指的是一个结点可以发散出两个新的结点。m叉树一个节点能指向m个新的结点。这个指向新节点的操作就叫<strong>扇出（fanout）</strong>。</p>
-<p>而上面的B+树，它能指向1280个新的节点，恐怖如斯，可以说<strong>扇出非常高</strong>了。</p>
-<p> <strong><code>y</code>怎么算？</strong></p>
-<p>叶子节点和非叶子节点的数据结构是一样的，所以也假设剩下<code>15kB</code>可以发挥。</p>
-<p>叶子节点里放的是真正的行数据。假设一条行数据<code>1kB</code>，所以一页里能放<strong>y&#x3D;15行</strong>。</p>
-<p><strong>行总数计算</strong></p>
-<p>回到  <code>(x ^ (z-1)) * y</code> 这个公式。</p>
-<p>已知<code>x=1280</code>，<code>y=15</code>。</p>
-<p>假设B+树是<strong>两层</strong>，那<code>z=2</code>。则是<code>(1280 ^ (2-1)) * 15 ≈ 2w</code></p>
-<p>假设B+树是<strong>三层</strong>，那<code>z=3</code>。则是<code>(1280 ^ (3-1)) * 15 ≈ 2.5kw</code></p>
-<p><strong>这个2.5kw，就是我们常说的单表建议最大行数2kw的由来。</strong>毕竟再加一层，数据就大得有点离谱了。三层数据页对应最多三次磁盘IO，也比较合理。</p>
-<h3 id="3-行数超过1亿查询速度就慢吗？"><a href="#3-行数超过1亿查询速度就慢吗？" class="headerlink" title="3. 行数超过1亿查询速度就慢吗？"></a>3. 行数超过1亿查询速度就慢吗？</h3><p>上面假设单行数据用了1kb，所以一个数据页能放个15行数据。</p>
-<p>如果我单行数据用不了这么多，比如只用了<code>250byte</code>。那么单个数据页能放60行数据。</p>
-<p>那同样是三层B+树，单表支持的行数就是 <code>(1280 ^ (3-1)) * 60 ≈ 1个亿</code>。</p>
-<p>你看我一个亿的数据，其实也就三层B+树，在这个B+树里要查到某行数据，最多也是三次磁盘IO。所以并不慢。</p>
-<h3 id="4-B树存放多少行数据"><a href="#4-B树存放多少行数据" class="headerlink" title="4. B树存放多少行数据"></a>4. B树存放多少行数据</h3><p>B树将行数据都存在非叶子节点上，假设每个数据页还是16kB，掐头去尾每页剩15kB，并且一条数据表行数据还是占1kb，就算不考虑各种页指针的情况下，也只能放个15条数据。<strong>数据页扇出明显变少了。</strong></p>
-<p>B树可承载的总行数的公式也变成了一个<strong>等比数列</strong>。</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">15 + 15^2 +15^3 + ... + 15^z</span><br></pre></td></tr></table></figure>
-
-<p>其中<strong>z还是层数</strong>的意思。</p>
-<p>为了能放<code>2kw</code>左右的数据，需要<code>z&gt;=6</code>。也就是树需要有6层，查一次要访问6个页。假设这6个页并不连续，为了查询其中一条数据，最坏情况需要进行<strong>6次磁盘IO</strong>。</p>
-<p>而B+树同样情况下放2kw数据左右，查一次最多是<strong>3次磁盘IO。</strong></p>
-<p>磁盘IO越多则越慢，这两者在性能上差距略大。</p>
-<p>为此，我们可以更明确地回答<a href="#1"><code>B+</code>树和<code>B-</code>树中，为何选择<code>B+</code>树？</a>，<strong>B+树比B树更适合成为mysql的索引。</strong></p>
-<p>参考资料：</p>
-<p>《MYSQL内核：INNODB存储引擎 卷1》</p>
 ]]></content>
       <categories>
         <category>技术</category>
       </categories>
       <tags>
-        <tag>MySQL</tag>
+        <tag>Redis</tag>
       </tags>
   </entry>
   <entry>
@@ -1532,193 +1719,6 @@
       </categories>
       <tags>
         <tag>Git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MySQL:InnoDB存储引擎和MyISAM的区别？</title>
-    <url>/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/</url>
-    <content><![CDATA[<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/mysql-logo-800-400.jpg"></p>
-<p>本文从<strong>事务</strong>，<strong>外键</strong>，<strong>索引</strong>， <strong>存储文件</strong>，<strong>日志</strong>，<strong>count行数</strong>，<strong>锁</strong>，<strong>主键</strong>八个方面系统地对比了在<code>MySQL</code>中<code>InnoDB</code>存储引擎和<code>MyISAM</code>存储引擎的区别。</p>
-<span id="more"></span>
-
-<h3 id="1-事务"><a href="#1-事务" class="headerlink" title="1. 事务"></a>1. 事务</h3><ul>
-<li><p><code>InnoDB</code>：支持事务。</p>
-</li>
-<li><p><code>MyISAM</code>：不支持事务，强调的是性能，每次查询具有原子性，一般情况下其查询数度比<code>InnoDB</code>更快，但是不提供事务支持。</p>
-</li>
-</ul>
-<blockquote>
-<p>一般情况下<code>MyISAM</code>查询速度比<code>InnoDB</code>快的原因：</p>
-<p>答：在查询的时候，InnoDB要维护的东西比MyISAM多很多，具体以下几点：</p>
-<ul>
-<li>InnoDB缓存数据块，MyISAM只缓存索引块， 这中间还有换进换出的减少；</li>
-<li>InnoDB寻址要映射到块，再到行，MyISAM记录的直接是文件的OFFSET，定位比InnoDB要快 </li>
-<li>InnoDB还需要维护MVCC一致； 虽然你的场景没有，但他还是需要去检查和维护</li>
-</ul>
-</blockquote>
-<h3 id="2-外键"><a href="#2-外键" class="headerlink" title="2. 外键"></a>2. 外键</h3><ul>
-<li><code>InnoDB</code>：支持外键</li>
-<li><code>MyISAM</code>：不支持外键，对一个包含外键的InnoDB表转为MyISAM会失败</li>
-</ul>
-<h3 id="3-索引"><a href="#3-索引" class="headerlink" title="3. 索引"></a>3. 索引</h3><ul>
-<li><code>InnoDB</code>：聚集索引，数据文件和索引存储在一起，必须要有主键，通过主键查询效率很高，一次查询即可得到完整的行数据。辅助索引存储的数据是对应的主键索引的值，通过辅助索引查询需要两次查询，根据辅助索引查询到对应的主键索引，再根据主键索引查询到对应的行数据（这一过程称之为<strong>回表</strong>）。</li>
-<li><code>MyISAM</code>：非聚集索引，索引和数据文件分开保存，索引保存的是数据文件的指针。主键索引和辅助索引相互独立。</li>
-</ul>
-<blockquote>
-<p>InnoDB的B+树主键索引的叶子节点就是数据文件，辅助索引的叶子节点是主键的值；而MyISAM的B+树主键索引和辅助索引的叶子节点都是数据文件的地址指针。</p>
-</blockquote>
-<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png"></p>
-<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130322302.png"></p>
-<h3 id="4-存储文件"><a href="#4-存储文件" class="headerlink" title="4. 存储文件"></a>4. 存储文件</h3><ul>
-<li><code>InnoDB</code>：存储文件有<strong>frm、ibd</strong>，<strong>frm</strong>是表定义文件，<strong>ibd</strong>是数据文件。</li>
-<li><code>MyISAM</code>：存储文件有<strong>frm、myd、myi</strong>，<strong>frm</strong>是表定义文件，<strong>myd</strong>是数据文件，<strong>myi</strong>是索引文件。</li>
-</ul>
-<h3 id="5-日志"><a href="#5-日志" class="headerlink" title="5. 日志"></a>5. 日志</h3><ul>
-<li><code>InnoDB</code>：有<code>redo log</code>，使用 InnoDB 的数据库在异常崩溃后，数据库重新启动的时候会保证数据库恢复到崩溃前的状态，这个恢复的过程依赖于 <code>redo log</code> 。 <code>redo log</code> 保证事务的持久性， <code>undo log</code> 保证事务的原子性。</li>
-<li><code>MyISAM</code>：没有<code>redo log</code>，不支持数据库异常崩溃后的安全恢复。</li>
-</ul>
-<h3 id="6-count"><a href="#6-count" class="headerlink" title="6. count"></a>6. count</h3><ul>
-<li><code>InnoDB</code>：不保存表的具体行数，如果使用<code>select count(*) from table</code>，就会遍历整个表，消耗相当大，但是在加了<code>where</code>条件后，myisam和innodb处理的方式都一样。</li>
-<li><code>MyISAM</code>：使用一个变量保存整个表的行数，如果使用<code>select count(*) from table</code>，会直接读取该变量。</li>
-</ul>
-<blockquote>
-<p> 因为InnoDB的事务特性，在同一时刻表中的行数对于不同的事务而言是不一样的，因此count统计会计算对于当前事务而言可以统计到的行数，而不是将总行数储存起来方便快速查询。</p>
-</blockquote>
-<h3 id="7-锁"><a href="#7-锁" class="headerlink" title="7. 锁"></a>7. 锁</h3><ul>
-<li><code>InnoDB</code>：支持行级锁和表锁。行锁是基于索引实现的，如果没有命中索引，也无法使用行锁，会退化到表锁。</li>
-<li><code>MyISAM</code>：仅支持表锁，不支持行锁。</li>
-</ul>
-<h3 id="8-主键"><a href="#8-主键" class="headerlink" title="8. 主键"></a>8. 主键</h3><ul>
-<li><code>InnoDB</code>：如果没有设定主键，会自动生成一个6字节的隐藏主键（用户不可见），数据保存在主键索引的叶子节点上。</li>
-<li><code>MyISAM</code>：允许不含有主键。</li>
-</ul>
-<blockquote>
-<p>删除部分自增主键后，二者的区别？</p>
-<ol>
-<li>不重启服务器</li>
-</ol>
-<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，插入一行新的数据，无论是<code>InnoDB</code>还是<code>MyISAM</code>都会从<code>6</code>开始插入。</p>
-<ol start="2">
-<li>重启服务器</li>
-</ol>
-<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，重启服务器，再插入一行新的数据，<code>InnoDB</code>主键会从<code>4</code>开始插入，而<code>MyISAM</code>会从<code>6</code>开始插入。</p>
-<blockquote>
-<p>原因：Innodb表把自增主键的最大ID记录到内存中，重启数据库后，都会导致最大自增ID重置；MyISAM表会把自增主键的最大ID记录到数据文件里，重启MySQL自增主键的最大ID也不会丢失。</p>
-</blockquote>
-<p><strong>说明：mysql8.0版本，重启数据库后，不会导致最大自增ID重置</strong></p>
-<p><strong>原因：</strong>在 MySQL 8.0 中，<code>AUTO_INCREMENT</code>计数器的逻辑变了，每当计数器的值有变，InnoDB 会将其写入 redo log，保存到引擎专用的系统表中。MySQL 正常关闭后重启：从系统表中获取计数器的值。MySQL 故障后重启：从系统表中获取计数器的值；从最后一个检查点开始扫描 redo log 中记录的计数器值；取这两者的最大值作为新值。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>MySQL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>刷题分享：LeetCode[729,731,732]我的日程安排表【TreeMap、查分数组、线段树】</title>
-    <url>/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/</url>
-    <content><![CDATA[<p><img src="/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/leetcode-1.jpg"></p>
-<p>题目对应<code>LeetCode</code><a href="https://leetcode.cn/problems/my-calendar-i/">729. 我的日程安排表 I</a> <a href="https://leetcode.cn/problems/my-calendar-ii/">731. 我的日程安排表 II</a> <a href="https://leetcode.cn/problems/my-calendar-iii/">732. 我的日程安排表 III</a></p>
-<span id="more"></span>
-
-<h2 id="我的日程安排表I"><a href="#我的日程安排表I" class="headerlink" title="我的日程安排表I"></a>我的日程安排表I</h2><p><a href="https://leetcode.cn/problems/my-calendar-i/">729. 我的日程安排表 I</a></p>
-<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p>实现一个 MyCalendar 类来存放你的日程安排。如果要添加的日程安排不会造成 重复预订 ，则可以存储这个新的日程安排。</p>
-<p>当两个日程安排有一些时间上的交叉时（例如两个日程安排都在同一时间内），就会产生 重复预订 。</p>
-<p>日程可以用一对整数 start 和 end 表示，这里的时间是半开区间，即 [start, end), 实数 x 的范围为，  start &lt;&#x3D; x &lt; end 。</p>
-<p>实现 MyCalendar 类：</p>
-<p>MyCalendar() 初始化日历对象。<br>boolean book(int start, int end) 如果可以将日程安排成功添加到日历中而不会导致重复预订，返回 true 。否则，返回 false 并且不要将该日程安排添加到日历中。</p>
-<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">输入：</span><br><span class="line">[&quot;MyCalendar&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;]</span><br><span class="line">[[], [10, 20], [15, 25], [20, 30]]</span><br><span class="line">输出：</span><br><span class="line">[null, true, false, true]</span><br><span class="line"></span><br><span class="line">解释：</span><br><span class="line">MyCalendar myCalendar = new MyCalendar();</span><br><span class="line">myCalendar.book(10, 20); // return True</span><br><span class="line">myCalendar.book(15, 25); // return False ，这个日程安排不能添加到日历中，因为时间 15 已经被另一个日程安排预订了。</span><br><span class="line">myCalendar.book(20, 30); // return True ，这个日程安排可以添加到日历中，因为第一个日程安排预订的每个时间都小于 20 ，且不包含时间 20 。</span><br></pre></td></tr></table></figure>
-
-<h3 id="题解【TreeMap】"><a href="#题解【TreeMap】" class="headerlink" title="题解【TreeMap】"></a>题解【TreeMap】</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendar</span> &#123;</span><br><span class="line">    TreeMap&lt;Integer, Integer&gt; treeMap;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendar</span><span class="params">()</span> &#123;</span><br><span class="line">        treeMap = <span class="keyword">new</span> <span class="title class_">TreeMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        Map.Entry&lt;Integer, Integer&gt; floor = treeMap.floorEntry(start);</span><br><span class="line">        Map.Entry&lt;Integer, Integer&gt; ceiling = treeMap.ceilingEntry(start);</span><br><span class="line">        <span class="keyword">if</span> (floor != <span class="literal">null</span> &amp;&amp; floor.getValue() &gt; start) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (ceiling != <span class="literal">null</span> &amp;&amp; ceiling.getKey() &lt; end) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        treeMap.put(start, end);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="复杂度分析"><a href="#复杂度分析" class="headerlink" title="复杂度分析"></a>复杂度分析</h3><p>在book()方法中，<code>TreeMap</code>是排序二叉树，<code>treeMap.floorEntry()</code>和<code>treeMap.ceilingEntry()</code>都是通过二分查找实现的，时间复杂度都是<code>o (log n)</code>.</p>
-<h2 id="我的日程安排表II"><a href="#我的日程安排表II" class="headerlink" title="我的日程安排表II"></a>我的日程安排表II</h2><p><a href="https://leetcode.cn/problems/my-calendar-ii/">731. 我的日程安排表 II</a></p>
-<h3 id="题目描述-1"><a href="#题目描述-1" class="headerlink" title="题目描述"></a>题目描述</h3><p>实现一个 MyCalendar 类来存放你的日程安排。如果要添加的时间内不会导致三重预订时，则可以存储这个新的日程安排。</p>
-<p>MyCalendar 有一个 book(int start, int end)方法。它意味着在 start 到 end 时间内增加一个日程安排，注意，这里的时间是半开区间，即 [start, end), 实数 x 的范围为，  start &lt;&#x3D; x &lt; end。</p>
-<p>当三个日程安排有一些时间上的交叉时（例如三个日程安排都在同一时间内），就会产生三重预订。</p>
-<p>每次调用 MyCalendar.book方法时，如果可以将日程安排成功添加到日历中而不会导致三重预订，返回 true。否则，返回 false 并且不要将该日程安排添加到日历中。</p>
-<p>请按照以下步骤调用MyCalendar 类: MyCalendar cal &#x3D; new MyCalendar(); MyCalendar.book(start, end)</p>
-<h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">MyCalendar();</span><br><span class="line">MyCalendar.book(10, 20); // returns true</span><br><span class="line">MyCalendar.book(50, 60); // returns true</span><br><span class="line">MyCalendar.book(10, 40); // returns true</span><br><span class="line">MyCalendar.book(5, 15); // returns false</span><br><span class="line">MyCalendar.book(5, 10); // returns true</span><br><span class="line">MyCalendar.book(25, 55); // returns true</span><br><span class="line">解释： </span><br><span class="line">前两个日程安排可以添加至日历中。 第三个日程安排会导致双重预订，但可以添加至日历中。</span><br><span class="line">第四个日程安排活动（5,15）不能添加至日历中，因为它会导致三重预订。</span><br><span class="line">第五个日程安排（5,10）可以添加至日历中，因为它未使用已经双重预订的时间10。</span><br><span class="line">第六个日程安排（25,55）可以添加至日历中，因为时间 [25,40] 将和第三个日程安排双重预订；</span><br><span class="line">时间 [40,50] 将单独预订，时间 [50,55）将和第二个日程安排双重预订</span><br></pre></td></tr></table></figure>
-
-<h3 id="题解【差分数组思想、TreeMap】"><a href="#题解【差分数组思想、TreeMap】" class="headerlink" title="题解【差分数组思想、TreeMap】"></a>题解【差分数组思想、TreeMap】<a id="t2"></a></h3><p>边界计数，边界开始时计数加一<code>delta[start]++</code>，边界计数时计数减一<code>delta[end]--</code>，按照排序从小到达统计<code>count</code>之和，一旦<code>count==3</code>则表明当前区间有三次重叠。考虑到需要排序结构，delta使用TreeMap。</p>
-<p><strong>图解：</strong></p>
-<p><img src="/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/image-20220606120852444.png"></p>
-<p>注意：当<code>count==3</code>时应撤销添加日程</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendarTwo</span> &#123;</span><br><span class="line">    TreeMap&lt;Integer, Integer&gt; treeMap;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendarTwo</span><span class="params">()</span> &#123;</span><br><span class="line">        treeMap = <span class="keyword">new</span> <span class="title class_">TreeMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        treeMap.put(start, treeMap.getOrDefault(start, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">        treeMap.put(end, treeMap.getOrDefault(end, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">        <span class="type">int</span> <span class="variable">sum</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> count : treeMap.values()) &#123;</span><br><span class="line">            sum += count;</span><br><span class="line">            <span class="keyword">if</span> (sum &gt;= <span class="number">3</span>) &#123;</span><br><span class="line">                <span class="comment">// 出现三重预定，取消将该日程添加到日历</span></span><br><span class="line">                treeMap.put(start, treeMap.getOrDefault(start, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">                treeMap.put(end, treeMap.getOrDefault(end, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="我的日程安排表III"><a href="#我的日程安排表III" class="headerlink" title="我的日程安排表III"></a>我的日程安排表III</h2><p><a href="https://leetcode.cn/problems/my-calendar-iii/">732. 我的日程安排表 III</a></p>
-<h3 id="题目描述-2"><a href="#题目描述-2" class="headerlink" title="题目描述"></a>题目描述</h3><p>当 k 个日程安排有一些时间上的交叉时（例如 k 个日程安排都在同一时间内），就会产生 k 次预订。</p>
-<p>给你一些日程安排 [start, end) ，请你在每个日程安排添加后，返回一个整数 k ，表示所有先前日程安排会产生的最大 k 次预订。</p>
-<p>实现一个 MyCalendarThree 类来存放你的日程安排，你可以一直添加新的日程安排。</p>
-<p>MyCalendarThree() 初始化对象。<br>int book(int start, int end) 返回一个整数 k ，表示日历中存在的 k 次预订的最大值。</p>
-<h3 id="示例-2"><a href="#示例-2" class="headerlink" title="示例"></a>示例</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">输入：</span><br><span class="line">[&quot;MyCalendarThree&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;]</span><br><span class="line">[[], [10, 20], [50, 60], [10, 40], [5, 15], [5, 10], [25, 55]]</span><br><span class="line">输出：</span><br><span class="line">[null, 1, 1, 2, 3, 3, 3]</span><br><span class="line"></span><br><span class="line">解释：</span><br><span class="line">MyCalendarThree myCalendarThree = new MyCalendarThree();</span><br><span class="line">myCalendarThree.book(10, 20); // 返回 1 ，第一个日程安排可以预订并且不存在相交，所以最大 k 次预订是 1 次预订。</span><br><span class="line">myCalendarThree.book(50, 60); // 返回 1 ，第二个日程安排可以预订并且不存在相交，所以最大 k 次预订是 1 次预订。</span><br><span class="line">myCalendarThree.book(10, 40); // 返回 2 ，第三个日程安排 [10, 40) 与第一个日程安排相交，所以最大 k 次预订是 2 次预订。</span><br><span class="line">myCalendarThree.book(5, 15); // 返回 3 ，剩下的日程安排的最大 k 次预订是 3 次预订。</span><br><span class="line">myCalendarThree.book(5, 10); // 返回 3</span><br><span class="line">myCalendarThree.book(25, 55); // 返回 3</span><br></pre></td></tr></table></figure>
-
-<h3 id="题解【线段树】"><a href="#题解【线段树】" class="headerlink" title="题解【线段树】"></a>题解【线段树】</h3><h3 id="方法一：差分数组"><a href="#方法一：差分数组" class="headerlink" title="方法一：差分数组"></a>方法一：差分数组</h3><p>采用差分数组解法，同<a href="#t2">我的日程安排表II</a></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendarThree</span> &#123;</span><br><span class="line">    TreeMap&lt;Integer, Integer&gt; delta;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendarThree</span><span class="params">()</span> &#123;</span><br><span class="line">        delta = <span class="keyword">new</span> <span class="title class_">TreeMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        delta.put(start, delta.getOrDefault(start, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">        delta.put(end, delta.getOrDefault(end, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">        <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>, maxCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> val : delta.values()) &#123;</span><br><span class="line">            count += val;</span><br><span class="line">            maxCount = Math.max(count, maxCount);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> maxCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="方法二：线段树"><a href="#方法二：线段树" class="headerlink" title="方法二：线段树"></a>方法二：线段树</h3><p>针对本题的线段树初级教程可以参考：<a href="https://leetcode.cn/problems/my-calendar-iii/solution/xian-duan-shu-by-xiaohu9527-rfzj/">线段树 – 新手篇</a></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendarThree</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;Integer, Integer&gt; tree;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;Integer, Integer&gt; lazy;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendarThree</span><span class="params">()</span> &#123;</span><br><span class="line">        tree = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;Integer, Integer&gt;();</span><br><span class="line">        lazy = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;Integer, Integer&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        update(start, end - <span class="number">1</span>, <span class="number">0</span>, <span class="number">1000000000</span>, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">return</span> tree.getOrDefault(<span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">update</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (r &lt; start || end &lt; l) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125; </span><br><span class="line">        <span class="keyword">if</span> (start &lt;= l &amp;&amp; r &lt;= end) &#123;</span><br><span class="line">            tree.put(idx, tree.getOrDefault(idx, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            lazy.put(idx, lazy.getOrDefault(idx, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">mid</span> <span class="operator">=</span> (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            update(start, end, l, mid, <span class="number">2</span> * idx);</span><br><span class="line">            update(start, end, mid + <span class="number">1</span>, r, <span class="number">2</span> * idx + <span class="number">1</span>);</span><br><span class="line">            tree.put(idx, lazy.getOrDefault(idx, <span class="number">0</span>) + Math.max(tree.getOrDefault(<span class="number">2</span> * idx, <span class="number">0</span>), tree.getOrDefault(<span class="number">2</span> * idx + <span class="number">1</span>, <span class="number">0</span>)));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<blockquote>
-<p>后续会出一篇关于线段树的详细教程！！！</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>算法题</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Redis过期key是否立马被删除？</title>
-    <url>/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/</url>
-    <content><![CDATA[<h3 id="Redis过期key是否立马被删除？"><a href="#Redis过期key是否立马被删除？" class="headerlink" title="Redis过期key是否立马被删除？"></a>Redis过期key是否立马被删除？</h3><p>答案是不会，Redis处理过期key主要有两种方式：</p>
-<ul>
-<li>惰性删除（客户端侧）</li>
-<li>定期随机删除（服务端侧）</li>
-</ul>
-<span id="more"></span>
-
-<h4 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h4><p>当客户端请求查询时，判断当前key已过期，则会删除该key，删除key的主动权交给每次访问的请求。</p>
-<p>弊端：只能处理还会访问的key，无法对一些不再会被访问的key进行删除。</p>
-<p>该实现通过<code>expiredIfNeeded</code>函数实现，源码路径：<code>src/db.c</code></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">expireIfNeeded</span><span class="params">(redisDb *db, robj *key, <span class="type">int</span> force_delete_expired)</span> &#123;</span><br><span class="line">   <span class="comment">// key 没有过期，return 0</span></span><br><span class="line">    <span class="keyword">if</span> (!keyIsExpired(db,key)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (server.masterhost != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (server.current_client == server.master) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (!force_delete_expired) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (checkClientPauseTimeoutAndReturnIfPaused()) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Delete the key */</span></span><br><span class="line">    deleteExpiredKeyAndPropagate(db,key);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h4><p>对于一些key过期后不再被访问，惰性删除永远无法对其进行删除，这会导致已过期的key不断积压，因此仅靠客户端侧的处理是不够的。</p>
-<ul>
-<li>如何让处理“占着茅坑不拉屎”的key?</li>
-</ul>
-<p>服务端进行定期删除，顾名思义就是Redis默认每100 ms 执行一次，随机抽取一些设置了过期时间的key，判断是否过期，如发现已过期就直接删除。</p>
-<blockquote>
-<p>注意：并不是检查所有key，而是随机抽取一定数量的key</p>
-</blockquote>
-<p>具体步骤如下：</p>
-<img src="/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/image-20220511000559696.png" style="zoom:70%">
-
-<p>该过程通过<code>activeExpireCycle</code>函数实现，源码路径：<code>src/expire.c</code></p>
-<ul>
-<li>为什么不检查所有设置过期时间的key？</li>
-</ul>
-<p>Redis中存放了数以万计的key，如果每隔100 ms 就要轮询检查所有设置过期时间的key，会非常耗费CPU</p>
-<ul>
-<li>删除如何做到主从同步？</li>
-</ul>
-<p>不论是惰性删除还是定期删除，当进行删除时，<code>master</code>会将删除指令记录到<code>AOF</code>和<code>slave</code>节点</p>
-<blockquote>
-<p><strong>如果过期数据太多，定时删除无法完全删除（每次删除完过期的key还是超过25%），同时这些key再也不会被客户端请求，即也无法通过惰性删除，该如何解决？</strong></p>
-<p>答：内存淘汰机制</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>Redis</tag>
       </tags>
   </entry>
   <entry>

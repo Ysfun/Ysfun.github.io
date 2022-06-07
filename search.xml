@@ -1,66 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Docker常用命令</title>
-    <url>/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<h2 id="帮助命令"><a href="#帮助命令" class="headerlink" title="帮助命令"></a>帮助命令</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看版本信息</span></span><br><span class="line">docker version</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">信息</span></span><br><span class="line">docker info</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看命令帮助信息</span></span><br><span class="line">docker 命令 --help</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<blockquote>
-<p>Docker命令的帮助文档 <a href="https://docs.docker.com/reference/">Command-line-reference</a></p>
-</blockquote>
-<p><img src="/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/docker_command_diagram.jpeg"></p>
-<h2 id="镜像命令"><a href="#镜像命令" class="headerlink" title="镜像命令"></a>镜像命令</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker images</span></span><br><span class="line">REPOSITORY               TAG       IMAGE ID       CREATED       SIZE</span><br><span class="line">docker/getting-started   latest    b1bcd61774d8   10 days ago   27.2MB</span><br><span class="line">hello-world              latest    18e5af790473   8 weeks ago   9.14kB</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">解释</span></span><br><span class="line">REPOSITORY	镜像仓库源</span><br><span class="line">TAG					镜像的标签</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可选项</span></span><br><span class="line">  -a, --all             Show all images (default hides intermediate images)</span><br><span class="line">  -q, --quiet           Only show image IDs</span><br></pre></td></tr></table></figure>
-
-<p><strong>docker search：镜像搜索命令</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker search mysql</span></span><br><span class="line">NAME                              DESCRIPTION                                     STARS     OFFICIAL   AUTOMATED</span><br><span class="line">mysql                             MySQL is a widely used, open-source relation…   11712     [OK]       </span><br><span class="line">mariadb                           MariaDB Server is a high performing open sou…   4464      [OK]       </span><br><span class="line">mysql/mysql-server                Optimized MySQL Server Docker images. Create…   870                  [OK]</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可选项</span></span><br><span class="line">  -f, --filter filter   Filter output based on conditions provided</span><br><span class="line">      --format string   Pretty-print search using a Go template</span><br><span class="line">      --limit int       Max number of search results (default 25)</span><br><span class="line">      --no-trunc        Don&#x27;t truncate output</span><br><span class="line">例如：docker search mysql --filter=stars=3000  --&gt;  表示stars&gt;=3000的结果</span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker search mysql --filter=stars=3000</span></span><br><span class="line">NAME      DESCRIPTION                                     STARS     OFFICIAL   AUTOMATED</span><br><span class="line">mysql     MySQL is a widely used, open-source relation…   11712     [OK]       </span><br><span class="line">mariadb   MariaDB Server is a high performing open sou…   4464      [OK]   </span><br></pre></td></tr></table></figure>
-
-<p><strong>docker pull：下载镜像</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">下载镜像 docker pull 镜像名 [:tag]</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker pull mysql/mysql-server:5.7</span></span><br><span class="line"></span><br><span class="line">5.7: Pulling from mysql/mysql-server</span><br><span class="line">b8aa102ba20a: Pull complete </span><br><span class="line">2ff679d72626: Pull complete </span><br><span class="line">ea45979059fe: Pull complete </span><br><span class="line">526a484cb892: Pull complete </span><br><span class="line">4436dc023066: Pull complete </span><br><span class="line">98b382a658b6: Pull complete </span><br><span class="line">17d3acf6ac1e: Pull complete </span><br><span class="line">c5ce8d5cf40e: Pull complete </span><br><span class="line">Digest: sha256:32aac4632baa157d24e9eb3e20d2d62e775f0a2630afb8dabf5ee8c086b09c2a</span><br><span class="line">Status: Downloaded newer image for mysql/mysql-server:5.7</span><br><span class="line">docker.io/mysql/mysql-server:5.7</span><br></pre></td></tr></table></figure>
-
-<p><strong>docker rmi：删除镜像命令</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker rmi -f 镜像id 镜像id  # 删除多个镜像</span><br><span class="line">docker rmi -f $(docker images -qa)  # 删除全部镜像</span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker rmi -f 18e5af790473</span></span><br><span class="line"></span><br><span class="line">Untagged: hello-world:latest</span><br><span class="line">Untagged: hello-world@sha256:cc15c5b292d8525effc0f89cb299f1804f3a725c8d05e158653a563f15e4f685</span><br><span class="line">Deleted: sha256:18e5af7904737ba5ef7fbbd7d59de5ebe6c4437907bd7fc436bf9b3ef3149ea9</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可选项</span></span><br><span class="line">  -f, --force      Force removal of the image</span><br><span class="line">      --no-prune   Do not delete untagged parents</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="容器命令"><a href="#容器命令" class="headerlink" title="容器命令"></a>容器命令</h2><p><strong>docker run：新建容器并启动</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker run [可选参数] image</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">参数说明</span></span><br><span class="line">--name=&quot;Name&quot;			指定容器名字，用于区分容器</span><br><span class="line">-d								后台方式运行</span><br><span class="line">-it								使用交互方式运行，进入容器查看内容</span><br><span class="line">-p								指定容器的端口 - p 8080:8080</span><br><span class="line">		-p ip: 主机端口:容器端口</span><br><span class="line">		-p 主机端口:容器端口（常用）</span><br><span class="line">		-p 容器端口</span><br><span class="line">-P								随机指定端口</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">启动并进入容器</span></span><br><span class="line">hyunmin@HyunmindeMacBook-Air ~ % docker run -it centos /bin/bash</span><br><span class="line">[root@44e406af8256 /]# exit			# 退出容器</span><br></pre></td></tr></table></figure>
-
-<p><strong>docker ps：查看运行中的容器</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker ps</span></span><br><span class="line">CONTAINER ID   IMAGE           COMMAND       CREATED        STATUS        PORTS     NAMES</span><br><span class="line">77128abd1e9c   centos:latest   &quot;/bin/bash&quot;   15 hours ago   Up 15 hours             objective_hellman</span><br></pre></td></tr></table></figure>
-
-<p><strong>退出容器</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">退出并关闭容器</span></span><br><span class="line">exit</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">退出容器，不关闭，后台运行</span></span><br><span class="line">Ctrl+P+Q</span><br></pre></td></tr></table></figure>
-
-<p><strong>docker rm：删除容器</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker rm 容器id				# 删除指定容器，不能删除正在运行的容器，-f强制删除</span><br></pre></td></tr></table></figure>
-
-<p><strong>启动和停止容器操作</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker start 容器id 				# 启动容器</span><br><span class="line">docker restart 容器id				# 重启容器</span><br><span class="line">docker stop 	容器id				# 停止当前正在运行的容器</span><br><span class="line">docker kill 容器id					# 强制停止当前容器</span><br></pre></td></tr></table></figure>
-
-<h2 id="DockerFile"><a href="#DockerFile" class="headerlink" title="DockerFile"></a>DockerFile</h2><blockquote>
-<p><strong>DockerFile常用命令</strong></p>
-</blockquote>
-<p><img src="/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20211202100941535.png"> </p>
-<blockquote>
-<p> <strong>DockerFile构建流程</strong></p>
-</blockquote>
-<p><img src="/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20211202101420768.png"> </p>
-<blockquote>
-<p>Docker file创建一个自己的centos</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1. 编写一个自己的docker file</span></span><br><span class="line">FROM centos</span><br><span class="line">MAINTAINER hyunmin&lt;s_hyunmin@163.com&gt;</span><br><span class="line"></span><br><span class="line">ENV MY_PATH /usr/local</span><br><span class="line">WORKDIR $MY_PATH</span><br><span class="line"></span><br><span class="line">RUN yum -y install vim</span><br><span class="line">RUN yum -y install net-tools</span><br><span class="line"></span><br><span class="line">EXPOSE 80</span><br><span class="line"></span><br><span class="line">CMD echo $MY_PATH</span><br><span class="line">CMD echo &quot;----end----&quot;</span><br><span class="line">CMD /bin/bash</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2. build镜像文件</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">build命令</span></span><br><span class="line">docker build -f dockerfile文件路径 -t 镜像名:[tag] 文件目录(.)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3. 镜像本地变更历史</span></span><br><span class="line">docker history docker镜像id</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>Docker</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Https、ssh加密原理</title>
     <url>/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/</url>
     <content><![CDATA[<h2 id="1-Https与Http区别"><a href="#1-Https与Http区别" class="headerlink" title="1. Https与Http区别"></a>1. Https与Http区别</h2><p>相比于Http，Https采用了加密传输方式，可以有效防止网络攻击。可以近似理解为Https &#x3D; Http + SSL证书。</p>
@@ -198,7 +138,7 @@
 
 <blockquote>
 <ol start="2">
-<li>安装<a href="mailto:&#109;&#121;&#x73;&#113;&#x6c;&#x40;&#53;&#x2e;&#55;">&#109;&#121;&#x73;&#113;&#x6c;&#x40;&#53;&#x2e;&#55;</a></li>
+<li>安装<a href="mailto:&#x6d;&#121;&#115;&#x71;&#x6c;&#x40;&#53;&#x2e;&#x37;">&#x6d;&#121;&#115;&#x71;&#x6c;&#x40;&#53;&#x2e;&#x37;</a></li>
 </ol>
 </blockquote>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew install mysql@5.7</span></span><br><span class="line"></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/manifests/5.7.36</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/blobs/sha256:e23df0f6e8bfc83fe2e982ec60e8</span><br><span class="line">==&gt; Downloading from https://pkg-containers.githubusercontent.com/ghcr1/blobs/sha256:e23df0f6e8bfc83</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Pouring mysql@5.7--5.7.36.arm64_big_sur.bottle.tar.gz</span><br><span class="line">==&gt; /opt/homebrew/Cellar/mysql@5.7/5.7.36/bin/mysqld --initialize-insecure --user=hyunmin --basedir=</span><br><span class="line">==&gt; Caveats</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
@@ -232,43 +172,6 @@
 </ol>
 </blockquote>
 <p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124204950548.png" alt="image-20211124204950548"></p>
-]]></content>
-      <tags>
-        <tag>教程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>mac上安装halo</title>
-    <url>/2021/11/22/mac%E4%B8%8A%E5%AE%89%E8%A3%85halo/</url>
-    <content><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><ul>
-<li>操作系统：macOS</li>
-<li>java环境：openjdk 11</li>
-<li>halo版本：1.4.13</li>
-</ul>
-<h2 id="2-下载并安装"><a href="#2-下载并安装" class="headerlink" title="2. 下载并安装"></a>2. 下载并安装</h2><p>halo首页地址：<a href="https://halo.run/">halo首页</a><br>halo Github地址：<a href="https://github.com/halo-dev/halo">halo github地址</a></p>
-<span id="more"></span>
-
-<h3 id="2-1-安装brew"><a href="#2-1-安装brew" class="headerlink" title="2.1 安装brew"></a>2.1 安装brew</h3><p>Homebrew是 mac的包管理器，仅需执行相应的命令,就能下载安装需要的软件包，可以省掉自己去下载、解压、拖拽(安装)等繁琐的步骤。 比如安装服务器 nginx，打开终端执行以下命令即可安装:</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">brew install nginx</span><br></pre></td></tr></table></figure>
-
-<p>mac终端运行下面命令安装brew，镜像地址下载安装，速度快</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://cdn.jsdelivr.net/gh/ineo6/homebrew-install/install)&quot;</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-2-安装wget"><a href="#2-2-安装wget" class="headerlink" title="2.2 安装wget"></a>2.2 安装wget</h3><p>mac终端运行下面命令</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">brew install wget</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-3-下载安装halo"><a href="#2-3-下载安装halo" class="headerlink" title="2.3 下载安装halo"></a>2.3 下载安装halo</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">wget https://dl.halo.run/release/halo-1.4.13.jar</span><br><span class="line">java -jar halo-1.4.13.jar</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-4-访问halo"><a href="#2-4-访问halo" class="headerlink" title="2.4 访问halo"></a>2.4 访问halo</h3><ul>
-<li>注意⚠️：在访问halo期间，运行halo程序的终端不能关闭</li>
-</ul>
-<p>查看halo web页面，浏览器访问：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1:8090</span><br></pre></td></tr></table></figure>
-
-<p>查看halo管理页面，浏览器访问：</p>
-<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1:8090/admin</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-5-说明"><a href="#2-5-说明" class="headerlink" title="2.5 说明"></a>2.5 说明</h3><p>初次运行halo程序，会在 ~ 目录下创建一个.halo的文件夹，里面包含了博客内容以及账号信息，切记不要轻易删除此文件夹，否则账号信息以及博客内容都会被删除。</p>
 ]]></content>
       <tags>
         <tag>教程</tag>
@@ -348,6 +251,96 @@
       <tags>
         <tag>教程</tag>
         <tag>Hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Docker常用命令</title>
+    <url>/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h2 id="帮助命令"><a href="#帮助命令" class="headerlink" title="帮助命令"></a>帮助命令</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看版本信息</span></span><br><span class="line">docker version</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">信息</span></span><br><span class="line">docker info</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看命令帮助信息</span></span><br><span class="line">docker 命令 --help</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<blockquote>
+<p>Docker命令的帮助文档 <a href="https://docs.docker.com/reference/">Command-line-reference</a></p>
+</blockquote>
+<p><img src="/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/docker_command_diagram.jpeg"></p>
+<h2 id="镜像命令"><a href="#镜像命令" class="headerlink" title="镜像命令"></a>镜像命令</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker images</span></span><br><span class="line">REPOSITORY               TAG       IMAGE ID       CREATED       SIZE</span><br><span class="line">docker/getting-started   latest    b1bcd61774d8   10 days ago   27.2MB</span><br><span class="line">hello-world              latest    18e5af790473   8 weeks ago   9.14kB</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">解释</span></span><br><span class="line">REPOSITORY	镜像仓库源</span><br><span class="line">TAG					镜像的标签</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可选项</span></span><br><span class="line">  -a, --all             Show all images (default hides intermediate images)</span><br><span class="line">  -q, --quiet           Only show image IDs</span><br></pre></td></tr></table></figure>
+
+<p><strong>docker search：镜像搜索命令</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker search mysql</span></span><br><span class="line">NAME                              DESCRIPTION                                     STARS     OFFICIAL   AUTOMATED</span><br><span class="line">mysql                             MySQL is a widely used, open-source relation…   11712     [OK]       </span><br><span class="line">mariadb                           MariaDB Server is a high performing open sou…   4464      [OK]       </span><br><span class="line">mysql/mysql-server                Optimized MySQL Server Docker images. Create…   870                  [OK]</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可选项</span></span><br><span class="line">  -f, --filter filter   Filter output based on conditions provided</span><br><span class="line">      --format string   Pretty-print search using a Go template</span><br><span class="line">      --limit int       Max number of search results (default 25)</span><br><span class="line">      --no-trunc        Don&#x27;t truncate output</span><br><span class="line">例如：docker search mysql --filter=stars=3000  --&gt;  表示stars&gt;=3000的结果</span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker search mysql --filter=stars=3000</span></span><br><span class="line">NAME      DESCRIPTION                                     STARS     OFFICIAL   AUTOMATED</span><br><span class="line">mysql     MySQL is a widely used, open-source relation…   11712     [OK]       </span><br><span class="line">mariadb   MariaDB Server is a high performing open sou…   4464      [OK]   </span><br></pre></td></tr></table></figure>
+
+<p><strong>docker pull：下载镜像</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">下载镜像 docker pull 镜像名 [:tag]</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker pull mysql/mysql-server:5.7</span></span><br><span class="line"></span><br><span class="line">5.7: Pulling from mysql/mysql-server</span><br><span class="line">b8aa102ba20a: Pull complete </span><br><span class="line">2ff679d72626: Pull complete </span><br><span class="line">ea45979059fe: Pull complete </span><br><span class="line">526a484cb892: Pull complete </span><br><span class="line">4436dc023066: Pull complete </span><br><span class="line">98b382a658b6: Pull complete </span><br><span class="line">17d3acf6ac1e: Pull complete </span><br><span class="line">c5ce8d5cf40e: Pull complete </span><br><span class="line">Digest: sha256:32aac4632baa157d24e9eb3e20d2d62e775f0a2630afb8dabf5ee8c086b09c2a</span><br><span class="line">Status: Downloaded newer image for mysql/mysql-server:5.7</span><br><span class="line">docker.io/mysql/mysql-server:5.7</span><br></pre></td></tr></table></figure>
+
+<p><strong>docker rmi：删除镜像命令</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker rmi -f 镜像id 镜像id  # 删除多个镜像</span><br><span class="line">docker rmi -f $(docker images -qa)  # 删除全部镜像</span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker rmi -f 18e5af790473</span></span><br><span class="line"></span><br><span class="line">Untagged: hello-world:latest</span><br><span class="line">Untagged: hello-world@sha256:cc15c5b292d8525effc0f89cb299f1804f3a725c8d05e158653a563f15e4f685</span><br><span class="line">Deleted: sha256:18e5af7904737ba5ef7fbbd7d59de5ebe6c4437907bd7fc436bf9b3ef3149ea9</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可选项</span></span><br><span class="line">  -f, --force      Force removal of the image</span><br><span class="line">      --no-prune   Do not delete untagged parents</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="容器命令"><a href="#容器命令" class="headerlink" title="容器命令"></a>容器命令</h2><p><strong>docker run：新建容器并启动</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker run [可选参数] image</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">参数说明</span></span><br><span class="line">--name=&quot;Name&quot;			指定容器名字，用于区分容器</span><br><span class="line">-d								后台方式运行</span><br><span class="line">-it								使用交互方式运行，进入容器查看内容</span><br><span class="line">-p								指定容器的端口 - p 8080:8080</span><br><span class="line">		-p ip: 主机端口:容器端口</span><br><span class="line">		-p 主机端口:容器端口（常用）</span><br><span class="line">		-p 容器端口</span><br><span class="line">-P								随机指定端口</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">启动并进入容器</span></span><br><span class="line">hyunmin@HyunmindeMacBook-Air ~ % docker run -it centos /bin/bash</span><br><span class="line">[root@44e406af8256 /]# exit			# 退出容器</span><br></pre></td></tr></table></figure>
+
+<p><strong>docker ps：查看运行中的容器</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker ps</span></span><br><span class="line">CONTAINER ID   IMAGE           COMMAND       CREATED        STATUS        PORTS     NAMES</span><br><span class="line">77128abd1e9c   centos:latest   &quot;/bin/bash&quot;   15 hours ago   Up 15 hours             objective_hellman</span><br></pre></td></tr></table></figure>
+
+<p><strong>退出容器</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">退出并关闭容器</span></span><br><span class="line">exit</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">退出容器，不关闭，后台运行</span></span><br><span class="line">Ctrl+P+Q</span><br></pre></td></tr></table></figure>
+
+<p><strong>docker rm：删除容器</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker rm 容器id				# 删除指定容器，不能删除正在运行的容器，-f强制删除</span><br></pre></td></tr></table></figure>
+
+<p><strong>启动和停止容器操作</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker start 容器id 				# 启动容器</span><br><span class="line">docker restart 容器id				# 重启容器</span><br><span class="line">docker stop 	容器id				# 停止当前正在运行的容器</span><br><span class="line">docker kill 容器id					# 强制停止当前容器</span><br></pre></td></tr></table></figure>
+
+<h2 id="DockerFile"><a href="#DockerFile" class="headerlink" title="DockerFile"></a>DockerFile</h2><blockquote>
+<p><strong>DockerFile常用命令</strong></p>
+</blockquote>
+<p><img src="/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20211202100941535.png"> </p>
+<blockquote>
+<p> <strong>DockerFile构建流程</strong></p>
+</blockquote>
+<p><img src="/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20211202101420768.png"> </p>
+<blockquote>
+<p>Docker file创建一个自己的centos</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1. 编写一个自己的docker file</span></span><br><span class="line">FROM centos</span><br><span class="line">MAINTAINER hyunmin&lt;s_hyunmin@163.com&gt;</span><br><span class="line"></span><br><span class="line">ENV MY_PATH /usr/local</span><br><span class="line">WORKDIR $MY_PATH</span><br><span class="line"></span><br><span class="line">RUN yum -y install vim</span><br><span class="line">RUN yum -y install net-tools</span><br><span class="line"></span><br><span class="line">EXPOSE 80</span><br><span class="line"></span><br><span class="line">CMD echo $MY_PATH</span><br><span class="line">CMD echo &quot;----end----&quot;</span><br><span class="line">CMD /bin/bash</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2. build镜像文件</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">build命令</span></span><br><span class="line">docker build -f dockerfile文件路径 -t 镜像名:[tag] 文件目录(.)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3. 镜像本地变更历史</span></span><br><span class="line">docker history docker镜像id</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>Docker</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>mac上使用SublimeText</title>
+    <url>/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/</url>
+    <content><![CDATA[<blockquote>
+<p>官网地址：<a href="https://www.sublimetext.com/">Sublime Text</a></p>
+</blockquote>
+<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p><a href="https://www.sublimetext.com/download">官方下载地址</a></p>
+<p><a href="https://www.sublimetext.com/docs/index.html">Sublime Text文档</a></p>
+<span id="more"></span>
+
+<h2 id="使用技巧"><a href="#使用技巧" class="headerlink" title="使用技巧"></a>使用技巧</h2><h3 id="在Sublime-Text上运行Java程序"><a href="#在Sublime-Text上运行Java程序" class="headerlink" title="在Sublime Text上运行Java程序"></a>在Sublime Text上运行Java程序</h3><ol>
+<li>编译</li>
+</ol>
+<p><code>command+B</code></p>
+<ol start="2">
+<li>安装JDK环境</li>
+<li>打开 Sublime Text -&gt; Tools -&gt;Build System -&gt; New Build System…</li>
+<li>复制下面代码，并保存文件为java.sublime-build到默认的User文件夹即可</li>
+</ol>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;shell_cmd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;javac \&quot;$file\&quot; &amp;&amp; java \&quot;$file_base_name\&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;file_regex&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^(...*?):([0-9]*):?([0-9]*)&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;selector&quot;</span><span class="punctuation">:</span> <span class="string">&quot;source.java&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="5">
+<li>选择Tools -&gt; Build System -&gt; java</li>
+</ol>
+<img src="/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/image-20211211145804287.png" style="zoom:50%;" align="left">
+]]></content>
+      <tags>
+        <tag>教程</tag>
       </tags>
   </entry>
   <entry>
@@ -455,27 +448,6 @@
       </tags>
   </entry>
   <entry>
-    <title>typora图片左对齐</title>
-    <url>/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/</url>
-    <content><![CDATA[<p>typora图片默认是剧中对齐的方式：</p>
-<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128142529931.png"> </p>
-<p>但很多情况下我们其实更倾向于图片左对齐，网上很多办法都更改typora的默认对齐方式，即更改github.css文件，但这种方式会让我们所有的图片都变成左对齐的方式，实际情况下我们有的时候只需要一张图片左对齐。其实在typora中实现图片左对齐的方法非常简单，只需要<strong>在图片链接后加一个空格即可</strong>：</p>
-<span id="more"></span>
-
-<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128143120575.png"></p>
-<hr>
-<h3 id="设置任意对齐方式"><a href="#设置任意对齐方式" class="headerlink" title="设置任意对齐方式"></a>设置任意对齐方式</h3><p>在<code>typora</code>中图片的默认格式为<code>![图片标题](图片url)</code></p>
-<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128151604005.png"></p>
-<p>实际上markdown是兼容<code>&lt;img src=&quot;&quot;&gt;</code>图片格式的，采用img标签就可以利用<code>align</code>属性设置图片对齐方式。</p>
-<p>下面介绍一种可以快速将图片格式从<code>![图片标题](图片url)</code>变为<code>&lt;img src=&quot;&quot;&gt;</code>格式，选中图片，右键，选择缩放图片，任意选择一个不是100%缩放比例（如果选择100%不会有任何变化，如果不想改变图片大小，设置<code>zoom:100</code>即可，即<code>style=&quot;zoom:100%;&quot;</code>），缩放完毕就可以发现图片格式进行自动转换，在<code>img标签中</code>添加<code>align</code>属性即可。</p>
-<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128152513094.png"></p>
-]]></content>
-      <tags>
-        <tag>教程</tag>
-        <tag>Typora</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>vim常用命令</title>
     <url>/2021/11/28/vim%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h2 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h2><ol>
@@ -530,33 +502,90 @@
       </tags>
   </entry>
   <entry>
-    <title>mac上使用SublimeText</title>
-    <url>/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/</url>
-    <content><![CDATA[<blockquote>
-<p>官网地址：<a href="https://www.sublimetext.com/">Sublime Text</a></p>
-</blockquote>
-<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p><a href="https://www.sublimetext.com/download">官方下载地址</a></p>
-<p><a href="https://www.sublimetext.com/docs/index.html">Sublime Text文档</a></p>
+    <title>mac上安装halo</title>
+    <url>/2021/11/22/mac%E4%B8%8A%E5%AE%89%E8%A3%85halo/</url>
+    <content><![CDATA[<h2 id="1-环境"><a href="#1-环境" class="headerlink" title="1. 环境"></a>1. 环境</h2><ul>
+<li>操作系统：macOS</li>
+<li>java环境：openjdk 11</li>
+<li>halo版本：1.4.13</li>
+</ul>
+<h2 id="2-下载并安装"><a href="#2-下载并安装" class="headerlink" title="2. 下载并安装"></a>2. 下载并安装</h2><p>halo首页地址：<a href="https://halo.run/">halo首页</a><br>halo Github地址：<a href="https://github.com/halo-dev/halo">halo github地址</a></p>
 <span id="more"></span>
 
-<h2 id="使用技巧"><a href="#使用技巧" class="headerlink" title="使用技巧"></a>使用技巧</h2><h3 id="在Sublime-Text上运行Java程序"><a href="#在Sublime-Text上运行Java程序" class="headerlink" title="在Sublime Text上运行Java程序"></a>在Sublime Text上运行Java程序</h3><ol>
-<li>编译</li>
-</ol>
-<p><code>command+B</code></p>
-<ol start="2">
-<li>安装JDK环境</li>
-<li>打开 Sublime Text -&gt; Tools -&gt;Build System -&gt; New Build System…</li>
-<li>复制下面代码，并保存文件为java.sublime-build到默认的User文件夹即可</li>
-</ol>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;shell_cmd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;javac \&quot;$file\&quot; &amp;&amp; java \&quot;$file_base_name\&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;file_regex&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^(...*?):([0-9]*):?([0-9]*)&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;selector&quot;</span><span class="punctuation">:</span> <span class="string">&quot;source.java&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<h3 id="2-1-安装brew"><a href="#2-1-安装brew" class="headerlink" title="2.1 安装brew"></a>2.1 安装brew</h3><p>Homebrew是 mac的包管理器，仅需执行相应的命令,就能下载安装需要的软件包，可以省掉自己去下载、解压、拖拽(安装)等繁琐的步骤。 比如安装服务器 nginx，打开终端执行以下命令即可安装:</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">brew install nginx</span><br></pre></td></tr></table></figure>
 
-<ol start="5">
-<li>选择Tools -&gt; Build System -&gt; java</li>
-</ol>
-<img src="/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/image-20211211145804287.png" style="zoom:50%;" align="left">
+<p>mac终端运行下面命令安装brew，镜像地址下载安装，速度快</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://cdn.jsdelivr.net/gh/ineo6/homebrew-install/install)&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-2-安装wget"><a href="#2-2-安装wget" class="headerlink" title="2.2 安装wget"></a>2.2 安装wget</h3><p>mac终端运行下面命令</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">brew install wget</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-3-下载安装halo"><a href="#2-3-下载安装halo" class="headerlink" title="2.3 下载安装halo"></a>2.3 下载安装halo</h3><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">wget https://dl.halo.run/release/halo-1.4.13.jar</span><br><span class="line">java -jar halo-1.4.13.jar</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-4-访问halo"><a href="#2-4-访问halo" class="headerlink" title="2.4 访问halo"></a>2.4 访问halo</h3><ul>
+<li>注意⚠️：在访问halo期间，运行halo程序的终端不能关闭</li>
+</ul>
+<p>查看halo web页面，浏览器访问：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1:8090</span><br></pre></td></tr></table></figure>
+
+<p>查看halo管理页面，浏览器访问：</p>
+<figure class="highlight text"><table><tr><td class="code"><pre><span class="line">http://127.0.0.1:8090/admin</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-5-说明"><a href="#2-5-说明" class="headerlink" title="2.5 说明"></a>2.5 说明</h3><p>初次运行halo程序，会在 ~ 目录下创建一个.halo的文件夹，里面包含了博客内容以及账号信息，切记不要轻易删除此文件夹，否则账号信息以及博客内容都会被删除。</p>
 ]]></content>
       <tags>
         <tag>教程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>typora图片左对齐</title>
+    <url>/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/</url>
+    <content><![CDATA[<p>typora图片默认是剧中对齐的方式：</p>
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128142529931.png"> </p>
+<p>但很多情况下我们其实更倾向于图片左对齐，网上很多办法都更改typora的默认对齐方式，即更改github.css文件，但这种方式会让我们所有的图片都变成左对齐的方式，实际情况下我们有的时候只需要一张图片左对齐。其实在typora中实现图片左对齐的方法非常简单，只需要<strong>在图片链接后加一个空格即可</strong>：</p>
+<span id="more"></span>
+
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128143120575.png"></p>
+<hr>
+<h3 id="设置任意对齐方式"><a href="#设置任意对齐方式" class="headerlink" title="设置任意对齐方式"></a>设置任意对齐方式</h3><p>在<code>typora</code>中图片的默认格式为<code>![图片标题](图片url)</code></p>
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128151604005.png"></p>
+<p>实际上markdown是兼容<code>&lt;img src=&quot;&quot;&gt;</code>图片格式的，采用img标签就可以利用<code>align</code>属性设置图片对齐方式。</p>
+<p>下面介绍一种可以快速将图片格式从<code>![图片标题](图片url)</code>变为<code>&lt;img src=&quot;&quot;&gt;</code>格式，选中图片，右键，选择缩放图片，任意选择一个不是100%缩放比例（如果选择100%不会有任何变化，如果不想改变图片大小，设置<code>zoom:100</code>即可，即<code>style=&quot;zoom:100%;&quot;</code>），缩放完毕就可以发现图片格式进行自动转换，在<code>img标签中</code>添加<code>align</code>属性即可。</p>
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128152513094.png"></p>
+]]></content>
+      <tags>
+        <tag>教程</tag>
+        <tag>Typora</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>刷题分享：LeetCode139.单词拆分【字典树，动态规划】</title>
+    <url>/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/</url>
+    <content><![CDATA[<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/leetcode-1.jpg"></p>
+<p>题目对应<code>LeetCode</code><a href="https://leetcode.cn/problems/word-break/">139. 单词拆分</a></p>
+<span id="more"></span>
+
+<h3 id="1-题目描述"><a href="#1-题目描述" class="headerlink" title="1. 题目描述"></a>1. 题目描述</h3><p>给你一个字符串 s 和一个字符串列表 wordDict 作为字典。请你判断是否可以利用字典中出现的单词拼接出 s 。</p>
+<p>注意：不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。</p>
+<blockquote>
+<p>示例 1：</p>
+<p>输入: s &#x3D; “leetcode”, wordDict &#x3D; [“leet”, “code”]<br>输出: true<br>解释: 返回 true 因为 “leetcode” 可以由 “leet” 和 “code” 拼接成。</p>
+<p>示例 2：</p>
+<p>输入: s &#x3D; “applepenapple”, wordDict &#x3D; [“apple”, “pen”]<br>输出: true<br>解释: 返回 true 因为 “applepenapple” 可以由 “apple” “pen” “apple” 拼接成。<br>     注意，你可以重复使用字典中的单词。</p>
+<p>示例 3：</p>
+<p>输入: s &#x3D; “catsandog”, wordDict &#x3D; [“cats”, “dog”, “sand”, “and”, “cat”]<br>输出: false</p>
+</blockquote>
+<h3 id="2-代码分析"><a href="#2-代码分析" class="headerlink" title="2. 代码分析"></a>2. 代码分析</h3><p>【动态规划】+【字典树】</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">wordBreak</span><span class="params">(String s, List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> build(wordDict);</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> s.length();</span><br><span class="line">        <span class="comment">// 动态规划，转移方程：dp[i] = dp[i-k] &amp;&amp; (s[i-k,i] in wordDict)</span></span><br><span class="line">        <span class="type">boolean</span>[] dp = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;n; i++) &#123;</span><br><span class="line">            List&lt;Integer&gt; list = check(s, root, i);</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> idx : list) &#123;</span><br><span class="line">                <span class="comment">// 可能有多个位置匹配，只要存在一个k满足 dp[i-k] &amp;&amp; (s[i-k,i] in wordDict) == true，则dp[i]为true</span></span><br><span class="line">                <span class="keyword">if</span> (idx==<span class="number">0</span> || dp[idx-<span class="number">1</span>]) &#123;</span><br><span class="line">                    dp[i] = <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n-<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断是否满足最右匹配</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Integer&gt; <span class="title function_">check</span><span class="params">(String s, Trie root, <span class="type">int</span> lastIndex)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">        List&lt;Integer&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">while</span> (lastIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> s.charAt(lastIndex) - <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span> (node.children[index] == <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            node = node.children[index];</span><br><span class="line">            <span class="keyword">if</span> (node.isEnd) &#123;</span><br><span class="line">                <span class="comment">// 如果满足最右匹配，且到达单词末尾，将该Index加入List</span></span><br><span class="line">                list.add(lastIndex);</span><br><span class="line">            &#125;</span><br><span class="line">            lastIndex--;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 建立字典树，建立字典树的基本套路</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> Trie <span class="title function_">build</span><span class="params">(List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">        <span class="keyword">for</span> (String s : wordDict) &#123;</span><br><span class="line">            <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">            <span class="comment">// 这里需要注意，单词尾部向头部遍历，方便check时的最右匹配</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i=s.length()-<span class="number">1</span>; i&gt;=<span class="number">0</span>; i--) &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">idx</span> <span class="operator">=</span> s.charAt(i)-<span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">                <span class="keyword">if</span> (node.children[idx] == <span class="literal">null</span>) &#123;</span><br><span class="line">                    node.children[idx] = <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">                &#125;</span><br><span class="line">                node = node.children[idx];</span><br><span class="line">            &#125;</span><br><span class="line">            node.isEnd = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> root;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 字典树的典型结构</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Trie</span>&#123;</span><br><span class="line">    Trie[] children;</span><br><span class="line">    <span class="type">boolean</span> isEnd;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Trie</span><span class="params">()</span> &#123;</span><br><span class="line">        children = <span class="keyword">new</span> <span class="title class_">Trie</span>[<span class="number">26</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/image-20220524165305435.png"></p>
+]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>算法题</tag>
       </tags>
   </entry>
   <entry>
@@ -598,35 +627,6 @@
       </categories>
       <tags>
         <tag>操作系统</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>刷题分享：LeetCode139.单词拆分【字典树，动态规划】</title>
-    <url>/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/</url>
-    <content><![CDATA[<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/leetcode-1.jpg"></p>
-<p>题目对应<code>LeetCode</code><a href="https://leetcode.cn/problems/word-break/">139. 单词拆分</a></p>
-<span id="more"></span>
-
-<h3 id="1-题目描述"><a href="#1-题目描述" class="headerlink" title="1. 题目描述"></a>1. 题目描述</h3><p>给你一个字符串 s 和一个字符串列表 wordDict 作为字典。请你判断是否可以利用字典中出现的单词拼接出 s 。</p>
-<p>注意：不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。</p>
-<blockquote>
-<p>示例 1：</p>
-<p>输入: s &#x3D; “leetcode”, wordDict &#x3D; [“leet”, “code”]<br>输出: true<br>解释: 返回 true 因为 “leetcode” 可以由 “leet” 和 “code” 拼接成。</p>
-<p>示例 2：</p>
-<p>输入: s &#x3D; “applepenapple”, wordDict &#x3D; [“apple”, “pen”]<br>输出: true<br>解释: 返回 true 因为 “applepenapple” 可以由 “apple” “pen” “apple” 拼接成。<br>     注意，你可以重复使用字典中的单词。</p>
-<p>示例 3：</p>
-<p>输入: s &#x3D; “catsandog”, wordDict &#x3D; [“cats”, “dog”, “sand”, “and”, “cat”]<br>输出: false</p>
-</blockquote>
-<h3 id="2-代码分析"><a href="#2-代码分析" class="headerlink" title="2. 代码分析"></a>2. 代码分析</h3><p>【动态规划】+【字典树】</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">wordBreak</span><span class="params">(String s, List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> build(wordDict);</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> s.length();</span><br><span class="line">        <span class="comment">// 动态规划，转移方程：dp[i] = dp[i-k] &amp;&amp; (s[i-k,i] in wordDict)</span></span><br><span class="line">        <span class="type">boolean</span>[] dp = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;n; i++) &#123;</span><br><span class="line">            List&lt;Integer&gt; list = check(s, root, i);</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> idx : list) &#123;</span><br><span class="line">                <span class="comment">// 可能有多个位置匹配，只要存在一个k满足 dp[i-k] &amp;&amp; (s[i-k,i] in wordDict) == true，则dp[i]为true</span></span><br><span class="line">                <span class="keyword">if</span> (idx==<span class="number">0</span> || dp[idx-<span class="number">1</span>]) &#123;</span><br><span class="line">                    dp[i] = <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n-<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断是否满足最右匹配</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Integer&gt; <span class="title function_">check</span><span class="params">(String s, Trie root, <span class="type">int</span> lastIndex)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">        List&lt;Integer&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">while</span> (lastIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> s.charAt(lastIndex) - <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span> (node.children[index] == <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            node = node.children[index];</span><br><span class="line">            <span class="keyword">if</span> (node.isEnd) &#123;</span><br><span class="line">                <span class="comment">// 如果满足最右匹配，且到达单词末尾，将该Index加入List</span></span><br><span class="line">                list.add(lastIndex);</span><br><span class="line">            &#125;</span><br><span class="line">            lastIndex--;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 建立字典树，建立字典树的基本套路</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> Trie <span class="title function_">build</span><span class="params">(List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">        <span class="keyword">for</span> (String s : wordDict) &#123;</span><br><span class="line">            <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">            <span class="comment">// 这里需要注意，单词尾部向头部遍历，方便check时的最右匹配</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i=s.length()-<span class="number">1</span>; i&gt;=<span class="number">0</span>; i--) &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">idx</span> <span class="operator">=</span> s.charAt(i)-<span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">                <span class="keyword">if</span> (node.children[idx] == <span class="literal">null</span>) &#123;</span><br><span class="line">                    node.children[idx] = <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">                &#125;</span><br><span class="line">                node = node.children[idx];</span><br><span class="line">            &#125;</span><br><span class="line">            node.isEnd = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> root;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 字典树的典型结构</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Trie</span>&#123;</span><br><span class="line">    Trie[] children;</span><br><span class="line">    <span class="type">boolean</span> isEnd;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Trie</span><span class="params">()</span> &#123;</span><br><span class="line">        children = <span class="keyword">new</span> <span class="title class_">Trie</span>[<span class="number">26</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/image-20220524165305435.png"></p>
-]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>算法题</tag>
       </tags>
   </entry>
   <entry>
@@ -757,35 +757,6 @@
       </tags>
   </entry>
   <entry>
-    <title>BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？</title>
-    <url>/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/</url>
-    <content><![CDATA[<h3 id="问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数"><a href="#问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数" class="headerlink" title="问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数"></a>问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数</h3><p>解法：采用BitMap，每个整数分配2个bit</p>
-<blockquote>
-<p>00	&#x3D;&gt; 0	表示没出现过</p>
-<p>01	&#x3D;&gt; 1	表示出现过1次</p>
-<p>10	&#x3D;&gt;2	表示出现过多次</p>
-<p>11	&#x3D;&gt;3	表示无效数据。</p>
-</blockquote>
-<span id="more"></span>
-
-<ul>
-<li>内存分析</li>
-</ul>
-<p>每个无符号整数的取值范围为0~2^32-1，BitMap空间复杂度取决于MAX_VALUE，因此需要一个长度为2 ^ 32的BitMap，总占用空间为2^32 * 2bit &#x3D; 1 GB。</p>
-<h3 id="使用Java程序进行实现："><a href="#使用Java程序进行实现：" class="headerlink" title="使用Java程序进行实现："></a>使用Java程序进行实现：</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BitMapTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 00 没出现过</span></span><br><span class="line"><span class="comment">     * 01 出现过1次</span></span><br><span class="line"><span class="comment">     * 10 出现过多次</span></span><br><span class="line"><span class="comment">     * 11 无效表示</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 1 byte = 8 bit，可分配四个数字，长度为1000可覆盖4000个数字，因此我们设置输入整数不超过4000</span></span><br><span class="line"><span class="comment">     * 真实情况下该数组的长度应该为 2.5亿/4，才能覆盖所有无符号整数，此处测试用较小数字进行</span></span><br><span class="line"><span class="comment">     * flags默认初始值都为0</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |3 2 1 0| flag[0] 例如：10000100 表示3出现过多次, 2, 0都没有出现过，1出现过一次</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |7 6 5 4| flag[1]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="type">byte</span>[] flags = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1000</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] nums = <span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">2000</span>];  <span class="comment">// 2000个测试输入数据</span></span><br><span class="line">        <span class="comment">// 验证结果的正确性</span></span><br><span class="line">        Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(nums.length);</span><br><span class="line">        <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">        System.out.println(<span class="string">&quot;原始数据：&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="comment">// 填充随机数输入进行验证</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> random.nextInt(flags.length * <span class="number">4</span>);  <span class="comment">// flags长度为1000，整数最大只能为4000</span></span><br><span class="line">            nums[i] = num;</span><br><span class="line">            System.out.print(num + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            map.put(num, map.getOrDefault(num, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            setVal(num);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();</span><br><span class="line">        System.out.println(<span class="string">&quot;-------------------&quot;</span>);</span><br><span class="line">        List&lt;Integer&gt; bitMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        List&lt;Integer&gt; hashMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (getVal(nums[i]) == <span class="number">1</span>) &#123;</span><br><span class="line">                bitMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (map.getOrDefault(nums[i], <span class="number">0</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">                hashMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;只出现过一次的数据：&quot;</span>);</span><br><span class="line">        System.out.println(bitMapAns);</span><br><span class="line">        System.out.println(<span class="string">&quot;bitMapAns 是否和 hashMapAns相同：&quot;</span> + bitMapAns.equals(hashMapAns));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> getVal(idx);</span><br><span class="line">        <span class="keyword">if</span> (val &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="comment">// 11 或 10 表示出现过多次，保持不变即可</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        ~(3&lt;&lt;loc) =&gt; 11001111 即让2bit对应位置为0，其他都为1</span></span><br><span class="line"><span class="comment">        (flags[pos] &amp; ~(3&lt;&lt;loc)) =&gt; 效果就是让2bit对应位置置为00，其他为保持不变</span></span><br><span class="line"><span class="comment">        | ((val + 1) &lt;&lt; loc) =&gt; 效果就是让val+1的值填充2bit的位置</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">newVal</span> <span class="operator">=</span> (flags[pos] &amp; ~(<span class="number">3</span> &lt;&lt; (loc * <span class="number">2</span>))) | ((val + <span class="number">1</span>) &lt;&lt; (loc * <span class="number">2</span>));</span><br><span class="line">        flags[pos] = (<span class="type">byte</span>) newVal;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">getVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        flags[pos] &gt;&gt; (loc * 2)  =&gt; 00001001  (左边自动补0) 这个操作的效果是让2这个整数在bitmap中对应的两个bit移动到最右端</span></span><br><span class="line"><span class="comment">        拿上面的结果  (0b00001001) &amp; (byte)3  =&gt; (0b00001001) &amp; (0b00000011) =&gt; (0b00000001) 即可得到目标的两个bit对应的数字</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> (flags[pos] &gt;&gt; (loc * <span class="number">2</span>)) &amp; (<span class="type">byte</span>) <span class="number">3</span>;</span><br><span class="line">        <span class="keyword">return</span> val;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>运行结果：</p>
-<p><img src="/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/image-20220512221937915.png"></p>
-<p>上述通过<code>HashMap</code>的方案可以检验<code>BitMap</code>的答案是正确的，并且成功节省了内存空间。</p>
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Git常用命令</title>
     <url>/2022/05/10/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h2 id="Git基础命令"><a href="#Git基础命令" class="headerlink" title="Git基础命令"></a>Git基础命令</h2><ol>
@@ -825,34 +796,29 @@
       </tags>
   </entry>
   <entry>
-    <title>Java小知识</title>
-    <url>/2022/05/11/Java%E5%B0%8F%E7%9F%A5%E8%AF%86/</url>
-    <content><![CDATA[<ol>
-<li>使用<code>String.split(expr)</code>方法时，要注意<code>expr</code>是否是正则表达式的通配符，如 <code>.</code>, <code>$</code>等，要使用双反斜杠进行转译<code>\\</code>，<code>\</code>要使用<code>\\\\</code>进行转译</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;abc.def.ghi&quot;</span>;</span><br><span class="line">String[] split = s.split(<span class="string">&quot;\\.&quot;</span>);</span><br><span class="line">System.out.println(Arrays.toString(split));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行结果</span></span><br><span class="line">[abc, def, ghi]</span><br></pre></td></tr></table></figure>
-
+    <title>BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？</title>
+    <url>/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/</url>
+    <content><![CDATA[<h3 id="问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数"><a href="#问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数" class="headerlink" title="问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数"></a>问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数</h3><p>解法：采用BitMap，每个整数分配2个bit</p>
+<blockquote>
+<p>00	&#x3D;&gt; 0	表示没出现过</p>
+<p>01	&#x3D;&gt; 1	表示出现过1次</p>
+<p>10	&#x3D;&gt;2	表示出现过多次</p>
+<p>11	&#x3D;&gt;3	表示无效数据。</p>
+</blockquote>
 <span id="more"></span>
 
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;abc\\def\\ghi&quot;</span>;</span><br><span class="line">System.out.println(<span class="string">&quot;s:\t\t&quot;</span> + s);</span><br><span class="line">String[] split = s.split(<span class="string">&quot;\\\\&quot;</span>);</span><br><span class="line">System.out.println(<span class="string">&quot;split:\t&quot;</span> + Arrays.toString(split));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行结果</span></span><br><span class="line">s:			abc\def\ghi</span><br><span class="line">split:	[abc, def, ghi]</span><br></pre></td></tr></table></figure>
+<ul>
+<li>内存分析</li>
+</ul>
+<p>每个无符号整数的取值范围为0~2^32-1，BitMap空间复杂度取决于MAX_VALUE，因此需要一个长度为2 ^ 32的BitMap，总占用空间为2^32 * 2bit &#x3D; 1 GB。</p>
+<h3 id="使用Java程序进行实现："><a href="#使用Java程序进行实现：" class="headerlink" title="使用Java程序进行实现："></a>使用Java程序进行实现：</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BitMapTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 00 没出现过</span></span><br><span class="line"><span class="comment">     * 01 出现过1次</span></span><br><span class="line"><span class="comment">     * 10 出现过多次</span></span><br><span class="line"><span class="comment">     * 11 无效表示</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 1 byte = 8 bit，可分配四个数字，长度为1000可覆盖4000个数字，因此我们设置输入整数不超过4000</span></span><br><span class="line"><span class="comment">     * 真实情况下该数组的长度应该为 2.5亿/4，才能覆盖所有无符号整数，此处测试用较小数字进行</span></span><br><span class="line"><span class="comment">     * flags默认初始值都为0</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |3 2 1 0| flag[0] 例如：10000100 表示3出现过多次, 2, 0都没有出现过，1出现过一次</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |7 6 5 4| flag[1]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="type">byte</span>[] flags = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1000</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] nums = <span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">2000</span>];  <span class="comment">// 2000个测试输入数据</span></span><br><span class="line">        <span class="comment">// 验证结果的正确性</span></span><br><span class="line">        Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(nums.length);</span><br><span class="line">        <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">        System.out.println(<span class="string">&quot;原始数据：&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="comment">// 填充随机数输入进行验证</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> random.nextInt(flags.length * <span class="number">4</span>);  <span class="comment">// flags长度为1000，整数最大只能为4000</span></span><br><span class="line">            nums[i] = num;</span><br><span class="line">            System.out.print(num + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            map.put(num, map.getOrDefault(num, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            setVal(num);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();</span><br><span class="line">        System.out.println(<span class="string">&quot;-------------------&quot;</span>);</span><br><span class="line">        List&lt;Integer&gt; bitMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        List&lt;Integer&gt; hashMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (getVal(nums[i]) == <span class="number">1</span>) &#123;</span><br><span class="line">                bitMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (map.getOrDefault(nums[i], <span class="number">0</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">                hashMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;只出现过一次的数据：&quot;</span>);</span><br><span class="line">        System.out.println(bitMapAns);</span><br><span class="line">        System.out.println(<span class="string">&quot;bitMapAns 是否和 hashMapAns相同：&quot;</span> + bitMapAns.equals(hashMapAns));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> getVal(idx);</span><br><span class="line">        <span class="keyword">if</span> (val &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="comment">// 11 或 10 表示出现过多次，保持不变即可</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        ~(3&lt;&lt;loc) =&gt; 11001111 即让2bit对应位置为0，其他都为1</span></span><br><span class="line"><span class="comment">        (flags[pos] &amp; ~(3&lt;&lt;loc)) =&gt; 效果就是让2bit对应位置置为00，其他为保持不变</span></span><br><span class="line"><span class="comment">        | ((val + 1) &lt;&lt; loc) =&gt; 效果就是让val+1的值填充2bit的位置</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">newVal</span> <span class="operator">=</span> (flags[pos] &amp; ~(<span class="number">3</span> &lt;&lt; (loc * <span class="number">2</span>))) | ((val + <span class="number">1</span>) &lt;&lt; (loc * <span class="number">2</span>));</span><br><span class="line">        flags[pos] = (<span class="type">byte</span>) newVal;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">getVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        flags[pos] &gt;&gt; (loc * 2)  =&gt; 00001001  (左边自动补0) 这个操作的效果是让2这个整数在bitmap中对应的两个bit移动到最右端</span></span><br><span class="line"><span class="comment">        拿上面的结果  (0b00001001) &amp; (byte)3  =&gt; (0b00001001) &amp; (0b00000011) =&gt; (0b00000001) 即可得到目标的两个bit对应的数字</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> (flags[pos] &gt;&gt; (loc * <span class="number">2</span>)) &amp; (<span class="type">byte</span>) <span class="number">3</span>;</span><br><span class="line">        <span class="keyword">return</span> val;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<ol start="2">
-<li>集合new对象时添加元素</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// new对象的时候添加元素</span></span><br><span class="line">Map&lt;String, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, Integer&gt;()&#123;&#123;</span><br><span class="line">  put(<span class="string">&quot;a&quot;</span>, <span class="number">0</span>);</span><br><span class="line">  put(<span class="string">&quot;b&quot;</span>, <span class="number">1</span>);</span><br><span class="line">&#125;&#125;;</span><br><span class="line">System.out.println(map);</span><br><span class="line"><span class="comment">// 正常添加元素</span></span><br><span class="line">map.put(<span class="string">&quot;c&quot;</span>, <span class="number">2</span>);</span><br><span class="line">System.out.println(map);</span><br></pre></td></tr></table></figure>
-
-<p>输出结果：</p>
-<p><img src="/2022/05/11/Java%E5%B0%8F%E7%9F%A5%E8%AF%86/image-20211129213733732.png"> </p>
-<ol start="3">
-<li>查看Java版本信息</li>
-</ol>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">System.out.println(System.getProperty(<span class="string">&quot;java.version&quot;</span>));</span><br></pre></td></tr></table></figure>
-
-
-
+<p>运行结果：</p>
+<p><img src="/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/image-20220512221937915.png"></p>
+<p>上述通过<code>HashMap</code>的方案可以检验<code>BitMap</code>的答案是正确的，并且成功节省了内存空间。</p>
 ]]></content>
       <categories>
-        <category>Java</category>
+        <category>技术</category>
       </categories>
       <tags>
         <tag>Java</tag>
@@ -1080,6 +1046,122 @@
       </tags>
   </entry>
   <entry>
+    <title>Java小知识</title>
+    <url>/2022/05/11/Java%E5%B0%8F%E7%9F%A5%E8%AF%86/</url>
+    <content><![CDATA[<ol>
+<li>使用<code>String.split(expr)</code>方法时，要注意<code>expr</code>是否是正则表达式的通配符，如 <code>.</code>, <code>$</code>等，要使用双反斜杠进行转译<code>\\</code>，<code>\</code>要使用<code>\\\\</code>进行转译</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;abc.def.ghi&quot;</span>;</span><br><span class="line">String[] split = s.split(<span class="string">&quot;\\.&quot;</span>);</span><br><span class="line">System.out.println(Arrays.toString(split));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行结果</span></span><br><span class="line">[abc, def, ghi]</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;abc\\def\\ghi&quot;</span>;</span><br><span class="line">System.out.println(<span class="string">&quot;s:\t\t&quot;</span> + s);</span><br><span class="line">String[] split = s.split(<span class="string">&quot;\\\\&quot;</span>);</span><br><span class="line">System.out.println(<span class="string">&quot;split:\t&quot;</span> + Arrays.toString(split));</span><br><span class="line"></span><br><span class="line"><span class="comment">// 运行结果</span></span><br><span class="line">s:			abc\def\ghi</span><br><span class="line">split:	[abc, def, ghi]</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>集合new对象时添加元素</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">// new对象的时候添加元素</span></span><br><span class="line">Map&lt;String, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;String, Integer&gt;()&#123;&#123;</span><br><span class="line">  put(<span class="string">&quot;a&quot;</span>, <span class="number">0</span>);</span><br><span class="line">  put(<span class="string">&quot;b&quot;</span>, <span class="number">1</span>);</span><br><span class="line">&#125;&#125;;</span><br><span class="line">System.out.println(map);</span><br><span class="line"><span class="comment">// 正常添加元素</span></span><br><span class="line">map.put(<span class="string">&quot;c&quot;</span>, <span class="number">2</span>);</span><br><span class="line">System.out.println(map);</span><br></pre></td></tr></table></figure>
+
+<p>输出结果：</p>
+<p><img src="/2022/05/11/Java%E5%B0%8F%E7%9F%A5%E8%AF%86/image-20211129213733732.png"> </p>
+<ol start="3">
+<li>查看Java版本信息</li>
+</ol>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line">System.out.println(System.getProperty(<span class="string">&quot;java.version&quot;</span>));</span><br></pre></td></tr></table></figure>
+
+
+
+]]></content>
+      <categories>
+        <category>Java</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL:InnoDB存储引擎和MyISAM的区别？</title>
+    <url>/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/</url>
+    <content><![CDATA[<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/mysql-logo-800-400.jpg"></p>
+<p>本文从<strong>事务</strong>，<strong>外键</strong>，<strong>索引</strong>， <strong>存储文件</strong>，<strong>日志</strong>，<strong>count行数</strong>，<strong>锁</strong>，<strong>主键</strong>八个方面系统地对比了在<code>MySQL</code>中<code>InnoDB</code>存储引擎和<code>MyISAM</code>存储引擎的区别。</p>
+<span id="more"></span>
+
+<h3 id="1-事务"><a href="#1-事务" class="headerlink" title="1. 事务"></a>1. 事务</h3><ul>
+<li><p><code>InnoDB</code>：支持事务。</p>
+</li>
+<li><p><code>MyISAM</code>：不支持事务，强调的是性能，每次查询具有原子性，一般情况下其查询数度比<code>InnoDB</code>更快，但是不提供事务支持。</p>
+</li>
+</ul>
+<blockquote>
+<p>一般情况下<code>MyISAM</code>查询速度比<code>InnoDB</code>快的原因：</p>
+<p>答：在查询的时候，InnoDB要维护的东西比MyISAM多很多，具体以下几点：</p>
+<ul>
+<li>InnoDB缓存数据块，MyISAM只缓存索引块， 这中间还有换进换出的减少；</li>
+<li>InnoDB寻址要映射到块，再到行，MyISAM记录的直接是文件的OFFSET，定位比InnoDB要快 </li>
+<li>InnoDB还需要维护MVCC一致； 虽然你的场景没有，但他还是需要去检查和维护</li>
+</ul>
+</blockquote>
+<h3 id="2-外键"><a href="#2-外键" class="headerlink" title="2. 外键"></a>2. 外键</h3><ul>
+<li><code>InnoDB</code>：支持外键</li>
+<li><code>MyISAM</code>：不支持外键，对一个包含外键的InnoDB表转为MyISAM会失败</li>
+</ul>
+<h3 id="3-索引"><a href="#3-索引" class="headerlink" title="3. 索引"></a>3. 索引</h3><ul>
+<li><code>InnoDB</code>：聚集索引，数据文件和索引存储在一起，必须要有主键，通过主键查询效率很高，一次查询即可得到完整的行数据。辅助索引存储的数据是对应的主键索引的值，通过辅助索引查询需要两次查询，根据辅助索引查询到对应的主键索引，再根据主键索引查询到对应的行数据（这一过程称之为<strong>回表</strong>）。</li>
+<li><code>MyISAM</code>：非聚集索引，索引和数据文件分开保存，索引保存的是数据文件的指针。主键索引和辅助索引相互独立。</li>
+</ul>
+<blockquote>
+<p>InnoDB的B+树主键索引的叶子节点就是数据文件，辅助索引的叶子节点是主键的值；而MyISAM的B+树主键索引和辅助索引的叶子节点都是数据文件的地址指针。</p>
+</blockquote>
+<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png"></p>
+<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130322302.png"></p>
+<h3 id="4-存储文件"><a href="#4-存储文件" class="headerlink" title="4. 存储文件"></a>4. 存储文件</h3><ul>
+<li><code>InnoDB</code>：存储文件有<strong>frm、ibd</strong>，<strong>frm</strong>是表定义文件，<strong>ibd</strong>是数据文件。</li>
+<li><code>MyISAM</code>：存储文件有<strong>frm、myd、myi</strong>，<strong>frm</strong>是表定义文件，<strong>myd</strong>是数据文件，<strong>myi</strong>是索引文件。</li>
+</ul>
+<h3 id="5-日志"><a href="#5-日志" class="headerlink" title="5. 日志"></a>5. 日志</h3><ul>
+<li><code>InnoDB</code>：有<code>redo log</code>，使用 InnoDB 的数据库在异常崩溃后，数据库重新启动的时候会保证数据库恢复到崩溃前的状态，这个恢复的过程依赖于 <code>redo log</code> 。 <code>redo log</code> 保证事务的持久性， <code>undo log</code> 保证事务的原子性。</li>
+<li><code>MyISAM</code>：没有<code>redo log</code>，不支持数据库异常崩溃后的安全恢复。</li>
+</ul>
+<h3 id="6-count"><a href="#6-count" class="headerlink" title="6. count"></a>6. count</h3><ul>
+<li><code>InnoDB</code>：不保存表的具体行数，如果使用<code>select count(*) from table</code>，就会遍历整个表，消耗相当大，但是在加了<code>where</code>条件后，myisam和innodb处理的方式都一样。</li>
+<li><code>MyISAM</code>：使用一个变量保存整个表的行数，如果使用<code>select count(*) from table</code>，会直接读取该变量。</li>
+</ul>
+<blockquote>
+<p> 因为InnoDB的事务特性，在同一时刻表中的行数对于不同的事务而言是不一样的，因此count统计会计算对于当前事务而言可以统计到的行数，而不是将总行数储存起来方便快速查询。</p>
+</blockquote>
+<h3 id="7-锁"><a href="#7-锁" class="headerlink" title="7. 锁"></a>7. 锁</h3><ul>
+<li><code>InnoDB</code>：支持行级锁和表锁。行锁是基于索引实现的，如果没有命中索引，也无法使用行锁，会退化到表锁。</li>
+<li><code>MyISAM</code>：仅支持表锁，不支持行锁。</li>
+</ul>
+<h3 id="8-主键"><a href="#8-主键" class="headerlink" title="8. 主键"></a>8. 主键</h3><ul>
+<li><code>InnoDB</code>：如果没有设定主键，会自动生成一个6字节的隐藏主键（用户不可见），数据保存在主键索引的叶子节点上。</li>
+<li><code>MyISAM</code>：允许不含有主键。</li>
+</ul>
+<blockquote>
+<p>删除部分自增主键后，二者的区别？</p>
+<ol>
+<li>不重启服务器</li>
+</ol>
+<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，插入一行新的数据，无论是<code>InnoDB</code>还是<code>MyISAM</code>都会从<code>6</code>开始插入。</p>
+<ol start="2">
+<li>重启服务器</li>
+</ol>
+<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，重启服务器，再插入一行新的数据，<code>InnoDB</code>主键会从<code>4</code>开始插入，而<code>MyISAM</code>会从<code>6</code>开始插入。</p>
+<blockquote>
+<p>原因：Innodb表把自增主键的最大ID记录到内存中，重启数据库后，都会导致最大自增ID重置；MyISAM表会把自增主键的最大ID记录到数据文件里，重启MySQL自增主键的最大ID也不会丢失。</p>
+</blockquote>
+<p><strong>说明：mysql8.0版本，重启数据库后，不会导致最大自增ID重置</strong></p>
+<p><strong>原因：</strong>在 MySQL 8.0 中，<code>AUTO_INCREMENT</code>计数器的逻辑变了，每当计数器的值有变，InnoDB 会将其写入 redo log，保存到引擎专用的系统表中。MySQL 正常关闭后重启：从系统表中获取计数器的值。MySQL 故障后重启：从系统表中获取计数器的值；从最后一个检查点开始扫描 redo log 中记录的计数器值；取这两者的最大值作为新值。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Java异常：Exception与Error，checkedException与unCheckedException</title>
     <url>/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/</url>
     <content><![CDATA[<h3 id="1-Java异常类层级结构图"><a href="#1-Java异常类层级结构图" class="headerlink" title="1. Java异常类层级结构图"></a>1. Java异常类层级结构图</h3><p><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512152121807.png"></p>
@@ -1134,6 +1216,266 @@
       </categories>
       <tags>
         <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL:事务&amp;MVCC详解</title>
+    <url>/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/</url>
+    <content><![CDATA[<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/mysql-logo-800-400.jpg"></p>
+<p><strong>数据库事务（transaction）</strong>是访问并可能操作各种数据项的一个数据库操作序列，这些操作要么全部执行,要么全部不执行，是一个不可分割的工作逻辑单元。</p>
+<span id="more"></span>
+
+<h2 id="事务的四大特性"><a href="#事务的四大特性" class="headerlink" title="事务的四大特性"></a>事务的四大特性</h2><ul>
+<li><p><strong>原子性（Atomicity）：</strong>一个事务中的所有操作，要么都执行，要么都失败，不存在中间状态，一旦事务执行过程中发生了错误，事务会进行回滚，恢复到事务开始之前的状态，就像这个事务从来没有执行过一样。</p>
+</li>
+<li><p><strong>一致性（Consistency）：</strong>数据库的完整性不会因为事务的执行而受到破坏，一个事务执行之前和执行之后都必须处于一致状态。比如表中有一个字段为姓名，它有唯一约束，也就是表中姓名不能重复，如果一个事务对姓名字段进行了修改，但是在事务提交后，表中的姓名变得非唯一性了，这就破坏了事务的一致性要求，这时数据库就要撤销该事务，返回初始化的状态。再比如用户A和用户B两者的钱加起来一共是1000，那么不管A和B之间如何转账、转几次账，事务结束后两个用户的钱相加起来应该还得是1000，这就是事务的一致性。</p>
+</li>
+<li><p><strong>隔离性（Isolation）：</strong>数据库允许多个并发事务同时对其数据进行读写和修改的能力，隔离性可以保证多个事务在并发执行的过程中互相隔离，互不干扰，从而避免并发事务交叉执行时带来的数据不一致问题。</p>
+</li>
+<li><p><strong>持久性（Durability）：</strong>事务结束后，对数据的修改是永久的，即便发生系统故障也不会对丢失。</p>
+</li>
+</ul>
+<p><strong><code>InnoDB</code>引擎如何保证事务的四大特性？</strong></p>
+<p>持久性通过<code>redo log</code>（重做日志）来保证的</p>
+<p>原子性通过<code>undo log</code>（回滚日志）来保证的</p>
+<p>隔离性通过<code>mvcc</code>（多版本并发控制）或锁机制来保证的</p>
+<p>一致性通过持久性+原子性+隔离性来保证的</p>
+<h2 id="并发事务带来的问题"><a href="#并发事务带来的问题" class="headerlink" title="并发事务带来的问题"></a>并发事务带来的问题</h2><h3 id="脏读"><a href="#脏读" class="headerlink" title="脏读"></a>脏读</h3><p><strong>一个事务读到了另一个「未提交事务修改的数据」，如果该数据发生回滚，则读到的数据就是错误的数据，就意味着发生了「脏读」现象。</strong></p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/10b513008ea35ee880c592a88adcb12f.png"></p>
+<p>因为事务 A 是还没提交事务的，也就是它随时可能发生回滚操作，<strong>如果在上面这种情况事务 A 发生了回滚，那么事务 B 刚才得到的数据就是过期的数据，这种现象就被称为脏读。</strong></p>
+<h3 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h3><p><strong>在一个事务内多次读取同一个数据，如果前后两次读到的数据不一致，就意味着发生了「不可重复读」现象。</strong></p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/f5b4f8f0c0adcf044b34c1f300a95abf.png"></p>
+<p>事务B第一读取余额为100万，第二次读取余额变为200万，两次读同一条数据结果却不一致。</p>
+<h3 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h3><p><strong>在一个事务中多次查询符合特定条件的记录数量，如果前后两次查询到的记录数量不同，就意味着发生了「幻读」。</strong></p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/d19a1019dc35dfe8cfe7fbff8cd97e31-20220601203800758.png"></p>
+<p>事务B第一次查询大于100万的记录有5条，第二次查询同样条件结果却变成了6条，出现了幻读。</p>
+<blockquote>
+<p>MySQL针对「脏读，不可重复读，幻读」等现象，采取了什么措施应对？</p>
+<p>答：隔离级别</p>
+</blockquote>
+<h2 id="事务的隔离级别"><a href="#事务的隔离级别" class="headerlink" title="事务的隔离级别"></a>事务的隔离级别</h2><p>SQL标准规定了四种隔离级别：</p>
+<ul>
+<li><strong>读未提交（Read Uncommitted）</strong>，一个事务可以读取到其他未提交事务变更过的数据；</li>
+<li><strong>读已提交（Read Committed）</strong>，一个事务只能读取到其他已经提交多的事务变更的数据，<code>Oracle</code>数据库默认采用这种隔离级别；</li>
+<li><strong>不可重复读（Repeatable Read）</strong>，一个事务执行过程中读取到的数据始终和事务开始时读到的数据一致，<code>MySQL</code>数据库默认采用这种隔离级别；</li>
+<li><strong>串行化（Serializable）</strong>，会对记录加上读写锁，在多个事务对这条记录进行读写操作时，如果发生了读写冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行；</li>
+</ul>
+<p>按「隔离水平」从高到低排序：</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/cce766a69dea725cd8f19b90db2d0430.png"></p>
+<p>针对不同隔离级别，并发事务时可能发生的现象：</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/4e98ea2e60923b969790898565b4d643.png"></p>
+<p>解决脏读现象，就要升级到「读提交」以上的隔离级别；要解决不可重复读现象，就要升级到「可重复读」的隔离级别。</p>
+<p>不过，要解决幻读现象不建议将隔离级别升级到「串行化」，因为这样会导致数据库在并发事务时性能很差。</p>
+<p><strong>MySQL的默认隔离级别是「不可重复读」，但是它采用<code>Next-Key Lock</code>锁（行锁和间隙锁的组合），来锁住记录本身以及记录的“间隙”，防止其他事务在记录之间插入新的记录，从而可以有效避免幻读。</strong></p>
+<h3 id="四种隔离级别是如何实现的？"><a href="#四种隔离级别是如何实现的？" class="headerlink" title="四种隔离级别是如何实现的？"></a>四种隔离级别是如何实现的？</h3><ul>
+<li>对于「读未提交」，因为可以读到为其他未提交事务修改的数据，所以直接读取最新数据；</li>
+<li>对于「串行化」，通过加<strong>读写锁</strong>的方式来避免并行访问；</li>
+<li>对于「读已提交」和「不可重复读」，它们都是通过<code>Read View</code>来实现的，它们的区别在于创建<code>Read View</code>的时机不同，<code>Read View</code>可以理解为一个快照数据，类似于相机拍的照片，记录的是某一时刻的风景。「读已提交」是在<strong>每个读语句执行前</strong>都会重新创建一个新的<code>Read View</code>；而「不可重复读」则是在<strong>事务开启前</strong>创建一个<code>Read View</code>，然后整个事务执行期间都使用这个<code>Read View</code>。</li>
+</ul>
+<blockquote>
+<p>Read View是MVCC工作的核心，下面来详细讲讲MVCC（多版本并发控制）。</p>
+</blockquote>
+<h2 id="MVCC（Multi-Version-Concurrency-Control）"><a href="#MVCC（Multi-Version-Concurrency-Control）" class="headerlink" title="MVCC（Multi-Version Concurrency Control）"></a>MVCC（Multi-Version Concurrency Control）</h2><p>MVCC最大的好处就是：读不加锁，读写不冲突。相比基于锁的并发控制，在读多写少的场景下，MVCC极大地提升了系统的并发性能。</p>
+<p>在MVCC并发控制中，读操作可以分为两类：快照读（Snapshot Read）和当前读（Current Read）。快照读，读取的是记录的可见版本（可能是历史版本），不用加锁；当前读，读取的是记录的最新版本，并且当前读返回的数据都会上锁，保证其他事务不会并发修改该记录。</p>
+<h3 id="在MySQL-InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？"><a href="#在MySQL-InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？" class="headerlink" title="在MySQL InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？"></a>在MySQL InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？</h3><ul>
+<li><p><strong>快照读：</strong>简单的select操作，属于快照读，不加锁。</p>
+<ul>
+<li>例如：select * from table where ?;</li>
+</ul>
+</li>
+<li><p><strong>当前读：</strong>特殊的读操作、插入&#x2F;更新&#x2F;删除操作，属于当前读，需要加锁。</p>
+<ul>
+<li>select * from table where ? lock in share mode;</li>
+<li>select * from table where ? for update;</li>
+<li>insert into table values (…);</li>
+<li>update table set ? where ?;</li>
+<li>delete from table where ?;</li>
+</ul>
+<p>以上语句都属于当前读，读取到记录的最新版本，并且会在读取到数据后，对数据进行加锁，以保证其他并发事务不会对当前数据进行修改。其中除了第一条语句，对读记录加<code>S锁</code>（共享锁）外，其他操作都是加<code>X锁</code>（排它锁）。</p>
+</li>
+</ul>
+<p><strong>为什么<code>插入/更新/删除</code>操作，都归为当前读?</strong></p>
+<p>当Update SQL发给MySQL后，MySQL server会根据where条件，读取到第一条满足条件的记录，然后InnoDB引擎会将第一条记录返回并加锁。待MysSQL server受到第一条记录后，会再发起一个Update请求，更新这条记录。一条记录操作完成后，会再读取下一条记录，直到没有满足条件的记录为止。因此Update操作内部就包含了一个当前读。同理Delete操作也一样。Insert操作会稍微不同，简单来讲，就是Insert操作可能会触发Unique Key的冲突检查，也会进行一下当前读。</p>
+<blockquote>
+<p>快照读中的记录快照就对应着前面提到的<code>Read View</code>，下面介绍MVCC的工作原理。</p>
+</blockquote>
+<h3 id="Read-View在MVCC中是如何工作的？"><a href="#Read-View在MVCC中是如何工作的？" class="headerlink" title="Read View在MVCC中是如何工作的？"></a>Read View在MVCC中是如何工作的？</h3><p>首先我们需要了解两个知识点：</p>
+<ul>
+<li>Read View中的四个字段，及其作用</li>
+<li>聚簇索引记录中两个跟事务相关的隐藏列</li>
+</ul>
+<ol>
+<li><strong>Read View的四个重要字段</strong></li>
+</ol>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/11a65cbc2e97f6855d7692a265dc2651-20220601215949157.png"></p>
+<p>各个字段的含义：</p>
+<ul>
+<li>creator_trx_id：是指<strong>创建该Read View的事务id</strong></li>
+<li>m_ids：创建Read View时，当前数据库中「<strong>活跃事务」的事务id列表</strong>，“活跃事务”是指启动了但还未提交的事务</li>
+<li>min_trx_id：创建Read View时，<strong>「活跃事务」中最小的事务id</strong>，即<code>m_idx</code>中的最小值</li>
+<li>max_trx_id：创建Read View时，当前数据库中应该给<strong>下一个事务的id值</strong>，不是<code>m_idx</code>中的最大值，是全局事务中最大的事务id+1</li>
+</ul>
+<ol start="2">
+<li><strong>聚簇索引记录中两个跟事务相关的隐藏列</strong></li>
+</ol>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/f595d13450878acd04affa82731f76c5.png"></p>
+<ul>
+<li>trx_id：当某个事务对该条记录改动时，会把<strong>该事务的事务id记录在trx_id中</strong></li>
+<li>roll_pointer：每次对某一条记录进行修改时，都会把这条记录的旧版本保存到<code>undo log</code>中，这个隐藏列是一个指针，指向了上一个版本的记录，于是通过它就能找到历史版本</li>
+</ul>
+<p><strong>在创建Read View时我们可以将记录中的trx_id划分为三种情况：</strong></p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/ReadView.drawio.png"></p>
+<p>一个事务去读取数据时，除当前事务的修改记录总是可见的之外，还有一下情况：</p>
+<ul>
+<li>如果记录的<code>trx_id</code>小于Read View中的<code>min_trx_id</code>，表示这个版本的记录是<strong>在创建Read View之前就已经提交了的事务生成的</strong>，因此该版本的记录对当前事务是可见的。</li>
+<li>如果记录的<code>trx_id</code>大于等于Read View中的<code>max_trx_id</code>，表示这个版本的记录是<strong>在创建Read View之后才启动的事务生成的</strong>，因此该版本的记录对当前事务是不可见的。</li>
+<li>如果记录的<code>trx_id</code>介于Read View中的<code>min_trx_id</code>和<code>max_trx_id</code>之间，则需要判断<code>trx_id</code>是否在<code>m_ids</code>列表中：<ul>
+<li>如果记录的<code>trx_id</code><strong>在</strong><code>m_ids</code>中，则表明这个版本的记录是在<strong>创建Read View时仍处于活跃状态（启动但未提交）的事务生成的</strong>，因此该版本的记录对当前事务时不可见的。</li>
+<li>如果记录的<code>trx_id</code><strong>不在</strong><code>m_ids</code>中，则表明生成该版本记录的活跃事务<strong>在创建Read View时已经提交</strong>，因此该版本的记录对当前事务是可见的。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>这种通过「版本链」来控制并发事务访问同一条记录时的行为就叫MVCC（多版本并发控制）。</p>
+</blockquote>
+<h3 id="可重复读是如何工作的？"><a href="#可重复读是如何工作的？" class="headerlink" title="可重复读是如何工作的？"></a>可重复读是如何工作的？</h3><p><strong>可重复读隔离级别是启动事务时生成一个 Read View，然后整个事务期间都在用这个 Read View</strong>。</p>
+<p>分析一个场景，假设事务A（事务id为51）启动后，紧接着启动了事务B（事务id为52），那么两个事务创建的Read View及初始记录如下：</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E4%BA%8B%E5%8A%A1ab%E7%9A%84%E8%A7%86%E5%9B%BE-new.png"></p>
+<p>事务 A 和 事务 B 的 Read View 具体内容如下：</p>
+<ul>
+<li>在事务 A 的 Read View 中，它的事务 id 是 51，由于它是第一个启动的事务，所以此时活跃事务的事务 id 列表就只有 51，活跃事务的事务 id 列表中最小的事务 id 是事务 A 本身，下一个事务 id 则是 52。</li>
+<li>在事务 B 的 Read View 中，它的事务 id 是 52，由于事务 A 是活跃的，所以此时活跃事务的事务 id 列表是 51 和 52，<strong>活跃的事务 id 中最小的事务 id 是事务 A</strong>，下一个事务 id 应该是 53。</li>
+</ul>
+<p>接着，在「可重复读」隔离级别下，事务A和事务B按顺序执行了以下操作：</p>
+<ol>
+<li>事务B读取小林的账户余额，显示余额为100万</li>
+<li>事务A更新小林的账户余额为200万，但还未提交</li>
+<li>事务B再读取小林的账户余额，显示100万</li>
+<li>事务A提交事务</li>
+<li>事务B再次读取到小林的账户余额为100万</li>
+</ol>
+<p>分析过程：</p>
+<p>事务B第一次读取账户余额时，记录的<code>trx_id</code>为50，小于Read View中的<code>min_trx_id</code>&#x3D;51，因此记录对于事务B是可见的，因此读取到余额为100万；</p>
+<p>事务A更新余额后，两个事务的Read View及记录的版本信息为</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E4%BA%8B%E5%8A%A1ab%E7%9A%84%E8%A7%86%E5%9B%BE2.png"></p>
+<p>事务B第二次读取账户余额时，最新版本记录的<code>trx_id</code>为51，处于事务B的Read View中<code>min_trx_id=51</code>和<code>max_trx_id=53</code>之间；因此还需判断<code>trx_id</code>是否在事务B的Read View中<code>m_ids=[51, 52]</code>列表中，发现在<code>m_ids</code>列表中，因此最新版本的记录对于事务B是不可见的；此时会根据当前版本记录的<code>roll_pointer</code>沿着<code>undo log</code>链条找历史版本，直到发现<code>trx_id</code>小于事务B的Read View中<code>min_trx_id</code>的第一条记录，所以事务B能读到<code>trx_id=50</code>的记录，也就是余额为100万的记录。</p>
+<p>最后在事务A提交后，由于在「可重复读」隔离级别下，Read View只会在创建事务时生成，因此事务A和事务B的Read View和创建事务是的一样。事务B第三次读取余额时还是基于之前的Read View来判断版本记录是否可见，因此此时读到的数据和第二次读取的结果是一样的，余额也是100万。</p>
+<p><strong>就是通过这样的方式实现了，「可重复读」隔离级别下在事务期间读到的记录都是事务启动前的记录。</strong></p>
+<h3 id="读已提交是怎么工作的？"><a href="#读已提交是怎么工作的？" class="headerlink" title="读已提交是怎么工作的？"></a>读已提交是怎么工作的？</h3><p><strong>读提交隔离级别是在每次读取数据时，都会生成一个新的 Read View。</strong></p>
+<p>同样分析上面那个场景，只不过将隔离级别从原来的「可重复读」改为「读已提交」。操作顺序也同上</p>
+<ol>
+<li>事务B读取小林的账户余额，显示余额为100万</li>
+<li>事务A更新小林的账户余额为200万，但还未提交</li>
+<li>事务B再读取小林的账户余额，显示100万</li>
+<li>事务A提交事务</li>
+<li>事务B再次读取到小林的账户余额为200万</li>
+</ol>
+<p>我们来分析事务B第二次读取记录时，读取不到事务A未提交的修改？</p>
+<p>在「读已提交」隔离级别下，事务B在第二次读取数据时会新创建Read View</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E8%AF%BB%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A1-20220601234013624.png"></p>
+<p>由于事务A还未提交，因此事务B读数据时事务A扔出于活跃状态，因此事务A的修改无法被事务B读取到。</p>
+<p>我们再来分析事务B第三次读数据时，为什么可以读取到事务A（事务已提交）的修改？</p>
+<p>事务B第三次执行读数据操作时创建的Read View如下：</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E8%AF%BB%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A12.drawio.png"></p>
+<p>事务B第三次读数据时，事务A已经提交，此时的Read View中的<code>min_trx_id</code>为52，即当前活跃的事务只有事务B，最新版记录由事务A创建，因此其<code>trx_id</code>为51，小于事务B的Read View中的<code>min_trx_id</code>，因此最新版本的记录对于事务B是可见的，因此第三次事务B读取到的余额为200万。</p>
+<p>正是因为在读提交隔离级别下，事务每次读数据时都重新创建 Read View，那么在事务期间的多次读取同一条数据，前后两次读的数据可能会出现不一致，因为可能这期间另外一个事务修改了该记录，并提交了事务。</p>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Markdown如何实现页内跳转？</title>
+    <url>/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/</url>
+    <content><![CDATA[<h2 id="1-Markdown怎么实现页内跳转？"><a href="#1-Markdown怎么实现页内跳转？" class="headerlink" title="1. Markdown怎么实现页内跳转？"></a>1. Markdown怎么实现页内跳转？</h2><h3 id="1-利用Markdown语法"><a href="#1-利用Markdown语法" class="headerlink" title="1. 利用Markdown语法"></a>1. 利用Markdown语法</h3><p>格式：[描述文字] (#标题名称)</p>
+<span id="more"></span>
+
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">实践：</span><br><span class="line"></span><br><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line"></span><br><span class="line">[点我去顶部](#1.-我是顶部（空格用`-`代替，转换为html时会跳转失败）)</span><br><span class="line"></span><br><span class="line">[点我去中部](#我是中部)</span><br><span class="line"></span><br><span class="line">##### 1. 我是顶部（空格用`-`代替，转换为html时会跳转失败）</span><br><span class="line"></span><br><span class="line">##### 我是中部</span><br></pre></td></tr></table></figure>
+
+<p><strong>效果展示：</strong></p>
+<hr>
+<p><a href="#1.-%E6%88%91%E6%98%AF%E9%A1%B6%E9%83%A8%EF%BC%88%E7%A9%BA%E6%A0%BC%E7%94%A8%60-%60%E4%BB%A3%E6%9B%BF%EF%BC%8C%E8%BD%AC%E6%8D%A2%E4%B8%BAhtml%E6%97%B6%E4%BC%9A%E8%B7%B3%E8%BD%AC%E5%A4%B1%E8%B4%A5%EF%BC%89">点我去顶部</a></p>
+<p><a href="#%E6%88%91%E6%98%AF%E4%B8%AD%E9%83%A8">点我去中部</a></p>
+<h5 id="1-我是顶部（空格用-代替，转换为html时会跳转失败）"><a href="#1-我是顶部（空格用-代替，转换为html时会跳转失败）" class="headerlink" title="1. 我是顶部（空格用-代替，转换为html时会跳转失败）"></a>1. 我是顶部（空格用<code>-</code>代替，转换为html时会跳转失败）</h5><h5 id="我是中部"><a href="#我是中部" class="headerlink" title="我是中部"></a>我是中部</h5><hr>
+<blockquote>
+<p>注意事项：标题名称要完全一样，标题中的空格要用 <code>-</code>代替，这种跳转方式只能局限于跳转到<code>#</code>目录</p>
+</blockquote>
+<h3 id="2-使用html标签"><a href="#2-使用html标签" class="headerlink" title="2. 使用html标签"></a>2. 使用html标签</h3><p>格式：</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">在需要被跳转到地方添加标签：&lt;a id=&quot;xxx&quot;&gt;&lt;/a&gt;</span><br><span class="line">在跳转的位置添加标签：[跳转名称](#xxx)</span><br></pre></td></tr></table></figure>
+
+<p>实践：</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line">[跳转到位置1](#a1)</span><br><span class="line"></span><br><span class="line">[跳转到地方2](#p2)</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;a id=&quot;a1&quot;&gt;位置1&lt;/a&gt;</span><br><span class="line"></span><br><span class="line">地方2&lt;a id=&quot;p2&quot;&gt;&lt;/a&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>效果展示：</strong></p>
+<hr>
+<p><a href="#a1">跳转到位置1</a></p>
+<p><a href="#p2">跳转到地方2</a></p>
+<br>
+
+<br>
+
+<p><a id="a1">位置1</a></p>
+<p>地方2<a id="p2"></a></p>
+<hr>
+<blockquote>
+<p>采用这种方式在转换为html时仍然生效，且可控制性高，推荐这种方式。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Markdown</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Redis过期key是否立马被删除？</title>
+    <url>/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/</url>
+    <content><![CDATA[<h3 id="Redis过期key是否立马被删除？"><a href="#Redis过期key是否立马被删除？" class="headerlink" title="Redis过期key是否立马被删除？"></a>Redis过期key是否立马被删除？</h3><p>答案是不会，Redis处理过期key主要有两种方式：</p>
+<ul>
+<li>惰性删除（客户端侧）</li>
+<li>定期随机删除（服务端侧）</li>
+</ul>
+<span id="more"></span>
+
+<h4 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h4><p>当客户端请求查询时，判断当前key已过期，则会删除该key，删除key的主动权交给每次访问的请求。</p>
+<p>弊端：只能处理还会访问的key，无法对一些不再会被访问的key进行删除。</p>
+<p>该实现通过<code>expiredIfNeeded</code>函数实现，源码路径：<code>src/db.c</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">expireIfNeeded</span><span class="params">(redisDb *db, robj *key, <span class="type">int</span> force_delete_expired)</span> &#123;</span><br><span class="line">   <span class="comment">// key 没有过期，return 0</span></span><br><span class="line">    <span class="keyword">if</span> (!keyIsExpired(db,key)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (server.masterhost != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (server.current_client == server.master) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (!force_delete_expired) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (checkClientPauseTimeoutAndReturnIfPaused()) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Delete the key */</span></span><br><span class="line">    deleteExpiredKeyAndPropagate(db,key);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h4><p>对于一些key过期后不再被访问，惰性删除永远无法对其进行删除，这会导致已过期的key不断积压，因此仅靠客户端侧的处理是不够的。</p>
+<ul>
+<li>如何让处理“占着茅坑不拉屎”的key?</li>
+</ul>
+<p>服务端进行定期删除，顾名思义就是Redis默认每100 ms 执行一次，随机抽取一些设置了过期时间的key，判断是否过期，如发现已过期就直接删除。</p>
+<blockquote>
+<p>注意：并不是检查所有key，而是随机抽取一定数量的key</p>
+</blockquote>
+<p>具体步骤如下：</p>
+<img src="/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/image-20220511000559696.png" style="zoom:70%">
+
+<p>该过程通过<code>activeExpireCycle</code>函数实现，源码路径：<code>src/expire.c</code></p>
+<ul>
+<li>为什么不检查所有设置过期时间的key？</li>
+</ul>
+<p>Redis中存放了数以万计的key，如果每隔100 ms 就要轮询检查所有设置过期时间的key，会非常耗费CPU</p>
+<ul>
+<li>删除如何做到主从同步？</li>
+</ul>
+<p>不论是惰性删除还是定期删除，当进行删除时，<code>master</code>会将删除指令记录到<code>AOF</code>和<code>slave</code>节点</p>
+<blockquote>
+<p><strong>如果过期数据太多，定时删除无法完全删除（每次删除完过期的key还是超过25%），同时这些key再也不会被客户端请求，即也无法通过惰性删除，该如何解决？</strong></p>
+<p>答：内存淘汰机制</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
       </tags>
   </entry>
   <entry>
@@ -1328,50 +1670,31 @@
       </tags>
   </entry>
   <entry>
-    <title>Redis过期key是否立马被删除？</title>
-    <url>/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/</url>
-    <content><![CDATA[<h3 id="Redis过期key是否立马被删除？"><a href="#Redis过期key是否立马被删除？" class="headerlink" title="Redis过期key是否立马被删除？"></a>Redis过期key是否立马被删除？</h3><p>答案是不会，Redis处理过期key主要有两种方式：</p>
-<ul>
-<li>惰性删除（客户端侧）</li>
-<li>定期随机删除（服务端侧）</li>
-</ul>
+    <title>如何配置git ssh</title>
+    <url>/2022/05/10/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgit-ssh/</url>
+    <content><![CDATA[<h3 id="1-检查用户名和邮箱"><a href="#1-检查用户名和邮箱" class="headerlink" title="1. 检查用户名和邮箱"></a>1. 检查用户名和邮箱</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看用户名</span></span><br><span class="line">git config user.name</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看邮箱</span></span><br><span class="line">git config user.email</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置用户名</span></span><br><span class="line">git config --global user.name &quot;xxx&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置邮箱</span></span><br><span class="line">git config --global user.email &quot;xxx&quot;</span><br></pre></td></tr></table></figure>
+
 <span id="more"></span>
 
-<h4 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h4><p>当客户端请求查询时，判断当前key已过期，则会删除该key，删除key的主动权交给每次访问的请求。</p>
-<p>弊端：只能处理还会访问的key，无法对一些不再会被访问的key进行删除。</p>
-<p>该实现通过<code>expiredIfNeeded</code>函数实现，源码路径：<code>src/db.c</code></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">expireIfNeeded</span><span class="params">(redisDb *db, robj *key, <span class="type">int</span> force_delete_expired)</span> &#123;</span><br><span class="line">   <span class="comment">// key 没有过期，return 0</span></span><br><span class="line">    <span class="keyword">if</span> (!keyIsExpired(db,key)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (server.masterhost != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (server.current_client == server.master) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (!force_delete_expired) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (checkClientPauseTimeoutAndReturnIfPaused()) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Delete the key */</span></span><br><span class="line">    deleteExpiredKeyAndPropagate(db,key);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="2-查看是否配置过SSH-Key"><a href="#2-查看是否配置过SSH-Key" class="headerlink" title="2. 查看是否配置过SSH Key"></a>2. 查看是否配置过SSH Key</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ls ~/.ssh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">hyunmin@HyunmindeMacBook-Air .ssh % <span class="built_in">ls</span> ~/.ssh</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">id_rsa      id_rsa.pub  known_hosts</span></span><br></pre></td></tr></table></figure>
 
-<h4 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h4><p>对于一些key过期后不再被访问，惰性删除永远无法对其进行删除，这会导致已过期的key不断积压，因此仅靠客户端侧的处理是不够的。</p>
-<ul>
-<li>如何让处理“占着茅坑不拉屎”的key?</li>
-</ul>
-<p>服务端进行定期删除，顾名思义就是Redis默认每100 ms 执行一次，随机抽取一些设置了过期时间的key，判断是否过期，如发现已过期就直接删除。</p>
-<blockquote>
-<p>注意：并不是检查所有key，而是随机抽取一定数量的key</p>
-</blockquote>
-<p>具体步骤如下：</p>
-<img src="/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/image-20220511000559696.png" style="zoom:70%">
+<p>存在id_rsa      id_rsa.pub文件即证明已配置过SSH Key</p>
+<h3 id="3-生成SSH-Key（秘钥）"><a href="#3-生成SSH-Key（秘钥）" class="headerlink" title="3. 生成SSH Key（秘钥）"></a>3. 生成SSH Key（秘钥）</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t -rsa -C &quot;email&quot;</span><br></pre></td></tr></table></figure>
 
-<p>该过程通过<code>activeExpireCycle</code>函数实现，源码路径：<code>src/expire.c</code></p>
-<ul>
-<li>为什么不检查所有设置过期时间的key？</li>
-</ul>
-<p>Redis中存放了数以万计的key，如果每隔100 ms 就要轮询检查所有设置过期时间的key，会非常耗费CPU</p>
-<ul>
-<li>删除如何做到主从同步？</li>
-</ul>
-<p>不论是惰性删除还是定期删除，当进行删除时，<code>master</code>会将删除指令记录到<code>AOF</code>和<code>slave</code>节点</p>
-<blockquote>
-<p><strong>如果过期数据太多，定时删除无法完全删除（每次删除完过期的key还是超过25%），同时这些key再也不会被客户端请求，即也无法通过惰性删除，该如何解决？</strong></p>
-<p>答：内存淘汰机制</p>
-</blockquote>
+<h3 id="4-GitHub远程仓库添加公钥"><a href="#4-GitHub远程仓库添加公钥" class="headerlink" title="4. GitHub远程仓库添加公钥"></a>4. GitHub远程仓库添加公钥</h3><ol>
+<li><p>复制<code>~/.ssh/id_rsa.pub</code>文件内容，并粘贴到GitHub-&gt;settings-&gt;SSH and GPG keys</p>
+</li>
+<li><p>检查是否配置成功</p>
+</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示如下内容则表示配置成功</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Hi Ysfun! You<span class="string">&#x27;ve successfully authenticated, but GitHub does not provide shell access.</span></span></span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
-        <category>技术</category>
+        <category>教程</category>
       </categories>
       <tags>
-        <tag>Redis</tag>
+        <tag>Git</tag>
       </tags>
   </entry>
   <entry>
@@ -1440,329 +1763,6 @@
       </categories>
       <tags>
         <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>如何配置git ssh</title>
-    <url>/2022/05/10/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgit-ssh/</url>
-    <content><![CDATA[<h3 id="1-检查用户名和邮箱"><a href="#1-检查用户名和邮箱" class="headerlink" title="1. 检查用户名和邮箱"></a>1. 检查用户名和邮箱</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看用户名</span></span><br><span class="line">git config user.name</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看邮箱</span></span><br><span class="line">git config user.email</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置用户名</span></span><br><span class="line">git config --global user.name &quot;xxx&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置邮箱</span></span><br><span class="line">git config --global user.email &quot;xxx&quot;</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<h3 id="2-查看是否配置过SSH-Key"><a href="#2-查看是否配置过SSH-Key" class="headerlink" title="2. 查看是否配置过SSH Key"></a>2. 查看是否配置过SSH Key</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ls ~/.ssh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">hyunmin@HyunmindeMacBook-Air .ssh % <span class="built_in">ls</span> ~/.ssh</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">id_rsa      id_rsa.pub  known_hosts</span></span><br></pre></td></tr></table></figure>
-
-<p>存在id_rsa      id_rsa.pub文件即证明已配置过SSH Key</p>
-<h3 id="3-生成SSH-Key（秘钥）"><a href="#3-生成SSH-Key（秘钥）" class="headerlink" title="3. 生成SSH Key（秘钥）"></a>3. 生成SSH Key（秘钥）</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t -rsa -C &quot;email&quot;</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-GitHub远程仓库添加公钥"><a href="#4-GitHub远程仓库添加公钥" class="headerlink" title="4. GitHub远程仓库添加公钥"></a>4. GitHub远程仓库添加公钥</h3><ol>
-<li><p>复制<code>~/.ssh/id_rsa.pub</code>文件内容，并粘贴到GitHub-&gt;settings-&gt;SSH and GPG keys</p>
-</li>
-<li><p>检查是否配置成功</p>
-</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示如下内容则表示配置成功</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Hi Ysfun! You<span class="string">&#x27;ve successfully authenticated, but GitHub does not provide shell access.</span></span></span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MySQL:InnoDB存储引擎和MyISAM的区别？</title>
-    <url>/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/</url>
-    <content><![CDATA[<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/mysql-logo-800-400.jpg"></p>
-<p>本文从<strong>事务</strong>，<strong>外键</strong>，<strong>索引</strong>， <strong>存储文件</strong>，<strong>日志</strong>，<strong>count行数</strong>，<strong>锁</strong>，<strong>主键</strong>八个方面系统地对比了在<code>MySQL</code>中<code>InnoDB</code>存储引擎和<code>MyISAM</code>存储引擎的区别。</p>
-<span id="more"></span>
-
-<h3 id="1-事务"><a href="#1-事务" class="headerlink" title="1. 事务"></a>1. 事务</h3><ul>
-<li><p><code>InnoDB</code>：支持事务。</p>
-</li>
-<li><p><code>MyISAM</code>：不支持事务，强调的是性能，每次查询具有原子性，一般情况下其查询数度比<code>InnoDB</code>更快，但是不提供事务支持。</p>
-</li>
-</ul>
-<blockquote>
-<p>一般情况下<code>MyISAM</code>查询速度比<code>InnoDB</code>快的原因：</p>
-<p>答：在查询的时候，InnoDB要维护的东西比MyISAM多很多，具体以下几点：</p>
-<ul>
-<li>InnoDB缓存数据块，MyISAM只缓存索引块， 这中间还有换进换出的减少；</li>
-<li>InnoDB寻址要映射到块，再到行，MyISAM记录的直接是文件的OFFSET，定位比InnoDB要快 </li>
-<li>InnoDB还需要维护MVCC一致； 虽然你的场景没有，但他还是需要去检查和维护</li>
-</ul>
-</blockquote>
-<h3 id="2-外键"><a href="#2-外键" class="headerlink" title="2. 外键"></a>2. 外键</h3><ul>
-<li><code>InnoDB</code>：支持外键</li>
-<li><code>MyISAM</code>：不支持外键，对一个包含外键的InnoDB表转为MyISAM会失败</li>
-</ul>
-<h3 id="3-索引"><a href="#3-索引" class="headerlink" title="3. 索引"></a>3. 索引</h3><ul>
-<li><code>InnoDB</code>：聚集索引，数据文件和索引存储在一起，必须要有主键，通过主键查询效率很高，一次查询即可得到完整的行数据。辅助索引存储的数据是对应的主键索引的值，通过辅助索引查询需要两次查询，根据辅助索引查询到对应的主键索引，再根据主键索引查询到对应的行数据（这一过程称之为<strong>回表</strong>）。</li>
-<li><code>MyISAM</code>：非聚集索引，索引和数据文件分开保存，索引保存的是数据文件的指针。主键索引和辅助索引相互独立。</li>
-</ul>
-<blockquote>
-<p>InnoDB的B+树主键索引的叶子节点就是数据文件，辅助索引的叶子节点是主键的值；而MyISAM的B+树主键索引和辅助索引的叶子节点都是数据文件的地址指针。</p>
-</blockquote>
-<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png"></p>
-<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130322302.png"></p>
-<h3 id="4-存储文件"><a href="#4-存储文件" class="headerlink" title="4. 存储文件"></a>4. 存储文件</h3><ul>
-<li><code>InnoDB</code>：存储文件有<strong>frm、ibd</strong>，<strong>frm</strong>是表定义文件，<strong>ibd</strong>是数据文件。</li>
-<li><code>MyISAM</code>：存储文件有<strong>frm、myd、myi</strong>，<strong>frm</strong>是表定义文件，<strong>myd</strong>是数据文件，<strong>myi</strong>是索引文件。</li>
-</ul>
-<h3 id="5-日志"><a href="#5-日志" class="headerlink" title="5. 日志"></a>5. 日志</h3><ul>
-<li><code>InnoDB</code>：有<code>redo log</code>，使用 InnoDB 的数据库在异常崩溃后，数据库重新启动的时候会保证数据库恢复到崩溃前的状态，这个恢复的过程依赖于 <code>redo log</code> 。 <code>redo log</code> 保证事务的持久性， <code>undo log</code> 保证事务的原子性。</li>
-<li><code>MyISAM</code>：没有<code>redo log</code>，不支持数据库异常崩溃后的安全恢复。</li>
-</ul>
-<h3 id="6-count"><a href="#6-count" class="headerlink" title="6. count"></a>6. count</h3><ul>
-<li><code>InnoDB</code>：不保存表的具体行数，如果使用<code>select count(*) from table</code>，就会遍历整个表，消耗相当大，但是在加了<code>where</code>条件后，myisam和innodb处理的方式都一样。</li>
-<li><code>MyISAM</code>：使用一个变量保存整个表的行数，如果使用<code>select count(*) from table</code>，会直接读取该变量。</li>
-</ul>
-<blockquote>
-<p> 因为InnoDB的事务特性，在同一时刻表中的行数对于不同的事务而言是不一样的，因此count统计会计算对于当前事务而言可以统计到的行数，而不是将总行数储存起来方便快速查询。</p>
-</blockquote>
-<h3 id="7-锁"><a href="#7-锁" class="headerlink" title="7. 锁"></a>7. 锁</h3><ul>
-<li><code>InnoDB</code>：支持行级锁和表锁。行锁是基于索引实现的，如果没有命中索引，也无法使用行锁，会退化到表锁。</li>
-<li><code>MyISAM</code>：仅支持表锁，不支持行锁。</li>
-</ul>
-<h3 id="8-主键"><a href="#8-主键" class="headerlink" title="8. 主键"></a>8. 主键</h3><ul>
-<li><code>InnoDB</code>：如果没有设定主键，会自动生成一个6字节的隐藏主键（用户不可见），数据保存在主键索引的叶子节点上。</li>
-<li><code>MyISAM</code>：允许不含有主键。</li>
-</ul>
-<blockquote>
-<p>删除部分自增主键后，二者的区别？</p>
-<ol>
-<li>不重启服务器</li>
-</ol>
-<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，插入一行新的数据，无论是<code>InnoDB</code>还是<code>MyISAM</code>都会从<code>6</code>开始插入。</p>
-<ol start="2">
-<li>重启服务器</li>
-</ol>
-<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，重启服务器，再插入一行新的数据，<code>InnoDB</code>主键会从<code>4</code>开始插入，而<code>MyISAM</code>会从<code>6</code>开始插入。</p>
-<blockquote>
-<p>原因：Innodb表把自增主键的最大ID记录到内存中，重启数据库后，都会导致最大自增ID重置；MyISAM表会把自增主键的最大ID记录到数据文件里，重启MySQL自增主键的最大ID也不会丢失。</p>
-</blockquote>
-<p><strong>说明：mysql8.0版本，重启数据库后，不会导致最大自增ID重置</strong></p>
-<p><strong>原因：</strong>在 MySQL 8.0 中，<code>AUTO_INCREMENT</code>计数器的逻辑变了，每当计数器的值有变，InnoDB 会将其写入 redo log，保存到引擎专用的系统表中。MySQL 正常关闭后重启：从系统表中获取计数器的值。MySQL 故障后重启：从系统表中获取计数器的值；从最后一个检查点开始扫描 redo log 中记录的计数器值；取这两者的最大值作为新值。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>MySQL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Markdown如何实现页内跳转？</title>
-    <url>/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/</url>
-    <content><![CDATA[<h2 id="1-Markdown怎么实现页内跳转？"><a href="#1-Markdown怎么实现页内跳转？" class="headerlink" title="1. Markdown怎么实现页内跳转？"></a>1. Markdown怎么实现页内跳转？</h2><h3 id="1-利用Markdown语法"><a href="#1-利用Markdown语法" class="headerlink" title="1. 利用Markdown语法"></a>1. 利用Markdown语法</h3><p>格式：[描述文字] (#标题名称)</p>
-<span id="more"></span>
-
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">实践：</span><br><span class="line"></span><br><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line"></span><br><span class="line">[点我去顶部](#1.-我是顶部（空格用`-`代替，转换为html时会跳转失败）)</span><br><span class="line"></span><br><span class="line">[点我去中部](#我是中部)</span><br><span class="line"></span><br><span class="line">##### 1. 我是顶部（空格用`-`代替，转换为html时会跳转失败）</span><br><span class="line"></span><br><span class="line">##### 我是中部</span><br></pre></td></tr></table></figure>
-
-<p><strong>效果展示：</strong></p>
-<hr>
-<p><a href="#1.-%E6%88%91%E6%98%AF%E9%A1%B6%E9%83%A8%EF%BC%88%E7%A9%BA%E6%A0%BC%E7%94%A8%60-%60%E4%BB%A3%E6%9B%BF%EF%BC%8C%E8%BD%AC%E6%8D%A2%E4%B8%BAhtml%E6%97%B6%E4%BC%9A%E8%B7%B3%E8%BD%AC%E5%A4%B1%E8%B4%A5%EF%BC%89">点我去顶部</a></p>
-<p><a href="#%E6%88%91%E6%98%AF%E4%B8%AD%E9%83%A8">点我去中部</a></p>
-<h5 id="1-我是顶部（空格用-代替，转换为html时会跳转失败）"><a href="#1-我是顶部（空格用-代替，转换为html时会跳转失败）" class="headerlink" title="1. 我是顶部（空格用-代替，转换为html时会跳转失败）"></a>1. 我是顶部（空格用<code>-</code>代替，转换为html时会跳转失败）</h5><h5 id="我是中部"><a href="#我是中部" class="headerlink" title="我是中部"></a>我是中部</h5><hr>
-<blockquote>
-<p>注意事项：标题名称要完全一样，标题中的空格要用 <code>-</code>代替，这种跳转方式只能局限于跳转到<code>#</code>目录</p>
-</blockquote>
-<h3 id="2-使用html标签"><a href="#2-使用html标签" class="headerlink" title="2. 使用html标签"></a>2. 使用html标签</h3><p>格式：</p>
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">在需要被跳转到地方添加标签：&lt;a id=&quot;xxx&quot;&gt;&lt;/a&gt;</span><br><span class="line">在跳转的位置添加标签：[跳转名称](#xxx)</span><br></pre></td></tr></table></figure>
-
-<p>实践：</p>
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line">[跳转到位置1](#a1)</span><br><span class="line"></span><br><span class="line">[跳转到地方2](#p2)</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;a id=&quot;a1&quot;&gt;位置1&lt;/a&gt;</span><br><span class="line"></span><br><span class="line">地方2&lt;a id=&quot;p2&quot;&gt;&lt;/a&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>效果展示：</strong></p>
-<hr>
-<p><a href="#a1">跳转到位置1</a></p>
-<p><a href="#p2">跳转到地方2</a></p>
-<br>
-
-<br>
-
-<p><a id="a1">位置1</a></p>
-<p>地方2<a id="p2"></a></p>
-<hr>
-<blockquote>
-<p>采用这种方式在转换为html时仍然生效，且可控制性高，推荐这种方式。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Markdown</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MySQL:事务&amp;MVCC详解</title>
-    <url>/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/</url>
-    <content><![CDATA[<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/mysql-logo-800-400.jpg"></p>
-<p><strong>数据库事务（transaction）</strong>是访问并可能操作各种数据项的一个数据库操作序列，这些操作要么全部执行,要么全部不执行，是一个不可分割的工作逻辑单元。</p>
-<span id="more"></span>
-
-<h2 id="事务的四大特性"><a href="#事务的四大特性" class="headerlink" title="事务的四大特性"></a>事务的四大特性</h2><ul>
-<li><p><strong>原子性（Atomicity）：</strong>一个事务中的所有操作，要么都执行，要么都失败，不存在中间状态，一旦事务执行过程中发生了错误，事务会进行回滚，恢复到事务开始之前的状态，就像这个事务从来没有执行过一样。</p>
-</li>
-<li><p><strong>一致性（Consistency）：</strong>数据库的完整性不会因为事务的执行而受到破坏，一个事务执行之前和执行之后都必须处于一致状态。比如表中有一个字段为姓名，它有唯一约束，也就是表中姓名不能重复，如果一个事务对姓名字段进行了修改，但是在事务提交后，表中的姓名变得非唯一性了，这就破坏了事务的一致性要求，这时数据库就要撤销该事务，返回初始化的状态。再比如用户A和用户B两者的钱加起来一共是1000，那么不管A和B之间如何转账、转几次账，事务结束后两个用户的钱相加起来应该还得是1000，这就是事务的一致性。</p>
-</li>
-<li><p><strong>隔离性（Isolation）：</strong>数据库允许多个并发事务同时对其数据进行读写和修改的能力，隔离性可以保证多个事务在并发执行的过程中互相隔离，互不干扰，从而避免并发事务交叉执行时带来的数据不一致问题。</p>
-</li>
-<li><p><strong>持久性（Durability）：</strong>事务结束后，对数据的修改是永久的，即便发生系统故障也不会对丢失。</p>
-</li>
-</ul>
-<p><strong><code>InnoDB</code>引擎如何保证事务的四大特性？</strong></p>
-<p>持久性通过<code>redo log</code>（重做日志）来保证的</p>
-<p>原子性通过<code>undo log</code>（回滚日志）来保证的</p>
-<p>隔离性通过<code>mvcc</code>（多版本并发控制）或锁机制来保证的</p>
-<p>一致性通过持久性+原子性+隔离性来保证的</p>
-<h2 id="并发事务带来的问题"><a href="#并发事务带来的问题" class="headerlink" title="并发事务带来的问题"></a>并发事务带来的问题</h2><h3 id="脏读"><a href="#脏读" class="headerlink" title="脏读"></a>脏读</h3><p><strong>一个事务读到了另一个「未提交事务修改的数据」，如果该数据发生回滚，则读到的数据就是错误的数据，就意味着发生了「脏读」现象。</strong></p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/10b513008ea35ee880c592a88adcb12f.png"></p>
-<p>因为事务 A 是还没提交事务的，也就是它随时可能发生回滚操作，<strong>如果在上面这种情况事务 A 发生了回滚，那么事务 B 刚才得到的数据就是过期的数据，这种现象就被称为脏读。</strong></p>
-<h3 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h3><p><strong>在一个事务内多次读取同一个数据，如果前后两次读到的数据不一致，就意味着发生了「不可重复读」现象。</strong></p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/f5b4f8f0c0adcf044b34c1f300a95abf.png"></p>
-<p>事务B第一读取余额为100万，第二次读取余额变为200万，两次读同一条数据结果却不一致。</p>
-<h3 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h3><p><strong>在一个事务中多次查询符合特定条件的记录数量，如果前后两次查询到的记录数量不同，就意味着发生了「幻读」。</strong></p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/d19a1019dc35dfe8cfe7fbff8cd97e31-20220601203800758.png"></p>
-<p>事务B第一次查询大于100万的记录有5条，第二次查询同样条件结果却变成了6条，出现了幻读。</p>
-<blockquote>
-<p>MySQL针对「脏读，不可重复读，幻读」等现象，采取了什么措施应对？</p>
-<p>答：隔离级别</p>
-</blockquote>
-<h2 id="事务的隔离级别"><a href="#事务的隔离级别" class="headerlink" title="事务的隔离级别"></a>事务的隔离级别</h2><p>SQL标准规定了四种隔离级别：</p>
-<ul>
-<li><strong>读未提交（Read Uncommitted）</strong>，一个事务可以读取到其他未提交事务变更过的数据；</li>
-<li><strong>读已提交（Read Committed）</strong>，一个事务只能读取到其他已经提交多的事务变更的数据，<code>Oracle</code>数据库默认采用这种隔离级别；</li>
-<li><strong>不可重复读（Repeatable Read）</strong>，一个事务执行过程中读取到的数据始终和事务开始时读到的数据一致，<code>MySQL</code>数据库默认采用这种隔离级别；</li>
-<li><strong>串行化（Serializable）</strong>，会对记录加上读写锁，在多个事务对这条记录进行读写操作时，如果发生了读写冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行；</li>
-</ul>
-<p>按「隔离水平」从高到低排序：</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/cce766a69dea725cd8f19b90db2d0430.png"></p>
-<p>针对不同隔离级别，并发事务时可能发生的现象：</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/4e98ea2e60923b969790898565b4d643.png"></p>
-<p>解决脏读现象，就要升级到「读提交」以上的隔离级别；要解决不可重复读现象，就要升级到「可重复读」的隔离级别。</p>
-<p>不过，要解决幻读现象不建议将隔离级别升级到「串行化」，因为这样会导致数据库在并发事务时性能很差。</p>
-<p><strong>MySQL的默认隔离级别是「不可重复读」，但是它采用<code>Next-Key Lock</code>锁（行锁和间隙锁的组合），来锁住记录本身以及记录的“间隙”，防止其他事务在记录之间插入新的记录，从而可以有效避免幻读。</strong></p>
-<h3 id="四种隔离级别是如何实现的？"><a href="#四种隔离级别是如何实现的？" class="headerlink" title="四种隔离级别是如何实现的？"></a>四种隔离级别是如何实现的？</h3><ul>
-<li>对于「读未提交」，因为可以读到为其他未提交事务修改的数据，所以直接读取最新数据；</li>
-<li>对于「串行化」，通过加<strong>读写锁</strong>的方式来避免并行访问；</li>
-<li>对于「读已提交」和「不可重复读」，它们都是通过<code>Read View</code>来实现的，它们的区别在于创建<code>Read View</code>的时机不同，<code>Read View</code>可以理解为一个快照数据，类似于相机拍的照片，记录的是某一时刻的风景。「读已提交」是在<strong>每个读语句执行前</strong>都会重新创建一个新的<code>Read View</code>；而「不可重复读」则是在<strong>事务开启前</strong>创建一个<code>Read View</code>，然后整个事务执行期间都使用这个<code>Read View</code>。</li>
-</ul>
-<blockquote>
-<p>Read View是MVCC工作的核心，下面来详细讲讲MVCC（多版本并发控制）。</p>
-</blockquote>
-<h2 id="MVCC（Multi-Version-Concurrency-Control）"><a href="#MVCC（Multi-Version-Concurrency-Control）" class="headerlink" title="MVCC（Multi-Version Concurrency Control）"></a>MVCC（Multi-Version Concurrency Control）</h2><p>MVCC最大的好处就是：读不加锁，读写不冲突。相比基于锁的并发控制，在读多写少的场景下，MVCC极大地提升了系统的并发性能。</p>
-<p>在MVCC并发控制中，读操作可以分为两类：快照读（Snapshot Read）和当前读（Current Read）。快照读，读取的是记录的可见版本（可能是历史版本），不用加锁；当前读，读取的是记录的最新版本，并且当前读返回的数据都会上锁，保证其他事务不会并发修改该记录。</p>
-<h3 id="在MySQL-InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？"><a href="#在MySQL-InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？" class="headerlink" title="在MySQL InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？"></a>在MySQL InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？</h3><ul>
-<li><p><strong>快照读：</strong>简单的select操作，属于快照读，不加锁。</p>
-<ul>
-<li>例如：select * from table where ?;</li>
-</ul>
-</li>
-<li><p><strong>当前读：</strong>特殊的读操作、插入&#x2F;更新&#x2F;删除操作，属于当前读，需要加锁。</p>
-<ul>
-<li>select * from table where ? lock in share mode;</li>
-<li>select * from table where ? for update;</li>
-<li>insert into table values (…);</li>
-<li>update table set ? where ?;</li>
-<li>delete from table where ?;</li>
-</ul>
-<p>以上语句都属于当前读，读取到记录的最新版本，并且会在读取到数据后，对数据进行加锁，以保证其他并发事务不会对当前数据进行修改。其中除了第一条语句，对读记录加<code>S锁</code>（共享锁）外，其他操作都是加<code>X锁</code>（排它锁）。</p>
-</li>
-</ul>
-<p><strong>为什么<code>插入/更新/删除</code>操作，都归为当前读?</strong></p>
-<p>当Update SQL发给MySQL后，MySQL server会根据where条件，读取到第一条满足条件的记录，然后InnoDB引擎会将第一条记录返回并加锁。待MysSQL server受到第一条记录后，会再发起一个Update请求，更新这条记录。一条记录操作完成后，会再读取下一条记录，直到没有满足条件的记录为止。因此Update操作内部就包含了一个当前读。同理Delete操作也一样。Insert操作会稍微不同，简单来讲，就是Insert操作可能会触发Unique Key的冲突检查，也会进行一下当前读。</p>
-<blockquote>
-<p>快照读中的记录快照就对应着前面提到的<code>Read View</code>，下面介绍MVCC的工作原理。</p>
-</blockquote>
-<h3 id="Read-View在MVCC中是如何工作的？"><a href="#Read-View在MVCC中是如何工作的？" class="headerlink" title="Read View在MVCC中是如何工作的？"></a>Read View在MVCC中是如何工作的？</h3><p>首先我们需要了解两个知识点：</p>
-<ul>
-<li>Read View中的四个字段，及其作用</li>
-<li>聚簇索引记录中两个跟事务相关的隐藏列</li>
-</ul>
-<ol>
-<li><strong>Read View的四个重要字段</strong></li>
-</ol>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/11a65cbc2e97f6855d7692a265dc2651-20220601215949157.png"></p>
-<p>各个字段的含义：</p>
-<ul>
-<li>creator_trx_id：是指<strong>创建该Read View的事务id</strong></li>
-<li>m_ids：创建Read View时，当前数据库中「<strong>活跃事务」的事务id列表</strong>，“活跃事务”是指启动了但还未提交的事务</li>
-<li>min_trx_id：创建Read View时，<strong>「活跃事务」中最小的事务id</strong>，即<code>m_idx</code>中的最小值</li>
-<li>max_trx_id：创建Read View时，当前数据库中应该给<strong>下一个事务的id值</strong>，不是<code>m_idx</code>中的最大值，是全局事务中最大的事务id+1</li>
-</ul>
-<ol start="2">
-<li><strong>聚簇索引记录中两个跟事务相关的隐藏列</strong></li>
-</ol>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/f595d13450878acd04affa82731f76c5.png"></p>
-<ul>
-<li>trx_id：当某个事务对该条记录改动时，会把<strong>该事务的事务id记录在trx_id中</strong></li>
-<li>roll_pointer：每次对某一条记录进行修改时，都会把这条记录的旧版本保存到<code>undo log</code>中，这个隐藏列是一个指针，指向了上一个版本的记录，于是通过它就能找到历史版本</li>
-</ul>
-<p><strong>在创建Read View时我们可以将记录中的trx_id划分为三种情况：</strong></p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/ReadView.drawio.png"></p>
-<p>一个事务去读取数据时，除当前事务的修改记录总是可见的之外，还有一下情况：</p>
-<ul>
-<li>如果记录的<code>trx_id</code>小于Read View中的<code>min_trx_id</code>，表示这个版本的记录是<strong>在创建Read View之前就已经提交了的事务生成的</strong>，因此该版本的记录对当前事务是可见的。</li>
-<li>如果记录的<code>trx_id</code>大于等于Read View中的<code>max_trx_id</code>，表示这个版本的记录是<strong>在创建Read View之后才启动的事务生成的</strong>，因此该版本的记录对当前事务是不可见的。</li>
-<li>如果记录的<code>trx_id</code>介于Read View中的<code>min_trx_id</code>和<code>max_trx_id</code>之间，则需要判断<code>trx_id</code>是否在<code>m_ids</code>列表中：<ul>
-<li>如果记录的<code>trx_id</code><strong>在</strong><code>m_ids</code>中，则表明这个版本的记录是在<strong>创建Read View时仍处于活跃状态（启动但未提交）的事务生成的</strong>，因此该版本的记录对当前事务时不可见的。</li>
-<li>如果记录的<code>trx_id</code><strong>不在</strong><code>m_ids</code>中，则表明生成该版本记录的活跃事务<strong>在创建Read View时已经提交</strong>，因此该版本的记录对当前事务是可见的。</li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>这种通过「版本链」来控制并发事务访问同一条记录时的行为就叫MVCC（多版本并发控制）。</p>
-</blockquote>
-<h3 id="可重复读是如何工作的？"><a href="#可重复读是如何工作的？" class="headerlink" title="可重复读是如何工作的？"></a>可重复读是如何工作的？</h3><p><strong>可重复读隔离级别是启动事务时生成一个 Read View，然后整个事务期间都在用这个 Read View</strong>。</p>
-<p>分析一个场景，假设事务A（事务id为51）启动后，紧接着启动了事务B（事务id为52），那么两个事务创建的Read View及初始记录如下：</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E4%BA%8B%E5%8A%A1ab%E7%9A%84%E8%A7%86%E5%9B%BE-new.png"></p>
-<p>事务 A 和 事务 B 的 Read View 具体内容如下：</p>
-<ul>
-<li>在事务 A 的 Read View 中，它的事务 id 是 51，由于它是第一个启动的事务，所以此时活跃事务的事务 id 列表就只有 51，活跃事务的事务 id 列表中最小的事务 id 是事务 A 本身，下一个事务 id 则是 52。</li>
-<li>在事务 B 的 Read View 中，它的事务 id 是 52，由于事务 A 是活跃的，所以此时活跃事务的事务 id 列表是 51 和 52，<strong>活跃的事务 id 中最小的事务 id 是事务 A</strong>，下一个事务 id 应该是 53。</li>
-</ul>
-<p>接着，在「可重复读」隔离级别下，事务A和事务B按顺序执行了以下操作：</p>
-<ol>
-<li>事务B读取小林的账户余额，显示余额为100万</li>
-<li>事务A更新小林的账户余额为200万，但还未提交</li>
-<li>事务B再读取小林的账户余额，显示100万</li>
-<li>事务A提交事务</li>
-<li>事务B再次读取到小林的账户余额为100万</li>
-</ol>
-<p>分析过程：</p>
-<p>事务B第一次读取账户余额时，记录的<code>trx_id</code>为50，小于Read View中的<code>min_trx_id</code>&#x3D;51，因此记录对于事务B是可见的，因此读取到余额为100万；</p>
-<p>事务A更新余额后，两个事务的Read View及记录的版本信息为</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E4%BA%8B%E5%8A%A1ab%E7%9A%84%E8%A7%86%E5%9B%BE2.png"></p>
-<p>事务B第二次读取账户余额时，最新版本记录的<code>trx_id</code>为51，处于事务B的Read View中<code>min_trx_id=51</code>和<code>max_trx_id=53</code>之间；因此还需判断<code>trx_id</code>是否在事务B的Read View中<code>m_ids=[51, 52]</code>列表中，发现在<code>m_ids</code>列表中，因此最新版本的记录对于事务B是不可见的；此时会根据当前版本记录的<code>roll_pointer</code>沿着<code>undo log</code>链条找历史版本，直到发现<code>trx_id</code>小于事务B的Read View中<code>min_trx_id</code>的第一条记录，所以事务B能读到<code>trx_id=50</code>的记录，也就是余额为100万的记录。</p>
-<p>最后在事务A提交后，由于在「可重复读」隔离级别下，Read View只会在创建事务时生成，因此事务A和事务B的Read View和创建事务是的一样。事务B第三次读取余额时还是基于之前的Read View来判断版本记录是否可见，因此此时读到的数据和第二次读取的结果是一样的，余额也是100万。</p>
-<p><strong>就是通过这样的方式实现了，「可重复读」隔离级别下在事务期间读到的记录都是事务启动前的记录。</strong></p>
-<h3 id="读已提交是怎么工作的？"><a href="#读已提交是怎么工作的？" class="headerlink" title="读已提交是怎么工作的？"></a>读已提交是怎么工作的？</h3><p><strong>读提交隔离级别是在每次读取数据时，都会生成一个新的 Read View。</strong></p>
-<p>同样分析上面那个场景，只不过将隔离级别从原来的「可重复读」改为「读已提交」。操作顺序也同上</p>
-<ol>
-<li>事务B读取小林的账户余额，显示余额为100万</li>
-<li>事务A更新小林的账户余额为200万，但还未提交</li>
-<li>事务B再读取小林的账户余额，显示100万</li>
-<li>事务A提交事务</li>
-<li>事务B再次读取到小林的账户余额为200万</li>
-</ol>
-<p>我们来分析事务B第二次读取记录时，读取不到事务A未提交的修改？</p>
-<p>在「读已提交」隔离级别下，事务B在第二次读取数据时会新创建Read View</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E8%AF%BB%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A1-20220601234013624.png"></p>
-<p>由于事务A还未提交，因此事务B读数据时事务A扔出于活跃状态，因此事务A的修改无法被事务B读取到。</p>
-<p>我们再来分析事务B第三次读数据时，为什么可以读取到事务A（事务已提交）的修改？</p>
-<p>事务B第三次执行读数据操作时创建的Read View如下：</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E8%AF%BB%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A12.drawio.png"></p>
-<p>事务B第三次读数据时，事务A已经提交，此时的Read View中的<code>min_trx_id</code>为52，即当前活跃的事务只有事务B，最新版记录由事务A创建，因此其<code>trx_id</code>为51，小于事务B的Read View中的<code>min_trx_id</code>，因此最新版本的记录对于事务B是可见的，因此第三次事务B读取到的余额为200万。</p>
-<p>正是因为在读提交隔离级别下，事务每次读数据时都重新创建 Read View，那么在事务期间的多次读取同一条数据，前后两次读的数据可能会出现不一致，因为可能这期间另外一个事务修改了该记录，并提交了事务。</p>
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>MySQL</tag>
       </tags>
   </entry>
 </search>

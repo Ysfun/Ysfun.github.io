@@ -12,7 +12,7 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=roboto:300,300italic,400,400italic,700,700italic%7Csans-serif:300,300italic,400,400italic,700,700italic%7CNoto+Serif+SC:300,300italic,400,400italic,700,700italic%7CZhi+Mang+Xing:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=roboto:300,300italic,400,400italic,700,700italic%7Csans-serif:300,300italic,400,400italic,700,700italic%7CNoto+Serif+SC:300,300italic,400,400italic,700,700italic%7CLato:300,300italic,400,400italic,700,700italic%7CZhi+Mang+Xing:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
@@ -24,7 +24,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="MySQL:总算把B+树搞明白了">
 <meta property="og:url" content="https://www.ysfun.cn/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/index.html">
-<meta property="og:site_name" content="阳素凡的博客">
+<meta property="og:site_name" content="阳素凡的个人博客">
 <meta property="og:description" content="1. MySQL索引为何使用B+树MySQL索引是提升数据库查询效率的最强武器，那么为何索引能够提升数据库查询速度？为何MySQL采用B+树来实现索引？">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://www.ysfun.cn/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/mysql-logo-800-400.jpg">
@@ -50,7 +50,7 @@
 <script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.ysfun.cn/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/","path":"2022/05/17/MySQL-总算把B-树搞明白了/","title":"MySQL:总算把B+树搞明白了"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>MySQL:总算把B+树搞明白了 | 阳素凡的博客</title>
+<title>MySQL:总算把B+树搞明白了 | 阳素凡的个人博客</title>
   
 
 
@@ -80,7 +80,7 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <p class="site-title">阳素凡的博客</p>
+      <p class="site-title">阳素凡的个人博客</p>
       <i class="logo-line"></i>
     </a>
   </div>
@@ -235,12 +235,12 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="阳素凡的博客">
+      <meta itemprop="name" content="阳素凡的个人博客">
       <meta itemprop="description" content="">
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="MySQL:总算把B+树搞明白了 | 阳素凡的博客">
+      <meta itemprop="name" content="MySQL:总算把B+树搞明白了 | 阳素凡的个人博客">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">

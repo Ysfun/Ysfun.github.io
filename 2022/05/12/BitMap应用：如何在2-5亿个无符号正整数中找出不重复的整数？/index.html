@@ -12,7 +12,7 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=roboto:300,300italic,400,400italic,700,700italic%7Csans-serif:300,300italic,400,400italic,700,700italic%7CNoto+Serif+SC:300,300italic,400,400italic,700,700italic%7CZhi+Mang+Xing:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=roboto:300,300italic,400,400italic,700,700italic%7Csans-serif:300,300italic,400,400italic,700,700italic%7CNoto+Serif+SC:300,300italic,400,400italic,700,700italic%7CLato:300,300italic,400,400italic,700,700italic%7CZhi+Mang+Xing:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
@@ -24,7 +24,7 @@
 <meta property="og:type" content="article">
 <meta property="og:title" content="BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？">
 <meta property="og:url" content="https://www.ysfun.cn/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/index.html">
-<meta property="og:site_name" content="阳素凡的博客">
+<meta property="og:site_name" content="阳素凡的个人博客">
 <meta property="og:description" content="问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数解法：采用BitMap，每个整数分配2个bit  00	&#x3D;&gt; 0	表示没出现过 01	&#x3D;&gt; 1	表示出现过1次 10	&#x3D;&gt;2	表示出现过多次 11	&#x3D;&gt;3	表示无效数据。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://www.ysfun.cn/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/image-20220512221937915.png">
@@ -43,7 +43,7 @@
 <script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.ysfun.cn/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/","path":"2022/05/12/BitMap应用：如何在2-5亿个无符号正整数中找出不重复的整数？/","title":"BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？ | 阳素凡的博客</title>
+<title>BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？ | 阳素凡的个人博客</title>
   
 
 
@@ -73,7 +73,7 @@
 
     <a href="/" class="brand" rel="start">
       <i class="logo-line"></i>
-      <p class="site-title">阳素凡的博客</p>
+      <p class="site-title">阳素凡的个人博客</p>
       <i class="logo-line"></i>
     </a>
   </div>
@@ -228,12 +228,12 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="阳素凡的博客">
+      <meta itemprop="name" content="阳素凡的个人博客">
       <meta itemprop="description" content="">
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？ | 阳素凡的博客">
+      <meta itemprop="name" content="BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？ | 阳素凡的个人博客">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">

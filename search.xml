@@ -1,45 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title>Https、ssh加密原理</title>
-    <url>/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<h2 id="1-Https与Http区别"><a href="#1-Https与Http区别" class="headerlink" title="1. Https与Http区别"></a>1. Https与Http区别</h2><p>相比于Http，Https采用了加密传输方式，可以有效防止网络攻击。可以近似理解为Https &#x3D; Http + SSL证书。</p>
-<p>Http默认端口为8080，Https默认端口为443。</p>
-<h2 id="2-Https加密原理"><a href="#2-Https加密原理" class="headerlink" title="2. Https加密原理"></a>2. Https加密原理</h2><p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/Https%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png"></p>
+    <title>Docker常用命令</title>
+    <url>/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h2 id="帮助命令"><a href="#帮助命令" class="headerlink" title="帮助命令"></a>帮助命令</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看版本信息</span></span><br><span class="line">docker version</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">信息</span></span><br><span class="line">docker info</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看命令帮助信息</span></span><br><span class="line">docker 命令 --help</span><br></pre></td></tr></table></figure>
+
 <span id="more"></span>
 
-<ol>
-<li>客户端（浏览器）向服务端发起请求</li>
-<li>服务端接收请求，并明文传输公钥A给客户端，为了证实服务端的身份，服务端会将CA证书一同传输给客户端（这个步骤是与ssh建立连接的区别所在）</li>
-<li>客户端接收到公钥A，并用公钥A加密自己本地随机生成的对称加密密钥X</li>
-<li>公钥A加密的信息只有通过私钥才能解密，因此只有服务端才能解密并获取对称密钥X</li>
-<li>至此，服务端和客户端双方都持有对称密钥X，且第三方无法窃取，此后通过密钥X加密传输数据</li>
-</ol>
-<h2 id="3-SSH加密原理"><a href="#3-SSH加密原理" class="headerlink" title="3. SSH加密原理"></a>3. SSH加密原理</h2><p>SSH是一种网络协议，用于计算机之间的加密登录。如果一个用户从本地计算机，使用SSH协议登录另一台远程计算机，我们就可以认为，这种登录是安全的，即使被中途截获，密码也不会泄露。</p>
-<p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png"></p>
-<p>SSH加密原理与https基本相同，唯一的区别在于ssh没有CA证书，容易收到中间人攻击（Man-in-the-middle attack）。客户端无法验证公钥有没有被篡改过，如果有人截取数据，并返回篡改后的假公钥给客户端，客户端通过假公钥加密后的密码信息被截取并解密，就会导致客户端密码信息泄漏。</p>
-<ul>
-<li>下图展示了SSH被攻击的情况</li>
-</ul>
-<p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E8%A2%AB%E6%94%BB%E5%87%BB.png"></p>
-<p>问题在于客户端无法验证公钥A是不是来自服务端真实的公钥，Https采用CA证书来验证服务端的身份，而SSH则没有。</p>
-<h2 id="4-SSH解决中间人攻击的办法"><a href="#4-SSH解决中间人攻击的办法" class="headerlink" title="4. SSH解决中间人攻击的办法"></a>4. SSH解决中间人攻击的办法</h2><p>SSH的publish key和private key都是自己生成的，没法公证。只能通过Client端自己对公钥进行确认。</p>
-<p>通常在第一次登录的时候，系统会出现下面提示信息：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ssh user@host</span></span><br><span class="line">The authenticity of host &#x27;host (12.18.429.21)&#x27; can&#x27;t be established.</span><br><span class="line">RSA key fingerprint is 98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d.</span><br><span class="line">Are you sure you want to continue connecting (yes/no)?</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>Docker命令的帮助文档 <a href="https://docs.docker.com/reference/">Command-line-reference</a></p>
+</blockquote>
+<p><img src="/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/docker_command_diagram.jpeg"></p>
+<h2 id="镜像命令"><a href="#镜像命令" class="headerlink" title="镜像命令"></a>镜像命令</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker images</span></span><br><span class="line">REPOSITORY               TAG       IMAGE ID       CREATED       SIZE</span><br><span class="line">docker/getting-started   latest    b1bcd61774d8   10 days ago   27.2MB</span><br><span class="line">hello-world              latest    18e5af790473   8 weeks ago   9.14kB</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">解释</span></span><br><span class="line">REPOSITORY	镜像仓库源</span><br><span class="line">TAG					镜像的标签</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可选项</span></span><br><span class="line">  -a, --all             Show all images (default hides intermediate images)</span><br><span class="line">  -q, --quiet           Only show image IDs</span><br></pre></td></tr></table></figure>
 
-<p>上面信息的意思是：无法确认主机host(12.18.429.21)的真实性，不过知道它的公钥指纹，询问你是否继续连接？</p>
-<p>所谓”公钥指纹”，是指公钥长度较长（这里采用RSA算法，长达1024位），很难比对，所以对其进行MD5计算，将它变成一个128位的指纹。上例中是98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d，再进行比较，就容易多了。</p>
-<p>之所以用fingerprint代替key，主要是key过于长（RSA算法生成的公钥有1024位），很难直接比较。所以，对公钥进行hash生成一个128位的指纹，这样就方便比较了。</p>
-<p>很自然的一个问题就是，用户怎么知道远程主机的公钥指纹应该是多少？</p>
-<p>回答是没有好办法，远程主机必须在自己的网站上贴出公钥指纹，以便用户自行核对，或者自己甄别host地址是否正确。</p>
-<p>假定经过风险衡量以后（一般用户直接就选择yes吧），用户决定接受这个远程主机的公钥。<br>　　Are you sure you want to continue connecting (yes&#x2F;no)? yes<br>系统会出现一句提示，表示host主机已经得到认可。<br>　　Warning: Permanently added ‘host,12.18.429.21’ (RSA) to the list of known hosts.<br>然后，会要求输入密码。<br>　　Password: (enter password)<br>如果密码正确，就可以登录了。</p>
-<p>当远程主机的公钥被接受以后，它就会被保存在文件$HOME&#x2F;.ssh&#x2F;known_hosts之中。下次再连接这台主机，系统就会认出它的公钥已经保存在本地了，从而跳过警告部分，直接提示输入密码。<br>每个SSH用户都有自己的known_hosts文件，此外系统也有一个这样的文件，通常是&#x2F;etc&#x2F;ssh&#x2F;ssh_known_hosts，保存一些对所有用户都可信赖的远程主机的公钥。</p>
+<p><strong>docker search：镜像搜索命令</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker search mysql</span></span><br><span class="line">NAME                              DESCRIPTION                                     STARS     OFFICIAL   AUTOMATED</span><br><span class="line">mysql                             MySQL is a widely used, open-source relation…   11712     [OK]       </span><br><span class="line">mariadb                           MariaDB Server is a high performing open sou…   4464      [OK]       </span><br><span class="line">mysql/mysql-server                Optimized MySQL Server Docker images. Create…   870                  [OK]</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可选项</span></span><br><span class="line">  -f, --filter filter   Filter output based on conditions provided</span><br><span class="line">      --format string   Pretty-print search using a Go template</span><br><span class="line">      --limit int       Max number of search results (default 25)</span><br><span class="line">      --no-trunc        Don&#x27;t truncate output</span><br><span class="line">例如：docker search mysql --filter=stars=3000  --&gt;  表示stars&gt;=3000的结果</span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker search mysql --filter=stars=3000</span></span><br><span class="line">NAME      DESCRIPTION                                     STARS     OFFICIAL   AUTOMATED</span><br><span class="line">mysql     MySQL is a widely used, open-source relation…   11712     [OK]       </span><br><span class="line">mariadb   MariaDB Server is a high performing open sou…   4464      [OK]   </span><br></pre></td></tr></table></figure>
+
+<p><strong>docker pull：下载镜像</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">下载镜像 docker pull 镜像名 [:tag]</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker pull mysql/mysql-server:5.7</span></span><br><span class="line"></span><br><span class="line">5.7: Pulling from mysql/mysql-server</span><br><span class="line">b8aa102ba20a: Pull complete </span><br><span class="line">2ff679d72626: Pull complete </span><br><span class="line">ea45979059fe: Pull complete </span><br><span class="line">526a484cb892: Pull complete </span><br><span class="line">4436dc023066: Pull complete </span><br><span class="line">98b382a658b6: Pull complete </span><br><span class="line">17d3acf6ac1e: Pull complete </span><br><span class="line">c5ce8d5cf40e: Pull complete </span><br><span class="line">Digest: sha256:32aac4632baa157d24e9eb3e20d2d62e775f0a2630afb8dabf5ee8c086b09c2a</span><br><span class="line">Status: Downloaded newer image for mysql/mysql-server:5.7</span><br><span class="line">docker.io/mysql/mysql-server:5.7</span><br></pre></td></tr></table></figure>
+
+<p><strong>docker rmi：删除镜像命令</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker rmi -f 镜像id 镜像id  # 删除多个镜像</span><br><span class="line">docker rmi -f $(docker images -qa)  # 删除全部镜像</span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker rmi -f 18e5af790473</span></span><br><span class="line"></span><br><span class="line">Untagged: hello-world:latest</span><br><span class="line">Untagged: hello-world@sha256:cc15c5b292d8525effc0f89cb299f1804f3a725c8d05e158653a563f15e4f685</span><br><span class="line">Deleted: sha256:18e5af7904737ba5ef7fbbd7d59de5ebe6c4437907bd7fc436bf9b3ef3149ea9</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可选项</span></span><br><span class="line">  -f, --force      Force removal of the image</span><br><span class="line">      --no-prune   Do not delete untagged parents</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="容器命令"><a href="#容器命令" class="headerlink" title="容器命令"></a>容器命令</h2><p><strong>docker run：新建容器并启动</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker run [可选参数] image</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">参数说明</span></span><br><span class="line">--name=&quot;Name&quot;			指定容器名字，用于区分容器</span><br><span class="line">-d								后台方式运行</span><br><span class="line">-it								使用交互方式运行，进入容器查看内容</span><br><span class="line">-p								指定容器的端口 - p 8080:8080</span><br><span class="line">		-p ip: 主机端口:容器端口</span><br><span class="line">		-p 主机端口:容器端口（常用）</span><br><span class="line">		-p 容器端口</span><br><span class="line">-P								随机指定端口</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">启动并进入容器</span></span><br><span class="line">hyunmin@HyunmindeMacBook-Air ~ % docker run -it centos /bin/bash</span><br><span class="line">[root@44e406af8256 /]# exit			# 退出容器</span><br></pre></td></tr></table></figure>
+
+<p><strong>docker ps：查看运行中的容器</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker ps</span></span><br><span class="line">CONTAINER ID   IMAGE           COMMAND       CREATED        STATUS        PORTS     NAMES</span><br><span class="line">77128abd1e9c   centos:latest   &quot;/bin/bash&quot;   15 hours ago   Up 15 hours             objective_hellman</span><br></pre></td></tr></table></figure>
+
+<p><strong>退出容器</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">退出并关闭容器</span></span><br><span class="line">exit</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">退出容器，不关闭，后台运行</span></span><br><span class="line">Ctrl+P+Q</span><br></pre></td></tr></table></figure>
+
+<p><strong>docker rm：删除容器</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker rm 容器id				# 删除指定容器，不能删除正在运行的容器，-f强制删除</span><br></pre></td></tr></table></figure>
+
+<p><strong>启动和停止容器操作</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker start 容器id 				# 启动容器</span><br><span class="line">docker restart 容器id				# 重启容器</span><br><span class="line">docker stop 	容器id				# 停止当前正在运行的容器</span><br><span class="line">docker kill 容器id					# 强制停止当前容器</span><br></pre></td></tr></table></figure>
+
+<h2 id="DockerFile"><a href="#DockerFile" class="headerlink" title="DockerFile"></a>DockerFile</h2><blockquote>
+<p><strong>DockerFile常用命令</strong></p>
+</blockquote>
+<p><img src="/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20211202100941535.png"> </p>
+<blockquote>
+<p> <strong>DockerFile构建流程</strong></p>
+</blockquote>
+<p><img src="/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20211202101420768.png"> </p>
+<blockquote>
+<p>Docker file创建一个自己的centos</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1. 编写一个自己的docker file</span></span><br><span class="line">FROM centos</span><br><span class="line">MAINTAINER hyunmin&lt;s_hyunmin@163.com&gt;</span><br><span class="line"></span><br><span class="line">ENV MY_PATH /usr/local</span><br><span class="line">WORKDIR $MY_PATH</span><br><span class="line"></span><br><span class="line">RUN yum -y install vim</span><br><span class="line">RUN yum -y install net-tools</span><br><span class="line"></span><br><span class="line">EXPOSE 80</span><br><span class="line"></span><br><span class="line">CMD echo $MY_PATH</span><br><span class="line">CMD echo &quot;----end----&quot;</span><br><span class="line">CMD /bin/bash</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2. build镜像文件</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">build命令</span></span><br><span class="line">docker build -f dockerfile文件路径 -t 镜像名:[tag] 文件目录(.)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3. 镜像本地变更历史</span></span><br><span class="line">docker history docker镜像id</span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
-        <category>计算机基础</category>
+        <category>技术</category>
       </categories>
       <tags>
-        <tag>计算机网络</tag>
+        <tag>Docker</tag>
       </tags>
   </entry>
   <entry>
@@ -122,62 +140,6 @@
       </tags>
   </entry>
   <entry>
-    <title>mac上使用Homebrew安装mysql</title>
-    <url>/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/</url>
-    <content><![CDATA[<p>注意⚠️：本教程是采用Homebrew安装mysql，引用官方的一句话：Homebrew是Mac OS 不可或缺的套件管理器。执行一下命令即可安装Homebrew：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装Homebrew</span></span><br><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://cdn.jsdelivr.net/gh/ineo6/homebrew-install/install)&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看版本信息</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew -v</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">出现下面版本信息，则表明安装成功</span></span><br><span class="line">Homebrew 3.3.4</span><br><span class="line">Homebrew/homebrew-core (git revision 4605f7a940f; last commit 2021-11-21)</span><br></pre></td></tr></table></figure>
-
-<h2 id="安装mysql"><a href="#安装mysql" class="headerlink" title="安装mysql"></a>安装mysql</h2><blockquote>
-<ol>
-<li>使用Homebrew搜索mysql版本</li>
-</ol>
-</blockquote>
-<span id="more"></span>
-
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew search mysql</span></span><br><span class="line"></span><br><span class="line">==&gt; Formulae</span><br><span class="line">automysqlbackup          mysql-client             mysql-sandbox            mysql@5.7</span><br><span class="line">mysql                    mysql-client@5.7         mysql-search-replace     mysqltuner</span><br><span class="line">mysql++                  mysql-connector-c++      mysql@5.6                qt-mysql</span><br><span class="line"></span><br><span class="line">==&gt; Casks</span><br><span class="line">homebrew/cask/mysql-connector-python               homebrew/cask/navicat-for-mysql</span><br><span class="line">homebrew/cask/mysql-shell                          homebrew/cask/sqlpro-for-mysql</span><br><span class="line">homebrew/cask/mysql-utilities</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<ol start="2">
-<li>安装<a href="mailto:&#x6d;&#121;&#115;&#x71;&#x6c;&#x40;&#53;&#x2e;&#x37;">&#x6d;&#121;&#115;&#x71;&#x6c;&#x40;&#53;&#x2e;&#x37;</a></li>
-</ol>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew install mysql@5.7</span></span><br><span class="line"></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/manifests/5.7.36</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/blobs/sha256:e23df0f6e8bfc83fe2e982ec60e8</span><br><span class="line">==&gt; Downloading from https://pkg-containers.githubusercontent.com/ghcr1/blobs/sha256:e23df0f6e8bfc83</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Pouring mysql@5.7--5.7.36.arm64_big_sur.bottle.tar.gz</span><br><span class="line">==&gt; /opt/homebrew/Cellar/mysql@5.7/5.7.36/bin/mysqld --initialize-insecure --user=hyunmin --basedir=</span><br><span class="line">==&gt; Caveats</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<ol start="3">
-<li>配置环境变量</li>
-</ol>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1. bash shell</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">vim ~/.bash_profile</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2. zsh shell</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">vim ~/.zshrc</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在配置文件中加入</span></span><br><span class="line">export PATH=&quot;/opt/homebrew/opt/mysql@5.7/bin:$PATH&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash"><span class="built_in">source</span> ~/.bash_profile</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">或</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash"><span class="built_in">source</span> ~/.zshrc</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124170144671.png" alt="image-20211124170144671"></p>
-<blockquote>
-<ol start="4">
-<li>启动MySQL服务</li>
-</ol>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">mysql.server start</span></span><br><span class="line"></span><br><span class="line">Starting MySQL</span><br><span class="line">. SUCCESS! </span><br></pre></td></tr></table></figure>
-
-<blockquote>
-<ol start="5">
-<li>MySQL初始化配置</li>
-</ol>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">mysql_secure_installation</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124204756469.png" alt="image-20211124204756469"></p>
-<blockquote>
-<ol start="6">
-<li>登陆测试</li>
-</ol>
-</blockquote>
-<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124204950548.png" alt="image-20211124204950548"></p>
-]]></content>
-      <tags>
-        <tag>教程</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>hexo博客安装Icarus主题</title>
     <url>/2021/11/28/hexo%E5%8D%9A%E5%AE%A2%E5%AE%89%E8%A3%85Icarus%E4%B8%BB%E9%A2%98/</url>
     <content><![CDATA[<p><strong>官方链接：</strong><a href="https://ppoffice.github.io/hexo-theme-icarus/Configuration/icarus%E7%94%A8%E6%88%B7%E6%8C%87%E5%8D%97-%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE/">Icarus用户指南-主题配置</a></p>
@@ -254,63 +216,101 @@
       </tags>
   </entry>
   <entry>
-    <title>Docker常用命令</title>
-    <url>/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<h2 id="帮助命令"><a href="#帮助命令" class="headerlink" title="帮助命令"></a>帮助命令</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看版本信息</span></span><br><span class="line">docker version</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">信息</span></span><br><span class="line">docker info</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看命令帮助信息</span></span><br><span class="line">docker 命令 --help</span><br></pre></td></tr></table></figure>
+    <title>mac上使用Homebrew安装mysql</title>
+    <url>/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/</url>
+    <content><![CDATA[<p>注意⚠️：本教程是采用Homebrew安装mysql，引用官方的一句话：Homebrew是Mac OS 不可或缺的套件管理器。执行一下命令即可安装Homebrew：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装Homebrew</span></span><br><span class="line">/usr/bin/ruby -e &quot;$(curl -fsSL https://cdn.jsdelivr.net/gh/ineo6/homebrew-install/install)&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看版本信息</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew -v</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">出现下面版本信息，则表明安装成功</span></span><br><span class="line">Homebrew 3.3.4</span><br><span class="line">Homebrew/homebrew-core (git revision 4605f7a940f; last commit 2021-11-21)</span><br></pre></td></tr></table></figure>
 
+<h2 id="安装mysql"><a href="#安装mysql" class="headerlink" title="安装mysql"></a>安装mysql</h2><blockquote>
+<ol>
+<li>使用Homebrew搜索mysql版本</li>
+</ol>
+</blockquote>
 <span id="more"></span>
 
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew search mysql</span></span><br><span class="line"></span><br><span class="line">==&gt; Formulae</span><br><span class="line">automysqlbackup          mysql-client             mysql-sandbox            mysql@5.7</span><br><span class="line">mysql                    mysql-client@5.7         mysql-search-replace     mysqltuner</span><br><span class="line">mysql++                  mysql-connector-c++      mysql@5.6                qt-mysql</span><br><span class="line"></span><br><span class="line">==&gt; Casks</span><br><span class="line">homebrew/cask/mysql-connector-python               homebrew/cask/navicat-for-mysql</span><br><span class="line">homebrew/cask/mysql-shell                          homebrew/cask/sqlpro-for-mysql</span><br><span class="line">homebrew/cask/mysql-utilities</span><br></pre></td></tr></table></figure>
+
 <blockquote>
-<p>Docker命令的帮助文档 <a href="https://docs.docker.com/reference/">Command-line-reference</a></p>
+<ol start="2">
+<li>安装<a href="mailto:&#x6d;&#x79;&#115;&#113;&#x6c;&#x40;&#x35;&#x2e;&#x37;">&#x6d;&#x79;&#115;&#113;&#x6c;&#x40;&#x35;&#x2e;&#x37;</a></li>
+</ol>
 </blockquote>
-<p><img src="/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/docker_command_diagram.jpeg"></p>
-<h2 id="镜像命令"><a href="#镜像命令" class="headerlink" title="镜像命令"></a>镜像命令</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker images</span></span><br><span class="line">REPOSITORY               TAG       IMAGE ID       CREATED       SIZE</span><br><span class="line">docker/getting-started   latest    b1bcd61774d8   10 days ago   27.2MB</span><br><span class="line">hello-world              latest    18e5af790473   8 weeks ago   9.14kB</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">解释</span></span><br><span class="line">REPOSITORY	镜像仓库源</span><br><span class="line">TAG					镜像的标签</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可选项</span></span><br><span class="line">  -a, --all             Show all images (default hides intermediate images)</span><br><span class="line">  -q, --quiet           Only show image IDs</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew install mysql@5.7</span></span><br><span class="line"></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/manifests/5.7.36</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/blobs/sha256:e23df0f6e8bfc83fe2e982ec60e8</span><br><span class="line">==&gt; Downloading from https://pkg-containers.githubusercontent.com/ghcr1/blobs/sha256:e23df0f6e8bfc83</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Pouring mysql@5.7--5.7.36.arm64_big_sur.bottle.tar.gz</span><br><span class="line">==&gt; /opt/homebrew/Cellar/mysql@5.7/5.7.36/bin/mysqld --initialize-insecure --user=hyunmin --basedir=</span><br><span class="line">==&gt; Caveats</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
 
-<p><strong>docker search：镜像搜索命令</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker search mysql</span></span><br><span class="line">NAME                              DESCRIPTION                                     STARS     OFFICIAL   AUTOMATED</span><br><span class="line">mysql                             MySQL is a widely used, open-source relation…   11712     [OK]       </span><br><span class="line">mariadb                           MariaDB Server is a high performing open sou…   4464      [OK]       </span><br><span class="line">mysql/mysql-server                Optimized MySQL Server Docker images. Create…   870                  [OK]</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可选项</span></span><br><span class="line">  -f, --filter filter   Filter output based on conditions provided</span><br><span class="line">      --format string   Pretty-print search using a Go template</span><br><span class="line">      --limit int       Max number of search results (default 25)</span><br><span class="line">      --no-trunc        Don&#x27;t truncate output</span><br><span class="line">例如：docker search mysql --filter=stars=3000  --&gt;  表示stars&gt;=3000的结果</span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker search mysql --filter=stars=3000</span></span><br><span class="line">NAME      DESCRIPTION                                     STARS     OFFICIAL   AUTOMATED</span><br><span class="line">mysql     MySQL is a widely used, open-source relation…   11712     [OK]       </span><br><span class="line">mariadb   MariaDB Server is a high performing open sou…   4464      [OK]   </span><br></pre></td></tr></table></figure>
-
-<p><strong>docker pull：下载镜像</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">下载镜像 docker pull 镜像名 [:tag]</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker pull mysql/mysql-server:5.7</span></span><br><span class="line"></span><br><span class="line">5.7: Pulling from mysql/mysql-server</span><br><span class="line">b8aa102ba20a: Pull complete </span><br><span class="line">2ff679d72626: Pull complete </span><br><span class="line">ea45979059fe: Pull complete </span><br><span class="line">526a484cb892: Pull complete </span><br><span class="line">4436dc023066: Pull complete </span><br><span class="line">98b382a658b6: Pull complete </span><br><span class="line">17d3acf6ac1e: Pull complete </span><br><span class="line">c5ce8d5cf40e: Pull complete </span><br><span class="line">Digest: sha256:32aac4632baa157d24e9eb3e20d2d62e775f0a2630afb8dabf5ee8c086b09c2a</span><br><span class="line">Status: Downloaded newer image for mysql/mysql-server:5.7</span><br><span class="line">docker.io/mysql/mysql-server:5.7</span><br></pre></td></tr></table></figure>
-
-<p><strong>docker rmi：删除镜像命令</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker rmi -f 镜像id 镜像id  # 删除多个镜像</span><br><span class="line">docker rmi -f $(docker images -qa)  # 删除全部镜像</span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker rmi -f 18e5af790473</span></span><br><span class="line"></span><br><span class="line">Untagged: hello-world:latest</span><br><span class="line">Untagged: hello-world@sha256:cc15c5b292d8525effc0f89cb299f1804f3a725c8d05e158653a563f15e4f685</span><br><span class="line">Deleted: sha256:18e5af7904737ba5ef7fbbd7d59de5ebe6c4437907bd7fc436bf9b3ef3149ea9</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">可选项</span></span><br><span class="line">  -f, --force      Force removal of the image</span><br><span class="line">      --no-prune   Do not delete untagged parents</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="容器命令"><a href="#容器命令" class="headerlink" title="容器命令"></a>容器命令</h2><p><strong>docker run：新建容器并启动</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker run [可选参数] image</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">参数说明</span></span><br><span class="line">--name=&quot;Name&quot;			指定容器名字，用于区分容器</span><br><span class="line">-d								后台方式运行</span><br><span class="line">-it								使用交互方式运行，进入容器查看内容</span><br><span class="line">-p								指定容器的端口 - p 8080:8080</span><br><span class="line">		-p ip: 主机端口:容器端口</span><br><span class="line">		-p 主机端口:容器端口（常用）</span><br><span class="line">		-p 容器端口</span><br><span class="line">-P								随机指定端口</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">启动并进入容器</span></span><br><span class="line">hyunmin@HyunmindeMacBook-Air ~ % docker run -it centos /bin/bash</span><br><span class="line">[root@44e406af8256 /]# exit			# 退出容器</span><br></pre></td></tr></table></figure>
-
-<p><strong>docker ps：查看运行中的容器</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">docker ps</span></span><br><span class="line">CONTAINER ID   IMAGE           COMMAND       CREATED        STATUS        PORTS     NAMES</span><br><span class="line">77128abd1e9c   centos:latest   &quot;/bin/bash&quot;   15 hours ago   Up 15 hours             objective_hellman</span><br></pre></td></tr></table></figure>
-
-<p><strong>退出容器</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">退出并关闭容器</span></span><br><span class="line">exit</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">退出容器，不关闭，后台运行</span></span><br><span class="line">Ctrl+P+Q</span><br></pre></td></tr></table></figure>
-
-<p><strong>docker rm：删除容器</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker rm 容器id				# 删除指定容器，不能删除正在运行的容器，-f强制删除</span><br></pre></td></tr></table></figure>
-
-<p><strong>启动和停止容器操作</strong></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker start 容器id 				# 启动容器</span><br><span class="line">docker restart 容器id				# 重启容器</span><br><span class="line">docker stop 	容器id				# 停止当前正在运行的容器</span><br><span class="line">docker kill 容器id					# 强制停止当前容器</span><br></pre></td></tr></table></figure>
-
-<h2 id="DockerFile"><a href="#DockerFile" class="headerlink" title="DockerFile"></a>DockerFile</h2><blockquote>
-<p><strong>DockerFile常用命令</strong></p>
-</blockquote>
-<p><img src="/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20211202100941535.png"> </p>
 <blockquote>
-<p> <strong>DockerFile构建流程</strong></p>
+<ol start="3">
+<li>配置环境变量</li>
+</ol>
 </blockquote>
-<p><img src="/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/image-20211202101420768.png"> </p>
-<blockquote>
-<p>Docker file创建一个自己的centos</p>
-</blockquote>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1. 编写一个自己的docker file</span></span><br><span class="line">FROM centos</span><br><span class="line">MAINTAINER hyunmin&lt;s_hyunmin@163.com&gt;</span><br><span class="line"></span><br><span class="line">ENV MY_PATH /usr/local</span><br><span class="line">WORKDIR $MY_PATH</span><br><span class="line"></span><br><span class="line">RUN yum -y install vim</span><br><span class="line">RUN yum -y install net-tools</span><br><span class="line"></span><br><span class="line">EXPOSE 80</span><br><span class="line"></span><br><span class="line">CMD echo $MY_PATH</span><br><span class="line">CMD echo &quot;----end----&quot;</span><br><span class="line">CMD /bin/bash</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2. build镜像文件</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">build命令</span></span><br><span class="line">docker build -f dockerfile文件路径 -t 镜像名:[tag] 文件目录(.)</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3. 镜像本地变更历史</span></span><br><span class="line">docker history docker镜像id</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1. bash shell</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">vim ~/.bash_profile</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2. zsh shell</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash">vim ~/.zshrc</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">在配置文件中加入</span></span><br><span class="line">export PATH=&quot;/opt/homebrew/opt/mysql@5.7/bin:$PATH&quot;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash"><span class="built_in">source</span> ~/.bash_profile</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">或</span></span><br><span class="line"><span class="meta prompt_">% </span><span class="language-bash"><span class="built_in">source</span> ~/.zshrc</span></span><br></pre></td></tr></table></figure>
 
+<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124170144671.png" alt="image-20211124170144671"></p>
+<blockquote>
+<ol start="4">
+<li>启动MySQL服务</li>
+</ol>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">mysql.server start</span></span><br><span class="line"></span><br><span class="line">Starting MySQL</span><br><span class="line">. SUCCESS! </span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<ol start="5">
+<li>MySQL初始化配置</li>
+</ol>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">mysql_secure_installation</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124204756469.png" alt="image-20211124204756469"></p>
+<blockquote>
+<ol start="6">
+<li>登陆测试</li>
+</ol>
+</blockquote>
+<p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124204950548.png" alt="image-20211124204950548"></p>
+]]></content>
+      <tags>
+        <tag>教程</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Https、ssh加密原理</title>
+    <url>/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<h2 id="1-Https与Http区别"><a href="#1-Https与Http区别" class="headerlink" title="1. Https与Http区别"></a>1. Https与Http区别</h2><p>相比于Http，Https采用了加密传输方式，可以有效防止网络攻击。可以近似理解为Https &#x3D; Http + SSL证书。</p>
+<p>Http默认端口为8080，Https默认端口为443。</p>
+<h2 id="2-Https加密原理"><a href="#2-Https加密原理" class="headerlink" title="2. Https加密原理"></a>2. Https加密原理</h2><p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/Https%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png"></p>
+<span id="more"></span>
+
+<ol>
+<li>客户端（浏览器）向服务端发起请求</li>
+<li>服务端接收请求，并明文传输公钥A给客户端，为了证实服务端的身份，服务端会将CA证书一同传输给客户端（这个步骤是与ssh建立连接的区别所在）</li>
+<li>客户端接收到公钥A，并用公钥A加密自己本地随机生成的对称加密密钥X</li>
+<li>公钥A加密的信息只有通过私钥才能解密，因此只有服务端才能解密并获取对称密钥X</li>
+<li>至此，服务端和客户端双方都持有对称密钥X，且第三方无法窃取，此后通过密钥X加密传输数据</li>
+</ol>
+<h2 id="3-SSH加密原理"><a href="#3-SSH加密原理" class="headerlink" title="3. SSH加密原理"></a>3. SSH加密原理</h2><p>SSH是一种网络协议，用于计算机之间的加密登录。如果一个用户从本地计算机，使用SSH协议登录另一台远程计算机，我们就可以认为，这种登录是安全的，即使被中途截获，密码也不会泄露。</p>
+<p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png"></p>
+<p>SSH加密原理与https基本相同，唯一的区别在于ssh没有CA证书，容易收到中间人攻击（Man-in-the-middle attack）。客户端无法验证公钥有没有被篡改过，如果有人截取数据，并返回篡改后的假公钥给客户端，客户端通过假公钥加密后的密码信息被截取并解密，就会导致客户端密码信息泄漏。</p>
+<ul>
+<li>下图展示了SSH被攻击的情况</li>
+</ul>
+<p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E8%A2%AB%E6%94%BB%E5%87%BB.png"></p>
+<p>问题在于客户端无法验证公钥A是不是来自服务端真实的公钥，Https采用CA证书来验证服务端的身份，而SSH则没有。</p>
+<h2 id="4-SSH解决中间人攻击的办法"><a href="#4-SSH解决中间人攻击的办法" class="headerlink" title="4. SSH解决中间人攻击的办法"></a>4. SSH解决中间人攻击的办法</h2><p>SSH的publish key和private key都是自己生成的，没法公证。只能通过Client端自己对公钥进行确认。</p>
+<p>通常在第一次登录的时候，系统会出现下面提示信息：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ssh user@host</span></span><br><span class="line">The authenticity of host &#x27;host (12.18.429.21)&#x27; can&#x27;t be established.</span><br><span class="line">RSA key fingerprint is 98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d.</span><br><span class="line">Are you sure you want to continue connecting (yes/no)?</span><br></pre></td></tr></table></figure>
+
+<p>上面信息的意思是：无法确认主机host(12.18.429.21)的真实性，不过知道它的公钥指纹，询问你是否继续连接？</p>
+<p>所谓”公钥指纹”，是指公钥长度较长（这里采用RSA算法，长达1024位），很难比对，所以对其进行MD5计算，将它变成一个128位的指纹。上例中是98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d，再进行比较，就容易多了。</p>
+<p>之所以用fingerprint代替key，主要是key过于长（RSA算法生成的公钥有1024位），很难直接比较。所以，对公钥进行hash生成一个128位的指纹，这样就方便比较了。</p>
+<p>很自然的一个问题就是，用户怎么知道远程主机的公钥指纹应该是多少？</p>
+<p>回答是没有好办法，远程主机必须在自己的网站上贴出公钥指纹，以便用户自行核对，或者自己甄别host地址是否正确。</p>
+<p>假定经过风险衡量以后（一般用户直接就选择yes吧），用户决定接受这个远程主机的公钥。<br>　　Are you sure you want to continue connecting (yes&#x2F;no)? yes<br>系统会出现一句提示，表示host主机已经得到认可。<br>　　Warning: Permanently added ‘host,12.18.429.21’ (RSA) to the list of known hosts.<br>然后，会要求输入密码。<br>　　Password: (enter password)<br>如果密码正确，就可以登录了。</p>
+<p>当远程主机的公钥被接受以后，它就会被保存在文件$HOME&#x2F;.ssh&#x2F;known_hosts之中。下次再连接这台主机，系统就会认出它的公钥已经保存在本地了，从而跳过警告部分，直接提示输入密码。<br>每个SSH用户都有自己的known_hosts文件，此外系统也有一个这样的文件，通常是&#x2F;etc&#x2F;ssh&#x2F;ssh_known_hosts，保存一些对所有用户都可信赖的远程主机的公钥。</p>
 ]]></content>
       <categories>
-        <category>技术</category>
+        <category>计算机基础</category>
       </categories>
       <tags>
-        <tag>Docker</tag>
+        <tag>计算机网络</tag>
       </tags>
   </entry>
   <entry>
@@ -341,65 +341,6 @@
 ]]></content>
       <tags>
         <tag>教程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>mac使用技巧</title>
-    <url>/2021/12/02/mac%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/</url>
-    <content><![CDATA[<h3 id="1-Mac终端"><a href="#1-Mac终端" class="headerlink" title="1. Mac终端"></a>1. Mac终端</h3><p><a href="https://support.apple.com/zh-cn/HT208050">Mac终端官方文档</a></p>
-<p>从 macOS Catalina 版开始，您的 Mac 将使用 zsh 作为默认登录 Shell 和交互式 Shell。您还可以在较低版本的 macOS 中将 zsh 设置为默认 Shell。</p>
-<span id="more"></span>
-
-<p>默认情况下，您的 Mac 使用 zsh 或 bash 作为登录 Shell 和交互式 Shell 的命令行解释器：</p>
-<ul>
-<li>从 macOS Catalina 版开始，<strong>zsh</strong> (Z shell) 是所有新建用户帐户的默认 Shell。</li>
-<li><strong>bash</strong> 是 <a href="https://support.apple.com/zh-cn/HT201260">macOS Mojave 及更低版本</a>中的默认 Shell。</li>
-</ul>
-<p>zsh 与 Bourne Shell (sh) 高度兼容，并且与 bash 基本兼容，但存在一些差别。要进一步了解 zsh 及其全面的命令行完成系统，请在“终端”中输入 <code>man zsh</code>。</p>
-<h4 id="从命令行中更改默认shell"><a href="#从命令行中更改默认shell" class="headerlink" title="从命令行中更改默认shell"></a>从命令行中更改默认shell</h4><p>在“终端”中，输入 <code>$ chsh -s path</code>，其中的 path 是 &#x2F;etc&#x2F;shells 中列出的某个 Shell 路径，例如 &#x2F;bin&#x2F;zsh、&#x2F;bin&#x2F;bash、&#x2F;bin&#x2F;csh、&#x2F;bin&#x2F;dash、&#x2F;bin&#x2F;ksh、&#x2F;bin&#x2F;sh 或 &#x2F;bin&#x2F;tcsh。</p>
-<h4 id="终端高亮显示"><a href="#终端高亮显示" class="headerlink" title="终端高亮显示"></a>终端高亮显示</h4><p>修改配置文件，<code>~/.bash_profile</code>或<code>~/.zshrc</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">export CLICOLOR=1</span><br><span class="line">export LSCOLORS=gxfxaxdxcxegedabagacad</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-Mac版IDEA快捷键"><a href="#2-Mac版IDEA快捷键" class="headerlink" title="2. Mac版IDEA快捷键"></a>2. Mac版IDEA快捷键</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line"># 更多操作，如导包，引入变量</span><br><span class="line">Option+Enter</span><br><span class="line"># 将当前行复制一行到下一行</span><br><span class="line">Command+D</span><br><span class="line"># 返回上一次编辑的地方</span><br><span class="line">Command+Option+⬅️ 或 Command+[</span><br><span class="line"># 全局搜索类</span><br><span class="line">Command+O</span><br><span class="line"># 删除当前行</span><br><span class="line">Command+Delete</span><br><span class="line"># 大小写切换</span><br><span class="line">Command+Shift+U</span><br><span class="line"># 查看类的继承结构</span><br><span class="line">Ctrl+h</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-给Mac命令添加别名"><a href="#3-给Mac命令添加别名" class="headerlink" title="3. 给Mac命令添加别名"></a>3. 给Mac命令添加别名</h3><ol>
-<li>修改.bash_profile（或.zshrc，取决于使用的哪个bash，新版本macOS默认是zsh）文件</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">vim ~/.zshrc</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 在.zshrc文件中添加alias语句 </span><br><span class="line">alias ll=&quot;ls -alF&quot;</span><br></pre></td></tr></table></figure>
-
-
-
-<p><img src="/2021/12/02/mac%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/image-20220516164058025.png"></p>
-<ol start="2">
-<li>刷新文件</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">source ~/.zshrc</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-Mac环境变量"><a href="#4-Mac环境变量" class="headerlink" title="4. Mac环境变量"></a>4. Mac环境变量</h3><ol>
-<li>Mac中环境变量加载顺序如下</li>
-</ol>
-<blockquote>
-<p>a. 	&#x2F;etc&#x2F;profile<br>b. 	&#x2F;etc&#x2F;paths<br>c. 	~&#x2F;.bash_profile<br>d. 	~&#x2F;.bash_login<br>e. 	~&#x2F;.profile<br>f. 	~&#x2F;.bashrc</p>
-</blockquote>
-<p>其中a, b是系统级别</p>
-<ol start="2">
-<li>添加步骤</li>
-</ol>
-<p>推荐在c层级添加，对于最新版的Mac由于默认使用zsh shell，因此环境变量在<code>~/.zshrc</code>里修改</p>
-<p>基本语法：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">export PATH=&quot;$PATH:&lt;path1&gt;:&lt;path2&gt;&quot;</span><br></pre></td></tr></table></figure>
-
-<p>其中<code>path1</code>和<code>path2</code>是自定义环境变量，多个环境变量使用<code>:</code>进行分隔。</p>
-<p>注意要加上<code>$PATH</code>，否则会导致一些系统内置的命令失效。</p>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>教程</tag>
-        <tag>Mac</tag>
       </tags>
   </entry>
   <entry>
@@ -539,27 +480,6 @@
       </tags>
   </entry>
   <entry>
-    <title>typora图片左对齐</title>
-    <url>/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/</url>
-    <content><![CDATA[<p>typora图片默认是剧中对齐的方式：</p>
-<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128142529931.png"> </p>
-<p>但很多情况下我们其实更倾向于图片左对齐，网上很多办法都更改typora的默认对齐方式，即更改github.css文件，但这种方式会让我们所有的图片都变成左对齐的方式，实际情况下我们有的时候只需要一张图片左对齐。其实在typora中实现图片左对齐的方法非常简单，只需要<strong>在图片链接后加一个空格即可</strong>：</p>
-<span id="more"></span>
-
-<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128143120575.png"></p>
-<hr>
-<h3 id="设置任意对齐方式"><a href="#设置任意对齐方式" class="headerlink" title="设置任意对齐方式"></a>设置任意对齐方式</h3><p>在<code>typora</code>中图片的默认格式为<code>![图片标题](图片url)</code></p>
-<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128151604005.png"></p>
-<p>实际上markdown是兼容<code>&lt;img src=&quot;&quot;&gt;</code>图片格式的，采用img标签就可以利用<code>align</code>属性设置图片对齐方式。</p>
-<p>下面介绍一种可以快速将图片格式从<code>![图片标题](图片url)</code>变为<code>&lt;img src=&quot;&quot;&gt;</code>格式，选中图片，右键，选择缩放图片，任意选择一个不是100%缩放比例（如果选择100%不会有任何变化，如果不想改变图片大小，设置<code>zoom:100</code>即可，即<code>style=&quot;zoom:100%;&quot;</code>），缩放完毕就可以发现图片格式进行自动转换，在<code>img标签中</code>添加<code>align</code>属性即可。</p>
-<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128152513094.png"></p>
-]]></content>
-      <tags>
-        <tag>教程</tag>
-        <tag>Typora</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>刷题分享：LeetCode139.单词拆分【字典树，动态规划】</title>
     <url>/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/</url>
     <content><![CDATA[<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/leetcode-1.jpg"></p>
@@ -677,6 +597,27 @@
       </tags>
   </entry>
   <entry>
+    <title>typora图片左对齐</title>
+    <url>/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/</url>
+    <content><![CDATA[<p>typora图片默认是剧中对齐的方式：</p>
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128142529931.png"> </p>
+<p>但很多情况下我们其实更倾向于图片左对齐，网上很多办法都更改typora的默认对齐方式，即更改github.css文件，但这种方式会让我们所有的图片都变成左对齐的方式，实际情况下我们有的时候只需要一张图片左对齐。其实在typora中实现图片左对齐的方法非常简单，只需要<strong>在图片链接后加一个空格即可</strong>：</p>
+<span id="more"></span>
+
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128143120575.png"></p>
+<hr>
+<h3 id="设置任意对齐方式"><a href="#设置任意对齐方式" class="headerlink" title="设置任意对齐方式"></a>设置任意对齐方式</h3><p>在<code>typora</code>中图片的默认格式为<code>![图片标题](图片url)</code></p>
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128151604005.png"></p>
+<p>实际上markdown是兼容<code>&lt;img src=&quot;&quot;&gt;</code>图片格式的，采用img标签就可以利用<code>align</code>属性设置图片对齐方式。</p>
+<p>下面介绍一种可以快速将图片格式从<code>![图片标题](图片url)</code>变为<code>&lt;img src=&quot;&quot;&gt;</code>格式，选中图片，右键，选择缩放图片，任意选择一个不是100%缩放比例（如果选择100%不会有任何变化，如果不想改变图片大小，设置<code>zoom:100</code>即可，即<code>style=&quot;zoom:100%;&quot;</code>），缩放完毕就可以发现图片格式进行自动转换，在<code>img标签中</code>添加<code>align</code>属性即可。</p>
+<p><img src="/2021/11/28/typora%E5%9B%BE%E7%89%87%E5%B7%A6%E5%AF%B9%E9%BD%90/image-20211128152513094.png"></p>
+]]></content>
+      <tags>
+        <tag>教程</tag>
+        <tag>Typora</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>将hexo博客部署到个人服务器</title>
     <url>/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/</url>
     <content><![CDATA[<p>本人之前的<code>Hexo</code>博客一直都是部署在<code>GitHub</code>上的，通过<code>github.io</code>域名后缀来访问，但是国内访问<code>GitHub</code>网络一直不太稳定，因此考虑自己购买一台服务器，将个人博客部署到自己的服务器。</p>
@@ -757,6 +698,65 @@
       </tags>
   </entry>
   <entry>
+    <title>mac使用技巧</title>
+    <url>/2021/12/02/mac%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/</url>
+    <content><![CDATA[<h3 id="1-Mac终端"><a href="#1-Mac终端" class="headerlink" title="1. Mac终端"></a>1. Mac终端</h3><p><a href="https://support.apple.com/zh-cn/HT208050">Mac终端官方文档</a></p>
+<p>从 macOS Catalina 版开始，您的 Mac 将使用 zsh 作为默认登录 Shell 和交互式 Shell。您还可以在较低版本的 macOS 中将 zsh 设置为默认 Shell。</p>
+<span id="more"></span>
+
+<p>默认情况下，您的 Mac 使用 zsh 或 bash 作为登录 Shell 和交互式 Shell 的命令行解释器：</p>
+<ul>
+<li>从 macOS Catalina 版开始，<strong>zsh</strong> (Z shell) 是所有新建用户帐户的默认 Shell。</li>
+<li><strong>bash</strong> 是 <a href="https://support.apple.com/zh-cn/HT201260">macOS Mojave 及更低版本</a>中的默认 Shell。</li>
+</ul>
+<p>zsh 与 Bourne Shell (sh) 高度兼容，并且与 bash 基本兼容，但存在一些差别。要进一步了解 zsh 及其全面的命令行完成系统，请在“终端”中输入 <code>man zsh</code>。</p>
+<h4 id="从命令行中更改默认shell"><a href="#从命令行中更改默认shell" class="headerlink" title="从命令行中更改默认shell"></a>从命令行中更改默认shell</h4><p>在“终端”中，输入 <code>$ chsh -s path</code>，其中的 path 是 &#x2F;etc&#x2F;shells 中列出的某个 Shell 路径，例如 &#x2F;bin&#x2F;zsh、&#x2F;bin&#x2F;bash、&#x2F;bin&#x2F;csh、&#x2F;bin&#x2F;dash、&#x2F;bin&#x2F;ksh、&#x2F;bin&#x2F;sh 或 &#x2F;bin&#x2F;tcsh。</p>
+<h4 id="终端高亮显示"><a href="#终端高亮显示" class="headerlink" title="终端高亮显示"></a>终端高亮显示</h4><p>修改配置文件，<code>~/.bash_profile</code>或<code>~/.zshrc</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">export CLICOLOR=1</span><br><span class="line">export LSCOLORS=gxfxaxdxcxegedabagacad</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-Mac版IDEA快捷键"><a href="#2-Mac版IDEA快捷键" class="headerlink" title="2. Mac版IDEA快捷键"></a>2. Mac版IDEA快捷键</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line"># 更多操作，如导包，引入变量</span><br><span class="line">Option+Enter</span><br><span class="line"># 将当前行复制一行到下一行</span><br><span class="line">Command+D</span><br><span class="line"># 返回上一次编辑的地方</span><br><span class="line">Command+Option+⬅️ 或 Command+[</span><br><span class="line"># 全局搜索类</span><br><span class="line">Command+O</span><br><span class="line"># 删除当前行</span><br><span class="line">Command+Delete</span><br><span class="line"># 大小写切换</span><br><span class="line">Command+Shift+U</span><br><span class="line"># 查看类的继承结构</span><br><span class="line">Ctrl+h</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-给Mac命令添加别名"><a href="#3-给Mac命令添加别名" class="headerlink" title="3. 给Mac命令添加别名"></a>3. 给Mac命令添加别名</h3><ol>
+<li>修改.bash_profile（或.zshrc，取决于使用的哪个bash，新版本macOS默认是zsh）文件</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">vim ~/.zshrc</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 在.zshrc文件中添加alias语句 </span><br><span class="line">alias ll=&quot;ls -alF&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2021/12/02/mac%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/image-20220516164058025.png"></p>
+<ol start="2">
+<li>刷新文件</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">source ~/.zshrc</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-Mac环境变量"><a href="#4-Mac环境变量" class="headerlink" title="4. Mac环境变量"></a>4. Mac环境变量</h3><ol>
+<li>Mac中环境变量加载顺序如下</li>
+</ol>
+<blockquote>
+<p>a. 	&#x2F;etc&#x2F;profile<br>b. 	&#x2F;etc&#x2F;paths<br>c. 	~&#x2F;.bash_profile<br>d. 	~&#x2F;.bash_login<br>e. 	~&#x2F;.profile<br>f. 	~&#x2F;.bashrc</p>
+</blockquote>
+<p>其中a, b是系统级别</p>
+<ol start="2">
+<li>添加步骤</li>
+</ol>
+<p>推荐在c层级添加，对于最新版的Mac由于默认使用zsh shell，因此环境变量在<code>~/.zshrc</code>里修改</p>
+<p>基本语法：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">export PATH=&quot;$PATH:&lt;path1&gt;:&lt;path2&gt;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>path1</code>和<code>path2</code>是自定义环境变量，多个环境变量使用<code>:</code>进行分隔。</p>
+<p>注意要加上<code>$PATH</code>，否则会导致一些系统内置的命令失效。</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>教程</tag>
+        <tag>Mac</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Git常用命令</title>
     <url>/2022/05/10/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h2 id="Git基础命令"><a href="#Git基础命令" class="headerlink" title="Git基础命令"></a>Git基础命令</h2><ol>
@@ -816,6 +816,87 @@
 <p>运行结果：</p>
 <p><img src="/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/image-20220512221937915.png"></p>
 <p>上述通过<code>HashMap</code>的方案可以检验<code>BitMap</code>的答案是正确的，并且成功节省了内存空间。</p>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>源码剖析：HashMap中插入节点put(k, v)和扩容resize()</title>
+    <url>/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/</url>
+    <content><![CDATA[<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/337690-20200704174405569-752263172-20220608125854874.png"></p>
+<p><code>HashMap</code>在不同JDK版本的实现方式和源码有所区别，本文针对<code>jdk1.8</code>展开分析，从源码出发深入探讨<code>HashMap</code>插入元素及其中涉及的扩容的过程。</p>
+<span id="more"></span>
+
+<h2 id="HashMap数据结构"><a href="#HashMap数据结构" class="headerlink" title="HashMap数据结构"></a>HashMap数据结构</h2><p><code>HashMap</code>本质由数组+链表&#x2F;红黑树，其源码中定义了一个核心属性<code>table</code>（一个<code>Node</code>数组），<code>Node</code>可以理解为存储哈希表中<strong>键值对</strong>的容器。</p>
+<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/image-20220608130154836.png"></p>
+<p><code>HashMap</code>会根据<code>key</code>的<code>哈希值</code>找到当前键值对存放在<code>table</code>中的下标<code>index</code>，当多个<code>key</code>位于同一个下标时（称之为哈希冲突），会采用链表的方式，将当前<code>Node</code>插入到链表尾端；当链表的长度超过<code>TREEIFY_THRESHOLD</code>时，会将链表转换为二叉查找树进行存储（HashMap采用的是红黑树）；当发现<code>key</code>相同时只替换<code>value</code>值即可。</p>
+<p>上面提到发现”<code>key</code>相同“，进行<code>key</code>比较的时候会按照如下顺序进行比对：</p>
+<ol>
+<li>先判断两个<code>key</code>的哈希值是否相同，如果不同则两个<code>key</code>不同，否则继续比较</li>
+<li>判断是否指向同一个引用，即是否<code>==</code>，如果指向同一个引用则两个<code>key</code>相同，否则继续比较</li>
+<li>判断<code>equals</code>是否相等，如果相等则两个<code>key</code>相同，否则不相同</li>
+</ol>
+<blockquote>
+<p>从这里我们解释为什么说“重写equals方法就一定要重写hashCode方法”？</p>
+<p>当我们需要使用到散列结构（HashMap, HashSet等）时，如果只重写equals方法而没有重写hashCode方法，在比较key是否相同时会先进行hashCode比较，没有重写hashCode方法会导致两个equals相等的对象的hashCode不同，因此在put操作时会当做两个不同的key来处理。</p>
+</blockquote>
+<h2 id="HashMap插入节点和扩容"><a href="#HashMap插入节点和扩容" class="headerlink" title="HashMap插入节点和扩容"></a>HashMap插入节点和扩容</h2><p><code>put</code>方法源码注释：</p>
+<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/image-20220608131355501.png"></p>
+<p>我们可以发现<code>put</code>方法实际是调用了<code>putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict)</code>方法，我们先来看计算哈希值的过程：</p>
+<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/image-20220608131606962.png"></p>
+<p>从源码我们可以发现，计算哈希值的时候，当<code>key</code>为<code>null</code>时指定了哈希值为0，说明<code>HashMap</code>是允许<code>key</code>为<code>null</code>的，并且只能有一个<code>key</code>为<code>null</code>。这里和其他的哈希表不同（如<code>HashTable</code>,<code>ConcurrentHashMap</code>），其他哈希结构都是不允许<code>key</code>为<code>null</code>的。</p>
+<h3 id="putVal-插入节点"><a href="#putVal-插入节点" class="headerlink" title="putVal()插入节点"></a>putVal()插入节点</h3><p>插入节点的步骤：</p>
+<ol>
+<li>根据哈希值找到当前key在table数组（哈希桶）中的位置</li>
+<li>table数组当前位置为空，则在此处创建新Node并放在table的当前位置即可，break</li>
+<li>当前位置不为空，且发现当前位置的节点是一颗红黑树，执行红黑树插入节点的操作，break</li>
+<li>当前位置不为空，也不是红黑树，则当前位置只有可能是链表，执行链表的插入操作<ol>
+<li>遍历链表，查找是否有相同key，如果发现了相同key，则进行值替换，break</li>
+<li>遍历到链表尾部，仍未发现相同key，此处创建行Node，并将其插入到链表尾部；插入节点后若发现当前链表长度超过<code>TREEIFY_THRESHOLD</code>时，将链表变成红黑树，break</li>
+</ol>
+</li>
+<li>插入节点后，判断当前<code>size</code>是否超过<code>threshold</code>，如超过进行<code>resize()</code></li>
+<li>Return</li>
+</ol>
+<p><strong>源码分析：（详细分析过程见注释）</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Implements Map.put and related methods.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> hash hash for key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key the key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> value the value to put</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> onlyIfAbsent if true, don&#x27;t change existing value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> evict if false, the table is in creation mode.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> previous value, or null if none</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="keyword">final</span> V <span class="title function_">putVal</span><span class="params">(<span class="type">int</span> hash, K key, V value, <span class="type">boolean</span> onlyIfAbsent,</span></span><br><span class="line"><span class="params">               <span class="type">boolean</span> evict)</span> &#123;</span><br><span class="line">  Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="type">int</span> n, i;</span><br><span class="line">  <span class="keyword">if</span> ((tab = table) == <span class="literal">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">    <span class="comment">// table为空时，初始化table</span></span><br><span class="line">    n = (tab = resize()).length;</span><br><span class="line">  <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="literal">null</span>)</span><br><span class="line">    <span class="comment">// 哈希桶当前位置为空，则直接把新的Node放到table数组的当前位置即可</span></span><br><span class="line">    tab[i] = newNode(hash, key, value, <span class="literal">null</span>);</span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// 发生哈希冲突</span></span><br><span class="line">    Node&lt;K,V&gt; e; K k;</span><br><span class="line">    <span class="comment">// p.hash == hash &amp;&amp; ((k = p.key) == key || (key != null &amp;&amp; key.equals(k)))就是上面提到的「比较key」的源码</span></span><br><span class="line">    <span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">        ((k = p.key) == key || (key != <span class="literal">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">      <span class="comment">// 发现key相同，把当前Node赋给e，后面进行value替换操作</span></span><br><span class="line">      e = p;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">      <span class="comment">// 发现哈希桶当前位置已经是一颗树，进行红黑树插入节点操作，此处不进行详细阐述</span></span><br><span class="line">      e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="built_in">this</span>, tab, hash, key, value);</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// table当前位置为链表，遍历链表，寻找是否有相同的key</span></span><br><span class="line">      <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">binCount</span> <span class="operator">=</span> <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">        <span class="keyword">if</span> ((e = p.next) == <span class="literal">null</span>) &#123;</span><br><span class="line">          <span class="comment">// 遍历到链表尾部，仍未发现相同的key，创建新Node，并插入到链表尾部</span></span><br><span class="line">          p.next = newNode(hash, key, value, <span class="literal">null</span>);</span><br><span class="line">          <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st</span></span><br><span class="line">            <span class="comment">// 发现当前链表的长度达到了TREEIFY_THRESHOLD，链表变红黑树，提升查询效率</span></span><br><span class="line">            treeifyBin(tab, hash);</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 此处同样是「比较key」的过程</span></span><br><span class="line">        <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">            ((k = e.key) == key || (key != <span class="literal">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">        <span class="comment">// 发现有相同的key，把当前Node赋给e，后面进行value替换操作</span></span><br><span class="line">        p = e;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (e != <span class="literal">null</span>) &#123; <span class="comment">// existing mapping for key</span></span><br><span class="line">      <span class="comment">// 发现key相同，进行value替换操作</span></span><br><span class="line">      <span class="type">V</span> <span class="variable">oldValue</span> <span class="operator">=</span> e.value;</span><br><span class="line">      <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="literal">null</span>)</span><br><span class="line">        e.value = value;</span><br><span class="line">      afterNodeAccess(e);</span><br><span class="line">      <span class="keyword">return</span> oldValue;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ++modCount;</span><br><span class="line">  <span class="keyword">if</span> (++size &gt; threshold)</span><br><span class="line">    <span class="comment">// 当前HashMap的节点数超过了门槛值，进行扩容</span></span><br><span class="line">    resize();  <span class="comment">// 扩容操作</span></span><br><span class="line">  afterNodeInsertion(evict);</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="resize-扩容"><a href="#resize-扩容" class="headerlink" title="resize()扩容"></a>resize()扩容</h3><p>源码注释：</p>
+<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/image-20220608134431428.png"></p>
+<p>从上面注释我们可以知道，当初始化或者哈希桶大小翻倍时会执行<code>resize()</code>方法。</p>
+<p><code>resize()</code>方法分为两个部分：</p>
+<ol>
+<li>重新计算<code>threshold</code>及<code>capacity</code></li>
+<li>重新放置所有Node</li>
+</ol>
+<p>第一个过程较为简单，基本过程就是<code>table</code>大小翻倍，然后重新计算<code>threshold = newCap * loadFactor</code>，源码部分涉及到很多越界处理，看着有些复杂。</p>
+<p>第二个过程遍历旧<code>table</code>，将节点放入到新<code>table</code>对应的位置，主要分为以下几步：</p>
+<ol>
+<li><p>旧<code>table</code>当前位置为空，直接跳过</p>
+</li>
+<li><p>旧<code>table</code>当前位置只有一个节点，将该节点放到新<code>table</code>的<code>e.hash &amp; (newCap - 1)</code>位置上即可</p>
+</li>
+<li><p>旧<code>table</code>当前位置是一颗二叉树，执行红黑树的重新放置节点操作</p>
+</li>
+<li><p>旧<code>table</code>当前位置是一个长度大于1的链表</p>
+<ol>
+<li>在链表中存在位置不变和位置往后移动<code>oldCap</code>的节点，使用<code>loHead,loTail</code>来记录位置不变节点的头尾节点，使用<code>hiHead, hiTail</code>记录位置需要往后移动<code>oldCap</code>的头尾节点</li>
+</ol>
+<blockquote>
+<p>怎么判断哪些节点位置不变，哪些需要移动？为什么是向后移动oldCap个位置？<br>e.hash &amp; (newCap - 1) 代表新table的位置，且newCap &#x3D; oldCap &lt;&lt; 1，并且newCap和oldCap都是2的倍数<br>举例说明：<br>我们假定oldCap &#x3D; 8（即0b1000），则newCap &#x3D; 16（即0b10000）<br>e.hash &amp;  0b111 表示在旧table中的位置，&amp; 操作是对e.hash进行截断，即e.hash的后三位即代表旧位置<br>e.hash &amp; 0b1111 表示在新table中的位置，同理，e.hash的后四位代表新位置<br>因此我们只要判断e.hash在第四位是否为0即可，如果为0，则表示新位置和旧位置一致；如果不为0，则新位置比旧位置大0b1000<br>结论：<br>e.hash &amp; oldCap &#x3D;&#x3D; 0 : 新位置和旧位置一致<br>e.hash &amp; oldCap !&#x3D; 0 : 新位置比旧位置大oldCap</p>
+</blockquote>
+<ol start="2">
+<li>位置不动的节点通过<code>newTab[j] = loHead</code>来实现；位置往后移动通过<code>newTab[j + oldCap] = hiHead</code>来实现</li>
+</ol>
+</li>
+</ol>
+<p><strong>源码分析：（详细分析过程见注释）</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">  Node&lt;K,V&gt;[] oldTab = table;</span><br><span class="line">  <span class="comment">// ==============第一部分 开始==============</span></span><br><span class="line">  <span class="type">int</span> <span class="variable">oldCap</span> <span class="operator">=</span> (oldTab == <span class="literal">null</span>) ? <span class="number">0</span> : oldTab.length;</span><br><span class="line">  <span class="type">int</span> <span class="variable">oldThr</span> <span class="operator">=</span> threshold;</span><br><span class="line">  <span class="type">int</span> newCap, newThr = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">if</span> (oldCap &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (oldCap &gt;= MAXIMUM_CAPACITY) &#123;</span><br><span class="line">      threshold = Integer.MAX_VALUE;</span><br><span class="line">      <span class="keyword">return</span> oldTab;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// newCap = oldCap &lt;&lt; 1，capacity翻倍，即table大小翻倍</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ((newCap = oldCap &lt;&lt; <span class="number">1</span>) &lt; MAXIMUM_CAPACITY &amp;&amp;</span><br><span class="line">             oldCap &gt;= DEFAULT_INITIAL_CAPACITY)</span><br><span class="line">      <span class="comment">// threshold翻倍</span></span><br><span class="line">      newThr = oldThr &lt;&lt; <span class="number">1</span>; <span class="comment">// double threshold</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> (oldThr &gt; <span class="number">0</span>) <span class="comment">// initial capacity was placed in threshold</span></span><br><span class="line">    newCap = oldThr;</span><br><span class="line">  <span class="keyword">else</span> &#123;               <span class="comment">// zero initial threshold signifies using defaults</span></span><br><span class="line">    newCap = DEFAULT_INITIAL_CAPACITY;</span><br><span class="line">    newThr = (<span class="type">int</span>)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (newThr == <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="comment">// 重新计算threshold = newCap * loadFactor</span></span><br><span class="line">    <span class="type">float</span> <span class="variable">ft</span> <span class="operator">=</span> (<span class="type">float</span>)newCap * loadFactor;</span><br><span class="line">    newThr = (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (<span class="type">float</span>)MAXIMUM_CAPACITY ?</span><br><span class="line">              (<span class="type">int</span>)ft : Integer.MAX_VALUE);</span><br><span class="line">  &#125;</span><br><span class="line">  threshold = newThr;</span><br><span class="line">  <span class="comment">// ==============第一部分 结束==============</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// ==============第二部分 开始==============</span></span><br><span class="line">  <span class="meta">@SuppressWarnings(&#123;&quot;rawtypes&quot;,&quot;unchecked&quot;&#125;)</span></span><br><span class="line">  Node&lt;K,V&gt;[] newTab = (Node&lt;K,V&gt;[])<span class="keyword">new</span> <span class="title class_">Node</span>[newCap];</span><br><span class="line">  table = newTab;</span><br><span class="line">  <span class="keyword">if</span> (oldTab != <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="comment">// 遍历原来的table</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; oldCap; ++j) &#123;</span><br><span class="line">      Node&lt;K,V&gt; e;</span><br><span class="line">      <span class="comment">// 原来table当前位置为null的直接跳过</span></span><br><span class="line">      <span class="keyword">if</span> ((e = oldTab[j]) != <span class="literal">null</span>) &#123;</span><br><span class="line">        oldTab[j] = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (e.next == <span class="literal">null</span>)</span><br><span class="line">          <span class="comment">// 当前位置上的链表只有一个节点，重新计算在新table中的位置，并放置到新table对应位置即可</span></span><br><span class="line">          newTab[e.hash &amp; (newCap - <span class="number">1</span>)] = e;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (e <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">          <span class="comment">// 当前位置上是一颗红黑树，进行树的重新放置操作，此处不进行详细阐述</span></span><br><span class="line">          ((TreeNode&lt;K,V&gt;)e).split(<span class="built_in">this</span>, newTab, j, oldCap);</span><br><span class="line">        <span class="keyword">else</span> &#123; <span class="comment">// preserve order</span></span><br><span class="line">          <span class="comment">// 当前位置上是一颗节点数大于1的链表</span></span><br><span class="line">          <span class="comment">// 不需要改变位置的头结点和尾节点</span></span><br><span class="line">          Node&lt;K,V&gt; loHead = <span class="literal">null</span>, loTail = <span class="literal">null</span>;</span><br><span class="line">          <span class="comment">// 需要将位置往后移动oldCap个位置的头节点和尾节点</span></span><br><span class="line">          Node&lt;K,V&gt; hiHead = <span class="literal">null</span>, hiTail = <span class="literal">null</span>;</span><br><span class="line">          Node&lt;K,V&gt; next;</span><br><span class="line">          <span class="keyword">do</span> &#123;</span><br><span class="line">            next = e.next;</span><br><span class="line">            <span class="comment">/* </span></span><br><span class="line"><span class="comment">            (e.hash &amp; oldCap) == 0 是判断当前节点哈希值在新table中的位置是否需要改变</span></span><br><span class="line"><span class="comment">            e.hash &amp; (newCap - 1) 代表新table的位置，且newCap = oldCap &lt;&lt; 1，并且newCap和oldCap都是2的倍数</span></span><br><span class="line"><span class="comment">            举例说明：</span></span><br><span class="line"><span class="comment">            我们假定oldCap = 8（即0b1000），则newCap = 16（即0b10000）</span></span><br><span class="line"><span class="comment">            e.hash &amp;  0b111 表示在旧table中的位置，&amp; 操作是对e.hash进行截断，即e.hash的后三位即代表旧位置</span></span><br><span class="line"><span class="comment">            e.hash &amp; 0b1111 表示在新table中的位置，同理，e.hash的后四位代表新位置</span></span><br><span class="line"><span class="comment">            因此我们只要判断e.hash在第四位是否为0即可，如果为0，则表示新位置和旧位置一致；如果不为0，则新位置比旧位置大0b1000</span></span><br><span class="line"><span class="comment">            结论：</span></span><br><span class="line"><span class="comment">            e.hash &amp; oldCap == 0 : 新位置和旧位置一致</span></span><br><span class="line"><span class="comment">            e.hash &amp; oldCap != 0 : 新位置比旧位置大oldCap</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line">            <span class="keyword">if</span> ((e.hash &amp; oldCap) == <span class="number">0</span>) &#123;</span><br><span class="line">              <span class="keyword">if</span> (loTail == <span class="literal">null</span>)</span><br><span class="line">                loHead = e;</span><br><span class="line">              <span class="keyword">else</span></span><br><span class="line">                loTail.next = e;</span><br><span class="line">              loTail = e;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">              <span class="keyword">if</span> (hiTail == <span class="literal">null</span>)</span><br><span class="line">                hiHead = e;</span><br><span class="line">              <span class="keyword">else</span></span><br><span class="line">                hiTail.next = e;</span><br><span class="line">              hiTail = e;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125; <span class="keyword">while</span> ((e = next) != <span class="literal">null</span>);</span><br><span class="line">          <span class="keyword">if</span> (loTail != <span class="literal">null</span>) &#123;</span><br><span class="line">            loTail.next = <span class="literal">null</span>;</span><br><span class="line">            <span class="comment">// 将新旧位置不变的节点仍放到j位置上</span></span><br><span class="line">            newTab[j] = loHead;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">if</span> (hiTail != <span class="literal">null</span>) &#123;</span><br><span class="line">            hiTail.next = <span class="literal">null</span>;</span><br><span class="line">            <span class="comment">// 将需要往后移的节点放到j+oldCap位置上</span></span><br><span class="line">            newTab[j + oldCap] = hiHead;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> newTab;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
         <category>技术</category>
@@ -1080,88 +1161,6 @@
       </tags>
   </entry>
   <entry>
-    <title>MySQL:InnoDB存储引擎和MyISAM的区别？</title>
-    <url>/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/</url>
-    <content><![CDATA[<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/mysql-logo-800-400.jpg"></p>
-<p>本文从<strong>事务</strong>，<strong>外键</strong>，<strong>索引</strong>， <strong>存储文件</strong>，<strong>日志</strong>，<strong>count行数</strong>，<strong>锁</strong>，<strong>主键</strong>八个方面系统地对比了在<code>MySQL</code>中<code>InnoDB</code>存储引擎和<code>MyISAM</code>存储引擎的区别。</p>
-<span id="more"></span>
-
-<h3 id="1-事务"><a href="#1-事务" class="headerlink" title="1. 事务"></a>1. 事务</h3><ul>
-<li><p><code>InnoDB</code>：支持事务。</p>
-</li>
-<li><p><code>MyISAM</code>：不支持事务，强调的是性能，每次查询具有原子性，一般情况下其查询数度比<code>InnoDB</code>更快，但是不提供事务支持。</p>
-</li>
-</ul>
-<blockquote>
-<p>一般情况下<code>MyISAM</code>查询速度比<code>InnoDB</code>快的原因：</p>
-<p>答：在查询的时候，InnoDB要维护的东西比MyISAM多很多，具体以下几点：</p>
-<ul>
-<li>InnoDB缓存数据块，MyISAM只缓存索引块， 这中间还有换进换出的减少；</li>
-<li>InnoDB寻址要映射到块，再到行，MyISAM记录的直接是文件的OFFSET，定位比InnoDB要快 </li>
-<li>InnoDB还需要维护MVCC一致； 虽然你的场景没有，但他还是需要去检查和维护</li>
-</ul>
-</blockquote>
-<h3 id="2-外键"><a href="#2-外键" class="headerlink" title="2. 外键"></a>2. 外键</h3><ul>
-<li><code>InnoDB</code>：支持外键</li>
-<li><code>MyISAM</code>：不支持外键，对一个包含外键的InnoDB表转为MyISAM会失败</li>
-</ul>
-<h3 id="3-索引"><a href="#3-索引" class="headerlink" title="3. 索引"></a>3. 索引</h3><ul>
-<li><code>InnoDB</code>：聚集索引，数据文件和索引存储在一起，必须要有主键，通过主键查询效率很高，一次查询即可得到完整的行数据。辅助索引存储的数据是对应的主键索引的值，通过辅助索引查询需要两次查询，根据辅助索引查询到对应的主键索引，再根据主键索引查询到对应的行数据（这一过程称之为<strong>回表</strong>）。</li>
-<li><code>MyISAM</code>：非聚集索引，索引和数据文件分开保存，索引保存的是数据文件的指针。主键索引和辅助索引相互独立。</li>
-</ul>
-<blockquote>
-<p>InnoDB的B+树主键索引的叶子节点就是数据文件，辅助索引的叶子节点是主键的值；而MyISAM的B+树主键索引和辅助索引的叶子节点都是数据文件的地址指针。</p>
-</blockquote>
-<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png"></p>
-<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130322302.png"></p>
-<h3 id="4-存储文件"><a href="#4-存储文件" class="headerlink" title="4. 存储文件"></a>4. 存储文件</h3><ul>
-<li><code>InnoDB</code>：存储文件有<strong>frm、ibd</strong>，<strong>frm</strong>是表定义文件，<strong>ibd</strong>是数据文件。</li>
-<li><code>MyISAM</code>：存储文件有<strong>frm、myd、myi</strong>，<strong>frm</strong>是表定义文件，<strong>myd</strong>是数据文件，<strong>myi</strong>是索引文件。</li>
-</ul>
-<h3 id="5-日志"><a href="#5-日志" class="headerlink" title="5. 日志"></a>5. 日志</h3><ul>
-<li><code>InnoDB</code>：有<code>redo log</code>，使用 InnoDB 的数据库在异常崩溃后，数据库重新启动的时候会保证数据库恢复到崩溃前的状态，这个恢复的过程依赖于 <code>redo log</code> 。 <code>redo log</code> 保证事务的持久性， <code>undo log</code> 保证事务的原子性。</li>
-<li><code>MyISAM</code>：没有<code>redo log</code>，不支持数据库异常崩溃后的安全恢复。</li>
-</ul>
-<h3 id="6-count"><a href="#6-count" class="headerlink" title="6. count"></a>6. count</h3><ul>
-<li><code>InnoDB</code>：不保存表的具体行数，如果使用<code>select count(*) from table</code>，就会遍历整个表，消耗相当大，但是在加了<code>where</code>条件后，myisam和innodb处理的方式都一样。</li>
-<li><code>MyISAM</code>：使用一个变量保存整个表的行数，如果使用<code>select count(*) from table</code>，会直接读取该变量。</li>
-</ul>
-<blockquote>
-<p> 因为InnoDB的事务特性，在同一时刻表中的行数对于不同的事务而言是不一样的，因此count统计会计算对于当前事务而言可以统计到的行数，而不是将总行数储存起来方便快速查询。</p>
-</blockquote>
-<h3 id="7-锁"><a href="#7-锁" class="headerlink" title="7. 锁"></a>7. 锁</h3><ul>
-<li><code>InnoDB</code>：支持行级锁和表锁。行锁是基于索引实现的，如果没有命中索引，也无法使用行锁，会退化到表锁。</li>
-<li><code>MyISAM</code>：仅支持表锁，不支持行锁。</li>
-</ul>
-<h3 id="8-主键"><a href="#8-主键" class="headerlink" title="8. 主键"></a>8. 主键</h3><ul>
-<li><code>InnoDB</code>：如果没有设定主键，会自动生成一个6字节的隐藏主键（用户不可见），数据保存在主键索引的叶子节点上。</li>
-<li><code>MyISAM</code>：允许不含有主键。</li>
-</ul>
-<blockquote>
-<p>删除部分自增主键后，二者的区别？</p>
-<ol>
-<li>不重启服务器</li>
-</ol>
-<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，插入一行新的数据，无论是<code>InnoDB</code>还是<code>MyISAM</code>都会从<code>6</code>开始插入。</p>
-<ol start="2">
-<li>重启服务器</li>
-</ol>
-<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，重启服务器，再插入一行新的数据，<code>InnoDB</code>主键会从<code>4</code>开始插入，而<code>MyISAM</code>会从<code>6</code>开始插入。</p>
-<blockquote>
-<p>原因：Innodb表把自增主键的最大ID记录到内存中，重启数据库后，都会导致最大自增ID重置；MyISAM表会把自增主键的最大ID记录到数据文件里，重启MySQL自增主键的最大ID也不会丢失。</p>
-</blockquote>
-<p><strong>说明：mysql8.0版本，重启数据库后，不会导致最大自增ID重置</strong></p>
-<p><strong>原因：</strong>在 MySQL 8.0 中，<code>AUTO_INCREMENT</code>计数器的逻辑变了，每当计数器的值有变，InnoDB 会将其写入 redo log，保存到引擎专用的系统表中。MySQL 正常关闭后重启：从系统表中获取计数器的值。MySQL 故障后重启：从系统表中获取计数器的值；从最后一个检查点开始扫描 redo log 中记录的计数器值；取这两者的最大值作为新值。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>MySQL</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Java异常：Exception与Error，checkedException与unCheckedException</title>
     <url>/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/</url>
     <content><![CDATA[<h3 id="1-Java异常类层级结构图"><a href="#1-Java异常类层级结构图" class="headerlink" title="1. Java异常类层级结构图"></a>1. Java异常类层级结构图</h3><p><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512152121807.png"></p>
@@ -1216,266 +1215,6 @@
       </categories>
       <tags>
         <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MySQL:事务&amp;MVCC详解</title>
-    <url>/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/</url>
-    <content><![CDATA[<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/mysql-logo-800-400.jpg"></p>
-<p><strong>数据库事务（transaction）</strong>是访问并可能操作各种数据项的一个数据库操作序列，这些操作要么全部执行,要么全部不执行，是一个不可分割的工作逻辑单元。</p>
-<span id="more"></span>
-
-<h2 id="事务的四大特性"><a href="#事务的四大特性" class="headerlink" title="事务的四大特性"></a>事务的四大特性</h2><ul>
-<li><p><strong>原子性（Atomicity）：</strong>一个事务中的所有操作，要么都执行，要么都失败，不存在中间状态，一旦事务执行过程中发生了错误，事务会进行回滚，恢复到事务开始之前的状态，就像这个事务从来没有执行过一样。</p>
-</li>
-<li><p><strong>一致性（Consistency）：</strong>数据库的完整性不会因为事务的执行而受到破坏，一个事务执行之前和执行之后都必须处于一致状态。比如表中有一个字段为姓名，它有唯一约束，也就是表中姓名不能重复，如果一个事务对姓名字段进行了修改，但是在事务提交后，表中的姓名变得非唯一性了，这就破坏了事务的一致性要求，这时数据库就要撤销该事务，返回初始化的状态。再比如用户A和用户B两者的钱加起来一共是1000，那么不管A和B之间如何转账、转几次账，事务结束后两个用户的钱相加起来应该还得是1000，这就是事务的一致性。</p>
-</li>
-<li><p><strong>隔离性（Isolation）：</strong>数据库允许多个并发事务同时对其数据进行读写和修改的能力，隔离性可以保证多个事务在并发执行的过程中互相隔离，互不干扰，从而避免并发事务交叉执行时带来的数据不一致问题。</p>
-</li>
-<li><p><strong>持久性（Durability）：</strong>事务结束后，对数据的修改是永久的，即便发生系统故障也不会对丢失。</p>
-</li>
-</ul>
-<p><strong><code>InnoDB</code>引擎如何保证事务的四大特性？</strong></p>
-<p>持久性通过<code>redo log</code>（重做日志）来保证的</p>
-<p>原子性通过<code>undo log</code>（回滚日志）来保证的</p>
-<p>隔离性通过<code>mvcc</code>（多版本并发控制）或锁机制来保证的</p>
-<p>一致性通过持久性+原子性+隔离性来保证的</p>
-<h2 id="并发事务带来的问题"><a href="#并发事务带来的问题" class="headerlink" title="并发事务带来的问题"></a>并发事务带来的问题</h2><h3 id="脏读"><a href="#脏读" class="headerlink" title="脏读"></a>脏读</h3><p><strong>一个事务读到了另一个「未提交事务修改的数据」，如果该数据发生回滚，则读到的数据就是错误的数据，就意味着发生了「脏读」现象。</strong></p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/10b513008ea35ee880c592a88adcb12f.png"></p>
-<p>因为事务 A 是还没提交事务的，也就是它随时可能发生回滚操作，<strong>如果在上面这种情况事务 A 发生了回滚，那么事务 B 刚才得到的数据就是过期的数据，这种现象就被称为脏读。</strong></p>
-<h3 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h3><p><strong>在一个事务内多次读取同一个数据，如果前后两次读到的数据不一致，就意味着发生了「不可重复读」现象。</strong></p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/f5b4f8f0c0adcf044b34c1f300a95abf.png"></p>
-<p>事务B第一读取余额为100万，第二次读取余额变为200万，两次读同一条数据结果却不一致。</p>
-<h3 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h3><p><strong>在一个事务中多次查询符合特定条件的记录数量，如果前后两次查询到的记录数量不同，就意味着发生了「幻读」。</strong></p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/d19a1019dc35dfe8cfe7fbff8cd97e31-20220601203800758.png"></p>
-<p>事务B第一次查询大于100万的记录有5条，第二次查询同样条件结果却变成了6条，出现了幻读。</p>
-<blockquote>
-<p>MySQL针对「脏读，不可重复读，幻读」等现象，采取了什么措施应对？</p>
-<p>答：隔离级别</p>
-</blockquote>
-<h2 id="事务的隔离级别"><a href="#事务的隔离级别" class="headerlink" title="事务的隔离级别"></a>事务的隔离级别</h2><p>SQL标准规定了四种隔离级别：</p>
-<ul>
-<li><strong>读未提交（Read Uncommitted）</strong>，一个事务可以读取到其他未提交事务变更过的数据；</li>
-<li><strong>读已提交（Read Committed）</strong>，一个事务只能读取到其他已经提交多的事务变更的数据，<code>Oracle</code>数据库默认采用这种隔离级别；</li>
-<li><strong>不可重复读（Repeatable Read）</strong>，一个事务执行过程中读取到的数据始终和事务开始时读到的数据一致，<code>MySQL</code>数据库默认采用这种隔离级别；</li>
-<li><strong>串行化（Serializable）</strong>，会对记录加上读写锁，在多个事务对这条记录进行读写操作时，如果发生了读写冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行；</li>
-</ul>
-<p>按「隔离水平」从高到低排序：</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/cce766a69dea725cd8f19b90db2d0430.png"></p>
-<p>针对不同隔离级别，并发事务时可能发生的现象：</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/4e98ea2e60923b969790898565b4d643.png"></p>
-<p>解决脏读现象，就要升级到「读提交」以上的隔离级别；要解决不可重复读现象，就要升级到「可重复读」的隔离级别。</p>
-<p>不过，要解决幻读现象不建议将隔离级别升级到「串行化」，因为这样会导致数据库在并发事务时性能很差。</p>
-<p><strong>MySQL的默认隔离级别是「不可重复读」，但是它采用<code>Next-Key Lock</code>锁（行锁和间隙锁的组合），来锁住记录本身以及记录的“间隙”，防止其他事务在记录之间插入新的记录，从而可以有效避免幻读。</strong></p>
-<h3 id="四种隔离级别是如何实现的？"><a href="#四种隔离级别是如何实现的？" class="headerlink" title="四种隔离级别是如何实现的？"></a>四种隔离级别是如何实现的？</h3><ul>
-<li>对于「读未提交」，因为可以读到为其他未提交事务修改的数据，所以直接读取最新数据；</li>
-<li>对于「串行化」，通过加<strong>读写锁</strong>的方式来避免并行访问；</li>
-<li>对于「读已提交」和「不可重复读」，它们都是通过<code>Read View</code>来实现的，它们的区别在于创建<code>Read View</code>的时机不同，<code>Read View</code>可以理解为一个快照数据，类似于相机拍的照片，记录的是某一时刻的风景。「读已提交」是在<strong>每个读语句执行前</strong>都会重新创建一个新的<code>Read View</code>；而「不可重复读」则是在<strong>事务开启前</strong>创建一个<code>Read View</code>，然后整个事务执行期间都使用这个<code>Read View</code>。</li>
-</ul>
-<blockquote>
-<p>Read View是MVCC工作的核心，下面来详细讲讲MVCC（多版本并发控制）。</p>
-</blockquote>
-<h2 id="MVCC（Multi-Version-Concurrency-Control）"><a href="#MVCC（Multi-Version-Concurrency-Control）" class="headerlink" title="MVCC（Multi-Version Concurrency Control）"></a>MVCC（Multi-Version Concurrency Control）</h2><p>MVCC最大的好处就是：读不加锁，读写不冲突。相比基于锁的并发控制，在读多写少的场景下，MVCC极大地提升了系统的并发性能。</p>
-<p>在MVCC并发控制中，读操作可以分为两类：快照读（Snapshot Read）和当前读（Current Read）。快照读，读取的是记录的可见版本（可能是历史版本），不用加锁；当前读，读取的是记录的最新版本，并且当前读返回的数据都会上锁，保证其他事务不会并发修改该记录。</p>
-<h3 id="在MySQL-InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？"><a href="#在MySQL-InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？" class="headerlink" title="在MySQL InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？"></a>在MySQL InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？</h3><ul>
-<li><p><strong>快照读：</strong>简单的select操作，属于快照读，不加锁。</p>
-<ul>
-<li>例如：select * from table where ?;</li>
-</ul>
-</li>
-<li><p><strong>当前读：</strong>特殊的读操作、插入&#x2F;更新&#x2F;删除操作，属于当前读，需要加锁。</p>
-<ul>
-<li>select * from table where ? lock in share mode;</li>
-<li>select * from table where ? for update;</li>
-<li>insert into table values (…);</li>
-<li>update table set ? where ?;</li>
-<li>delete from table where ?;</li>
-</ul>
-<p>以上语句都属于当前读，读取到记录的最新版本，并且会在读取到数据后，对数据进行加锁，以保证其他并发事务不会对当前数据进行修改。其中除了第一条语句，对读记录加<code>S锁</code>（共享锁）外，其他操作都是加<code>X锁</code>（排它锁）。</p>
-</li>
-</ul>
-<p><strong>为什么<code>插入/更新/删除</code>操作，都归为当前读?</strong></p>
-<p>当Update SQL发给MySQL后，MySQL server会根据where条件，读取到第一条满足条件的记录，然后InnoDB引擎会将第一条记录返回并加锁。待MysSQL server受到第一条记录后，会再发起一个Update请求，更新这条记录。一条记录操作完成后，会再读取下一条记录，直到没有满足条件的记录为止。因此Update操作内部就包含了一个当前读。同理Delete操作也一样。Insert操作会稍微不同，简单来讲，就是Insert操作可能会触发Unique Key的冲突检查，也会进行一下当前读。</p>
-<blockquote>
-<p>快照读中的记录快照就对应着前面提到的<code>Read View</code>，下面介绍MVCC的工作原理。</p>
-</blockquote>
-<h3 id="Read-View在MVCC中是如何工作的？"><a href="#Read-View在MVCC中是如何工作的？" class="headerlink" title="Read View在MVCC中是如何工作的？"></a>Read View在MVCC中是如何工作的？</h3><p>首先我们需要了解两个知识点：</p>
-<ul>
-<li>Read View中的四个字段，及其作用</li>
-<li>聚簇索引记录中两个跟事务相关的隐藏列</li>
-</ul>
-<ol>
-<li><strong>Read View的四个重要字段</strong></li>
-</ol>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/11a65cbc2e97f6855d7692a265dc2651-20220601215949157.png"></p>
-<p>各个字段的含义：</p>
-<ul>
-<li>creator_trx_id：是指<strong>创建该Read View的事务id</strong></li>
-<li>m_ids：创建Read View时，当前数据库中「<strong>活跃事务」的事务id列表</strong>，“活跃事务”是指启动了但还未提交的事务</li>
-<li>min_trx_id：创建Read View时，<strong>「活跃事务」中最小的事务id</strong>，即<code>m_idx</code>中的最小值</li>
-<li>max_trx_id：创建Read View时，当前数据库中应该给<strong>下一个事务的id值</strong>，不是<code>m_idx</code>中的最大值，是全局事务中最大的事务id+1</li>
-</ul>
-<ol start="2">
-<li><strong>聚簇索引记录中两个跟事务相关的隐藏列</strong></li>
-</ol>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/f595d13450878acd04affa82731f76c5.png"></p>
-<ul>
-<li>trx_id：当某个事务对该条记录改动时，会把<strong>该事务的事务id记录在trx_id中</strong></li>
-<li>roll_pointer：每次对某一条记录进行修改时，都会把这条记录的旧版本保存到<code>undo log</code>中，这个隐藏列是一个指针，指向了上一个版本的记录，于是通过它就能找到历史版本</li>
-</ul>
-<p><strong>在创建Read View时我们可以将记录中的trx_id划分为三种情况：</strong></p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/ReadView.drawio.png"></p>
-<p>一个事务去读取数据时，除当前事务的修改记录总是可见的之外，还有一下情况：</p>
-<ul>
-<li>如果记录的<code>trx_id</code>小于Read View中的<code>min_trx_id</code>，表示这个版本的记录是<strong>在创建Read View之前就已经提交了的事务生成的</strong>，因此该版本的记录对当前事务是可见的。</li>
-<li>如果记录的<code>trx_id</code>大于等于Read View中的<code>max_trx_id</code>，表示这个版本的记录是<strong>在创建Read View之后才启动的事务生成的</strong>，因此该版本的记录对当前事务是不可见的。</li>
-<li>如果记录的<code>trx_id</code>介于Read View中的<code>min_trx_id</code>和<code>max_trx_id</code>之间，则需要判断<code>trx_id</code>是否在<code>m_ids</code>列表中：<ul>
-<li>如果记录的<code>trx_id</code><strong>在</strong><code>m_ids</code>中，则表明这个版本的记录是在<strong>创建Read View时仍处于活跃状态（启动但未提交）的事务生成的</strong>，因此该版本的记录对当前事务时不可见的。</li>
-<li>如果记录的<code>trx_id</code><strong>不在</strong><code>m_ids</code>中，则表明生成该版本记录的活跃事务<strong>在创建Read View时已经提交</strong>，因此该版本的记录对当前事务是可见的。</li>
-</ul>
-</li>
-</ul>
-<blockquote>
-<p>这种通过「版本链」来控制并发事务访问同一条记录时的行为就叫MVCC（多版本并发控制）。</p>
-</blockquote>
-<h3 id="可重复读是如何工作的？"><a href="#可重复读是如何工作的？" class="headerlink" title="可重复读是如何工作的？"></a>可重复读是如何工作的？</h3><p><strong>可重复读隔离级别是启动事务时生成一个 Read View，然后整个事务期间都在用这个 Read View</strong>。</p>
-<p>分析一个场景，假设事务A（事务id为51）启动后，紧接着启动了事务B（事务id为52），那么两个事务创建的Read View及初始记录如下：</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E4%BA%8B%E5%8A%A1ab%E7%9A%84%E8%A7%86%E5%9B%BE-new.png"></p>
-<p>事务 A 和 事务 B 的 Read View 具体内容如下：</p>
-<ul>
-<li>在事务 A 的 Read View 中，它的事务 id 是 51，由于它是第一个启动的事务，所以此时活跃事务的事务 id 列表就只有 51，活跃事务的事务 id 列表中最小的事务 id 是事务 A 本身，下一个事务 id 则是 52。</li>
-<li>在事务 B 的 Read View 中，它的事务 id 是 52，由于事务 A 是活跃的，所以此时活跃事务的事务 id 列表是 51 和 52，<strong>活跃的事务 id 中最小的事务 id 是事务 A</strong>，下一个事务 id 应该是 53。</li>
-</ul>
-<p>接着，在「可重复读」隔离级别下，事务A和事务B按顺序执行了以下操作：</p>
-<ol>
-<li>事务B读取小林的账户余额，显示余额为100万</li>
-<li>事务A更新小林的账户余额为200万，但还未提交</li>
-<li>事务B再读取小林的账户余额，显示100万</li>
-<li>事务A提交事务</li>
-<li>事务B再次读取到小林的账户余额为100万</li>
-</ol>
-<p>分析过程：</p>
-<p>事务B第一次读取账户余额时，记录的<code>trx_id</code>为50，小于Read View中的<code>min_trx_id</code>&#x3D;51，因此记录对于事务B是可见的，因此读取到余额为100万；</p>
-<p>事务A更新余额后，两个事务的Read View及记录的版本信息为</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E4%BA%8B%E5%8A%A1ab%E7%9A%84%E8%A7%86%E5%9B%BE2.png"></p>
-<p>事务B第二次读取账户余额时，最新版本记录的<code>trx_id</code>为51，处于事务B的Read View中<code>min_trx_id=51</code>和<code>max_trx_id=53</code>之间；因此还需判断<code>trx_id</code>是否在事务B的Read View中<code>m_ids=[51, 52]</code>列表中，发现在<code>m_ids</code>列表中，因此最新版本的记录对于事务B是不可见的；此时会根据当前版本记录的<code>roll_pointer</code>沿着<code>undo log</code>链条找历史版本，直到发现<code>trx_id</code>小于事务B的Read View中<code>min_trx_id</code>的第一条记录，所以事务B能读到<code>trx_id=50</code>的记录，也就是余额为100万的记录。</p>
-<p>最后在事务A提交后，由于在「可重复读」隔离级别下，Read View只会在创建事务时生成，因此事务A和事务B的Read View和创建事务是的一样。事务B第三次读取余额时还是基于之前的Read View来判断版本记录是否可见，因此此时读到的数据和第二次读取的结果是一样的，余额也是100万。</p>
-<p><strong>就是通过这样的方式实现了，「可重复读」隔离级别下在事务期间读到的记录都是事务启动前的记录。</strong></p>
-<h3 id="读已提交是怎么工作的？"><a href="#读已提交是怎么工作的？" class="headerlink" title="读已提交是怎么工作的？"></a>读已提交是怎么工作的？</h3><p><strong>读提交隔离级别是在每次读取数据时，都会生成一个新的 Read View。</strong></p>
-<p>同样分析上面那个场景，只不过将隔离级别从原来的「可重复读」改为「读已提交」。操作顺序也同上</p>
-<ol>
-<li>事务B读取小林的账户余额，显示余额为100万</li>
-<li>事务A更新小林的账户余额为200万，但还未提交</li>
-<li>事务B再读取小林的账户余额，显示100万</li>
-<li>事务A提交事务</li>
-<li>事务B再次读取到小林的账户余额为200万</li>
-</ol>
-<p>我们来分析事务B第二次读取记录时，读取不到事务A未提交的修改？</p>
-<p>在「读已提交」隔离级别下，事务B在第二次读取数据时会新创建Read View</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E8%AF%BB%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A1-20220601234013624.png"></p>
-<p>由于事务A还未提交，因此事务B读数据时事务A扔出于活跃状态，因此事务A的修改无法被事务B读取到。</p>
-<p>我们再来分析事务B第三次读数据时，为什么可以读取到事务A（事务已提交）的修改？</p>
-<p>事务B第三次执行读数据操作时创建的Read View如下：</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E8%AF%BB%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A12.drawio.png"></p>
-<p>事务B第三次读数据时，事务A已经提交，此时的Read View中的<code>min_trx_id</code>为52，即当前活跃的事务只有事务B，最新版记录由事务A创建，因此其<code>trx_id</code>为51，小于事务B的Read View中的<code>min_trx_id</code>，因此最新版本的记录对于事务B是可见的，因此第三次事务B读取到的余额为200万。</p>
-<p>正是因为在读提交隔离级别下，事务每次读数据时都重新创建 Read View，那么在事务期间的多次读取同一条数据，前后两次读的数据可能会出现不一致，因为可能这期间另外一个事务修改了该记录，并提交了事务。</p>
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>MySQL</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Markdown如何实现页内跳转？</title>
-    <url>/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/</url>
-    <content><![CDATA[<h2 id="1-Markdown怎么实现页内跳转？"><a href="#1-Markdown怎么实现页内跳转？" class="headerlink" title="1. Markdown怎么实现页内跳转？"></a>1. Markdown怎么实现页内跳转？</h2><h3 id="1-利用Markdown语法"><a href="#1-利用Markdown语法" class="headerlink" title="1. 利用Markdown语法"></a>1. 利用Markdown语法</h3><p>格式：[描述文字] (#标题名称)</p>
-<span id="more"></span>
-
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">实践：</span><br><span class="line"></span><br><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line"></span><br><span class="line">[点我去顶部](#1.-我是顶部（空格用`-`代替，转换为html时会跳转失败）)</span><br><span class="line"></span><br><span class="line">[点我去中部](#我是中部)</span><br><span class="line"></span><br><span class="line">##### 1. 我是顶部（空格用`-`代替，转换为html时会跳转失败）</span><br><span class="line"></span><br><span class="line">##### 我是中部</span><br></pre></td></tr></table></figure>
-
-<p><strong>效果展示：</strong></p>
-<hr>
-<p><a href="#1.-%E6%88%91%E6%98%AF%E9%A1%B6%E9%83%A8%EF%BC%88%E7%A9%BA%E6%A0%BC%E7%94%A8%60-%60%E4%BB%A3%E6%9B%BF%EF%BC%8C%E8%BD%AC%E6%8D%A2%E4%B8%BAhtml%E6%97%B6%E4%BC%9A%E8%B7%B3%E8%BD%AC%E5%A4%B1%E8%B4%A5%EF%BC%89">点我去顶部</a></p>
-<p><a href="#%E6%88%91%E6%98%AF%E4%B8%AD%E9%83%A8">点我去中部</a></p>
-<h5 id="1-我是顶部（空格用-代替，转换为html时会跳转失败）"><a href="#1-我是顶部（空格用-代替，转换为html时会跳转失败）" class="headerlink" title="1. 我是顶部（空格用-代替，转换为html时会跳转失败）"></a>1. 我是顶部（空格用<code>-</code>代替，转换为html时会跳转失败）</h5><h5 id="我是中部"><a href="#我是中部" class="headerlink" title="我是中部"></a>我是中部</h5><hr>
-<blockquote>
-<p>注意事项：标题名称要完全一样，标题中的空格要用 <code>-</code>代替，这种跳转方式只能局限于跳转到<code>#</code>目录</p>
-</blockquote>
-<h3 id="2-使用html标签"><a href="#2-使用html标签" class="headerlink" title="2. 使用html标签"></a>2. 使用html标签</h3><p>格式：</p>
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">在需要被跳转到地方添加标签：&lt;a id=&quot;xxx&quot;&gt;&lt;/a&gt;</span><br><span class="line">在跳转的位置添加标签：[跳转名称](#xxx)</span><br></pre></td></tr></table></figure>
-
-<p>实践：</p>
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line">[跳转到位置1](#a1)</span><br><span class="line"></span><br><span class="line">[跳转到地方2](#p2)</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;a id=&quot;a1&quot;&gt;位置1&lt;/a&gt;</span><br><span class="line"></span><br><span class="line">地方2&lt;a id=&quot;p2&quot;&gt;&lt;/a&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>效果展示：</strong></p>
-<hr>
-<p><a href="#a1">跳转到位置1</a></p>
-<p><a href="#p2">跳转到地方2</a></p>
-<br>
-
-<br>
-
-<p><a id="a1">位置1</a></p>
-<p>地方2<a id="p2"></a></p>
-<hr>
-<blockquote>
-<p>采用这种方式在转换为html时仍然生效，且可控制性高，推荐这种方式。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Markdown</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Redis过期key是否立马被删除？</title>
-    <url>/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/</url>
-    <content><![CDATA[<h3 id="Redis过期key是否立马被删除？"><a href="#Redis过期key是否立马被删除？" class="headerlink" title="Redis过期key是否立马被删除？"></a>Redis过期key是否立马被删除？</h3><p>答案是不会，Redis处理过期key主要有两种方式：</p>
-<ul>
-<li>惰性删除（客户端侧）</li>
-<li>定期随机删除（服务端侧）</li>
-</ul>
-<span id="more"></span>
-
-<h4 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h4><p>当客户端请求查询时，判断当前key已过期，则会删除该key，删除key的主动权交给每次访问的请求。</p>
-<p>弊端：只能处理还会访问的key，无法对一些不再会被访问的key进行删除。</p>
-<p>该实现通过<code>expiredIfNeeded</code>函数实现，源码路径：<code>src/db.c</code></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">expireIfNeeded</span><span class="params">(redisDb *db, robj *key, <span class="type">int</span> force_delete_expired)</span> &#123;</span><br><span class="line">   <span class="comment">// key 没有过期，return 0</span></span><br><span class="line">    <span class="keyword">if</span> (!keyIsExpired(db,key)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (server.masterhost != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (server.current_client == server.master) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (!force_delete_expired) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (checkClientPauseTimeoutAndReturnIfPaused()) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Delete the key */</span></span><br><span class="line">    deleteExpiredKeyAndPropagate(db,key);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h4><p>对于一些key过期后不再被访问，惰性删除永远无法对其进行删除，这会导致已过期的key不断积压，因此仅靠客户端侧的处理是不够的。</p>
-<ul>
-<li>如何让处理“占着茅坑不拉屎”的key?</li>
-</ul>
-<p>服务端进行定期删除，顾名思义就是Redis默认每100 ms 执行一次，随机抽取一些设置了过期时间的key，判断是否过期，如发现已过期就直接删除。</p>
-<blockquote>
-<p>注意：并不是检查所有key，而是随机抽取一定数量的key</p>
-</blockquote>
-<p>具体步骤如下：</p>
-<img src="/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/image-20220511000559696.png" style="zoom:70%">
-
-<p>该过程通过<code>activeExpireCycle</code>函数实现，源码路径：<code>src/expire.c</code></p>
-<ul>
-<li>为什么不检查所有设置过期时间的key？</li>
-</ul>
-<p>Redis中存放了数以万计的key，如果每隔100 ms 就要轮询检查所有设置过期时间的key，会非常耗费CPU</p>
-<ul>
-<li>删除如何做到主从同步？</li>
-</ul>
-<p>不论是惰性删除还是定期删除，当进行删除时，<code>master</code>会将删除指令记录到<code>AOF</code>和<code>slave</code>节点</p>
-<blockquote>
-<p><strong>如果过期数据太多，定时删除无法完全删除（每次删除完过期的key还是超过25%），同时这些key再也不会被客户端请求，即也无法通过惰性删除，该如何解决？</strong></p>
-<p>答：内存淘汰机制</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>Redis</tag>
       </tags>
   </entry>
   <entry>
@@ -1670,31 +1409,301 @@
       </tags>
   </entry>
   <entry>
-    <title>如何配置git ssh</title>
-    <url>/2022/05/10/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgit-ssh/</url>
-    <content><![CDATA[<h3 id="1-检查用户名和邮箱"><a href="#1-检查用户名和邮箱" class="headerlink" title="1. 检查用户名和邮箱"></a>1. 检查用户名和邮箱</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看用户名</span></span><br><span class="line">git config user.name</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看邮箱</span></span><br><span class="line">git config user.email</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置用户名</span></span><br><span class="line">git config --global user.name &quot;xxx&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置邮箱</span></span><br><span class="line">git config --global user.email &quot;xxx&quot;</span><br></pre></td></tr></table></figure>
-
+    <title>MySQL:InnoDB存储引擎和MyISAM的区别？</title>
+    <url>/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/</url>
+    <content><![CDATA[<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/mysql-logo-800-400.jpg"></p>
+<p>本文从<strong>事务</strong>，<strong>外键</strong>，<strong>索引</strong>， <strong>存储文件</strong>，<strong>日志</strong>，<strong>count行数</strong>，<strong>锁</strong>，<strong>主键</strong>八个方面系统地对比了在<code>MySQL</code>中<code>InnoDB</code>存储引擎和<code>MyISAM</code>存储引擎的区别。</p>
 <span id="more"></span>
 
-<h3 id="2-查看是否配置过SSH-Key"><a href="#2-查看是否配置过SSH-Key" class="headerlink" title="2. 查看是否配置过SSH Key"></a>2. 查看是否配置过SSH Key</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ls ~/.ssh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">hyunmin@HyunmindeMacBook-Air .ssh % <span class="built_in">ls</span> ~/.ssh</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">id_rsa      id_rsa.pub  known_hosts</span></span><br></pre></td></tr></table></figure>
-
-<p>存在id_rsa      id_rsa.pub文件即证明已配置过SSH Key</p>
-<h3 id="3-生成SSH-Key（秘钥）"><a href="#3-生成SSH-Key（秘钥）" class="headerlink" title="3. 生成SSH Key（秘钥）"></a>3. 生成SSH Key（秘钥）</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t -rsa -C &quot;email&quot;</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-GitHub远程仓库添加公钥"><a href="#4-GitHub远程仓库添加公钥" class="headerlink" title="4. GitHub远程仓库添加公钥"></a>4. GitHub远程仓库添加公钥</h3><ol>
-<li><p>复制<code>~/.ssh/id_rsa.pub</code>文件内容，并粘贴到GitHub-&gt;settings-&gt;SSH and GPG keys</p>
+<h3 id="1-事务"><a href="#1-事务" class="headerlink" title="1. 事务"></a>1. 事务</h3><ul>
+<li><p><code>InnoDB</code>：支持事务。</p>
 </li>
-<li><p>检查是否配置成功</p>
+<li><p><code>MyISAM</code>：不支持事务，强调的是性能，每次查询具有原子性，一般情况下其查询数度比<code>InnoDB</code>更快，但是不提供事务支持。</p>
 </li>
+</ul>
+<blockquote>
+<p>一般情况下<code>MyISAM</code>查询速度比<code>InnoDB</code>快的原因：</p>
+<p>答：在查询的时候，InnoDB要维护的东西比MyISAM多很多，具体以下几点：</p>
+<ul>
+<li>InnoDB缓存数据块，MyISAM只缓存索引块， 这中间还有换进换出的减少；</li>
+<li>InnoDB寻址要映射到块，再到行，MyISAM记录的直接是文件的OFFSET，定位比InnoDB要快 </li>
+<li>InnoDB还需要维护MVCC一致； 虽然你的场景没有，但他还是需要去检查和维护</li>
+</ul>
+</blockquote>
+<h3 id="2-外键"><a href="#2-外键" class="headerlink" title="2. 外键"></a>2. 外键</h3><ul>
+<li><code>InnoDB</code>：支持外键</li>
+<li><code>MyISAM</code>：不支持外键，对一个包含外键的InnoDB表转为MyISAM会失败</li>
+</ul>
+<h3 id="3-索引"><a href="#3-索引" class="headerlink" title="3. 索引"></a>3. 索引</h3><ul>
+<li><code>InnoDB</code>：聚集索引，数据文件和索引存储在一起，必须要有主键，通过主键查询效率很高，一次查询即可得到完整的行数据。辅助索引存储的数据是对应的主键索引的值，通过辅助索引查询需要两次查询，根据辅助索引查询到对应的主键索引，再根据主键索引查询到对应的行数据（这一过程称之为<strong>回表</strong>）。</li>
+<li><code>MyISAM</code>：非聚集索引，索引和数据文件分开保存，索引保存的是数据文件的指针。主键索引和辅助索引相互独立。</li>
+</ul>
+<blockquote>
+<p>InnoDB的B+树主键索引的叶子节点就是数据文件，辅助索引的叶子节点是主键的值；而MyISAM的B+树主键索引和辅助索引的叶子节点都是数据文件的地址指针。</p>
+</blockquote>
+<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png"></p>
+<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130322302.png"></p>
+<h3 id="4-存储文件"><a href="#4-存储文件" class="headerlink" title="4. 存储文件"></a>4. 存储文件</h3><ul>
+<li><code>InnoDB</code>：存储文件有<strong>frm、ibd</strong>，<strong>frm</strong>是表定义文件，<strong>ibd</strong>是数据文件。</li>
+<li><code>MyISAM</code>：存储文件有<strong>frm、myd、myi</strong>，<strong>frm</strong>是表定义文件，<strong>myd</strong>是数据文件，<strong>myi</strong>是索引文件。</li>
+</ul>
+<h3 id="5-日志"><a href="#5-日志" class="headerlink" title="5. 日志"></a>5. 日志</h3><ul>
+<li><code>InnoDB</code>：有<code>redo log</code>，使用 InnoDB 的数据库在异常崩溃后，数据库重新启动的时候会保证数据库恢复到崩溃前的状态，这个恢复的过程依赖于 <code>redo log</code> 。 <code>redo log</code> 保证事务的持久性， <code>undo log</code> 保证事务的原子性。</li>
+<li><code>MyISAM</code>：没有<code>redo log</code>，不支持数据库异常崩溃后的安全恢复。</li>
+</ul>
+<h3 id="6-count"><a href="#6-count" class="headerlink" title="6. count"></a>6. count</h3><ul>
+<li><code>InnoDB</code>：不保存表的具体行数，如果使用<code>select count(*) from table</code>，就会遍历整个表，消耗相当大，但是在加了<code>where</code>条件后，myisam和innodb处理的方式都一样。</li>
+<li><code>MyISAM</code>：使用一个变量保存整个表的行数，如果使用<code>select count(*) from table</code>，会直接读取该变量。</li>
+</ul>
+<blockquote>
+<p> 因为InnoDB的事务特性，在同一时刻表中的行数对于不同的事务而言是不一样的，因此count统计会计算对于当前事务而言可以统计到的行数，而不是将总行数储存起来方便快速查询。</p>
+</blockquote>
+<h3 id="7-锁"><a href="#7-锁" class="headerlink" title="7. 锁"></a>7. 锁</h3><ul>
+<li><code>InnoDB</code>：支持行级锁和表锁。行锁是基于索引实现的，如果没有命中索引，也无法使用行锁，会退化到表锁。</li>
+<li><code>MyISAM</code>：仅支持表锁，不支持行锁。</li>
+</ul>
+<h3 id="8-主键"><a href="#8-主键" class="headerlink" title="8. 主键"></a>8. 主键</h3><ul>
+<li><code>InnoDB</code>：如果没有设定主键，会自动生成一个6字节的隐藏主键（用户不可见），数据保存在主键索引的叶子节点上。</li>
+<li><code>MyISAM</code>：允许不含有主键。</li>
+</ul>
+<blockquote>
+<p>删除部分自增主键后，二者的区别？</p>
+<ol>
+<li>不重启服务器</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示如下内容则表示配置成功</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Hi Ysfun! You<span class="string">&#x27;ve successfully authenticated, but GitHub does not provide shell access.</span></span></span><br></pre></td></tr></table></figure>
-
+<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，插入一行新的数据，无论是<code>InnoDB</code>还是<code>MyISAM</code>都会从<code>6</code>开始插入。</p>
+<ol start="2">
+<li>重启服务器</li>
+</ol>
+<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，重启服务器，再插入一行新的数据，<code>InnoDB</code>主键会从<code>4</code>开始插入，而<code>MyISAM</code>会从<code>6</code>开始插入。</p>
+<blockquote>
+<p>原因：Innodb表把自增主键的最大ID记录到内存中，重启数据库后，都会导致最大自增ID重置；MyISAM表会把自增主键的最大ID记录到数据文件里，重启MySQL自增主键的最大ID也不会丢失。</p>
+</blockquote>
+<p><strong>说明：mysql8.0版本，重启数据库后，不会导致最大自增ID重置</strong></p>
+<p><strong>原因：</strong>在 MySQL 8.0 中，<code>AUTO_INCREMENT</code>计数器的逻辑变了，每当计数器的值有变，InnoDB 会将其写入 redo log，保存到引擎专用的系统表中。MySQL 正常关闭后重启：从系统表中获取计数器的值。MySQL 故障后重启：从系统表中获取计数器的值；从最后一个检查点开始扫描 redo log 中记录的计数器值；取这两者的最大值作为新值。</p>
+</blockquote>
 ]]></content>
       <categories>
-        <category>教程</category>
+        <category>技术</category>
       </categories>
       <tags>
-        <tag>Git</tag>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL:事务&amp;MVCC详解</title>
+    <url>/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/</url>
+    <content><![CDATA[<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/mysql-logo-800-400.jpg"></p>
+<p><strong>数据库事务（transaction）</strong>是访问并可能操作各种数据项的一个数据库操作序列，这些操作要么全部执行,要么全部不执行，是一个不可分割的工作逻辑单元。</p>
+<span id="more"></span>
+
+<h2 id="事务的四大特性"><a href="#事务的四大特性" class="headerlink" title="事务的四大特性"></a>事务的四大特性</h2><ul>
+<li><p><strong>原子性（Atomicity）：</strong>一个事务中的所有操作，要么都执行，要么都失败，不存在中间状态，一旦事务执行过程中发生了错误，事务会进行回滚，恢复到事务开始之前的状态，就像这个事务从来没有执行过一样。</p>
+</li>
+<li><p><strong>一致性（Consistency）：</strong>数据库的完整性不会因为事务的执行而受到破坏，一个事务执行之前和执行之后都必须处于一致状态。比如表中有一个字段为姓名，它有唯一约束，也就是表中姓名不能重复，如果一个事务对姓名字段进行了修改，但是在事务提交后，表中的姓名变得非唯一性了，这就破坏了事务的一致性要求，这时数据库就要撤销该事务，返回初始化的状态。再比如用户A和用户B两者的钱加起来一共是1000，那么不管A和B之间如何转账、转几次账，事务结束后两个用户的钱相加起来应该还得是1000，这就是事务的一致性。</p>
+</li>
+<li><p><strong>隔离性（Isolation）：</strong>数据库允许多个并发事务同时对其数据进行读写和修改的能力，隔离性可以保证多个事务在并发执行的过程中互相隔离，互不干扰，从而避免并发事务交叉执行时带来的数据不一致问题。</p>
+</li>
+<li><p><strong>持久性（Durability）：</strong>事务结束后，对数据的修改是永久的，即便发生系统故障也不会对丢失。</p>
+</li>
+</ul>
+<p><strong><code>InnoDB</code>引擎如何保证事务的四大特性？</strong></p>
+<p>持久性通过<code>redo log</code>（重做日志）来保证的</p>
+<p>原子性通过<code>undo log</code>（回滚日志）来保证的</p>
+<p>隔离性通过<code>mvcc</code>（多版本并发控制）或锁机制来保证的</p>
+<p>一致性通过持久性+原子性+隔离性来保证的</p>
+<h2 id="并发事务带来的问题"><a href="#并发事务带来的问题" class="headerlink" title="并发事务带来的问题"></a>并发事务带来的问题</h2><h3 id="脏读"><a href="#脏读" class="headerlink" title="脏读"></a>脏读</h3><p><strong>一个事务读到了另一个「未提交事务修改的数据」，如果该数据发生回滚，则读到的数据就是错误的数据，就意味着发生了「脏读」现象。</strong></p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/10b513008ea35ee880c592a88adcb12f.png"></p>
+<p>因为事务 A 是还没提交事务的，也就是它随时可能发生回滚操作，<strong>如果在上面这种情况事务 A 发生了回滚，那么事务 B 刚才得到的数据就是过期的数据，这种现象就被称为脏读。</strong></p>
+<h3 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h3><p><strong>在一个事务内多次读取同一个数据，如果前后两次读到的数据不一致，就意味着发生了「不可重复读」现象。</strong></p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/f5b4f8f0c0adcf044b34c1f300a95abf.png"></p>
+<p>事务B第一读取余额为100万，第二次读取余额变为200万，两次读同一条数据结果却不一致。</p>
+<h3 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h3><p><strong>在一个事务中多次查询符合特定条件的记录数量，如果前后两次查询到的记录数量不同，就意味着发生了「幻读」。</strong></p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/d19a1019dc35dfe8cfe7fbff8cd97e31-20220601203800758.png"></p>
+<p>事务B第一次查询大于100万的记录有5条，第二次查询同样条件结果却变成了6条，出现了幻读。</p>
+<blockquote>
+<p>MySQL针对「脏读，不可重复读，幻读」等现象，采取了什么措施应对？</p>
+<p>答：隔离级别</p>
+</blockquote>
+<h2 id="事务的隔离级别"><a href="#事务的隔离级别" class="headerlink" title="事务的隔离级别"></a>事务的隔离级别</h2><p>SQL标准规定了四种隔离级别：</p>
+<ul>
+<li><strong>读未提交（Read Uncommitted）</strong>，一个事务可以读取到其他未提交事务变更过的数据；</li>
+<li><strong>读已提交（Read Committed）</strong>，一个事务只能读取到其他已经提交多的事务变更的数据，<code>Oracle</code>数据库默认采用这种隔离级别；</li>
+<li><strong>不可重复读（Repeatable Read）</strong>，一个事务执行过程中读取到的数据始终和事务开始时读到的数据一致，<code>MySQL</code>数据库默认采用这种隔离级别；</li>
+<li><strong>串行化（Serializable）</strong>，会对记录加上读写锁，在多个事务对这条记录进行读写操作时，如果发生了读写冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行；</li>
+</ul>
+<p>按「隔离水平」从高到低排序：</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/cce766a69dea725cd8f19b90db2d0430.png"></p>
+<p>针对不同隔离级别，并发事务时可能发生的现象：</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/4e98ea2e60923b969790898565b4d643.png"></p>
+<p>解决脏读现象，就要升级到「读提交」以上的隔离级别；要解决不可重复读现象，就要升级到「可重复读」的隔离级别。</p>
+<p>不过，要解决幻读现象不建议将隔离级别升级到「串行化」，因为这样会导致数据库在并发事务时性能很差。</p>
+<p><strong>MySQL的默认隔离级别是「不可重复读」，但是它采用<code>Next-Key Lock</code>锁（行锁和间隙锁的组合），来锁住记录本身以及记录的“间隙”，防止其他事务在记录之间插入新的记录，从而可以有效避免幻读。</strong></p>
+<h3 id="四种隔离级别是如何实现的？"><a href="#四种隔离级别是如何实现的？" class="headerlink" title="四种隔离级别是如何实现的？"></a>四种隔离级别是如何实现的？</h3><ul>
+<li>对于「读未提交」，因为可以读到为其他未提交事务修改的数据，所以直接读取最新数据；</li>
+<li>对于「串行化」，通过加<strong>读写锁</strong>的方式来避免并行访问；</li>
+<li>对于「读已提交」和「不可重复读」，它们都是通过<code>Read View</code>来实现的，它们的区别在于创建<code>Read View</code>的时机不同，<code>Read View</code>可以理解为一个快照数据，类似于相机拍的照片，记录的是某一时刻的风景。「读已提交」是在<strong>每个读语句执行前</strong>都会重新创建一个新的<code>Read View</code>；而「不可重复读」则是在<strong>事务开启前</strong>创建一个<code>Read View</code>，然后整个事务执行期间都使用这个<code>Read View</code>。</li>
+</ul>
+<blockquote>
+<p>Read View是MVCC工作的核心，下面来详细讲讲MVCC（多版本并发控制）。</p>
+</blockquote>
+<h2 id="MVCC（Multi-Version-Concurrency-Control）"><a href="#MVCC（Multi-Version-Concurrency-Control）" class="headerlink" title="MVCC（Multi-Version Concurrency Control）"></a>MVCC（Multi-Version Concurrency Control）</h2><p>MVCC最大的好处就是：读不加锁，读写不冲突。相比基于锁的并发控制，在读多写少的场景下，MVCC极大地提升了系统的并发性能。</p>
+<p>在MVCC并发控制中，读操作可以分为两类：快照读（Snapshot Read）和当前读（Current Read）。快照读，读取的是记录的可见版本（可能是历史版本），不用加锁；当前读，读取的是记录的最新版本，并且当前读返回的数据都会上锁，保证其他事务不会并发修改该记录。</p>
+<h3 id="在MySQL-InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？"><a href="#在MySQL-InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？" class="headerlink" title="在MySQL InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？"></a>在MySQL InnoDB存储引擎中，哪些读操作是快照读？哪些操作又是当前读呢？</h3><ul>
+<li><p><strong>快照读：</strong>简单的select操作，属于快照读，不加锁。</p>
+<ul>
+<li>例如：select * from table where ?;</li>
+</ul>
+</li>
+<li><p><strong>当前读：</strong>特殊的读操作、插入&#x2F;更新&#x2F;删除操作，属于当前读，需要加锁。</p>
+<ul>
+<li>select * from table where ? lock in share mode;</li>
+<li>select * from table where ? for update;</li>
+<li>insert into table values (…);</li>
+<li>update table set ? where ?;</li>
+<li>delete from table where ?;</li>
+</ul>
+<p>以上语句都属于当前读，读取到记录的最新版本，并且会在读取到数据后，对数据进行加锁，以保证其他并发事务不会对当前数据进行修改。其中除了第一条语句，对读记录加<code>S锁</code>（共享锁）外，其他操作都是加<code>X锁</code>（排它锁）。</p>
+</li>
+</ul>
+<p><strong>为什么<code>插入/更新/删除</code>操作，都归为当前读?</strong></p>
+<p>当Update SQL发给MySQL后，MySQL server会根据where条件，读取到第一条满足条件的记录，然后InnoDB引擎会将第一条记录返回并加锁。待MysSQL server受到第一条记录后，会再发起一个Update请求，更新这条记录。一条记录操作完成后，会再读取下一条记录，直到没有满足条件的记录为止。因此Update操作内部就包含了一个当前读。同理Delete操作也一样。Insert操作会稍微不同，简单来讲，就是Insert操作可能会触发Unique Key的冲突检查，也会进行一下当前读。</p>
+<blockquote>
+<p>快照读中的记录快照就对应着前面提到的<code>Read View</code>，下面介绍MVCC的工作原理。</p>
+</blockquote>
+<h3 id="Read-View在MVCC中是如何工作的？"><a href="#Read-View在MVCC中是如何工作的？" class="headerlink" title="Read View在MVCC中是如何工作的？"></a>Read View在MVCC中是如何工作的？</h3><p>首先我们需要了解两个知识点：</p>
+<ul>
+<li>Read View中的四个字段，及其作用</li>
+<li>聚簇索引记录中两个跟事务相关的隐藏列</li>
+</ul>
+<ol>
+<li><strong>Read View的四个重要字段</strong></li>
+</ol>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/11a65cbc2e97f6855d7692a265dc2651-20220601215949157.png"></p>
+<p>各个字段的含义：</p>
+<ul>
+<li>creator_trx_id：是指<strong>创建该Read View的事务id</strong></li>
+<li>m_ids：创建Read View时，当前数据库中「<strong>活跃事务」的事务id列表</strong>，“活跃事务”是指启动了但还未提交的事务</li>
+<li>min_trx_id：创建Read View时，<strong>「活跃事务」中最小的事务id</strong>，即<code>m_idx</code>中的最小值</li>
+<li>max_trx_id：创建Read View时，当前数据库中应该给<strong>下一个事务的id值</strong>，不是<code>m_idx</code>中的最大值，是全局事务中最大的事务id+1</li>
+</ul>
+<ol start="2">
+<li><strong>聚簇索引记录中两个跟事务相关的隐藏列</strong></li>
+</ol>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/f595d13450878acd04affa82731f76c5.png"></p>
+<ul>
+<li>trx_id：当某个事务对该条记录改动时，会把<strong>该事务的事务id记录在trx_id中</strong></li>
+<li>roll_pointer：每次对某一条记录进行修改时，都会把这条记录的旧版本保存到<code>undo log</code>中，这个隐藏列是一个指针，指向了上一个版本的记录，于是通过它就能找到历史版本</li>
+</ul>
+<p><strong>在创建Read View时我们可以将记录中的trx_id划分为三种情况：</strong></p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/ReadView.drawio.png"></p>
+<p>一个事务去读取数据时，除当前事务的修改记录总是可见的之外，还有一下情况：</p>
+<ul>
+<li>如果记录的<code>trx_id</code>小于Read View中的<code>min_trx_id</code>，表示这个版本的记录是<strong>在创建Read View之前就已经提交了的事务生成的</strong>，因此该版本的记录对当前事务是可见的。</li>
+<li>如果记录的<code>trx_id</code>大于等于Read View中的<code>max_trx_id</code>，表示这个版本的记录是<strong>在创建Read View之后才启动的事务生成的</strong>，因此该版本的记录对当前事务是不可见的。</li>
+<li>如果记录的<code>trx_id</code>介于Read View中的<code>min_trx_id</code>和<code>max_trx_id</code>之间，则需要判断<code>trx_id</code>是否在<code>m_ids</code>列表中：<ul>
+<li>如果记录的<code>trx_id</code><strong>在</strong><code>m_ids</code>中，则表明这个版本的记录是在<strong>创建Read View时仍处于活跃状态（启动但未提交）的事务生成的</strong>，因此该版本的记录对当前事务时不可见的。</li>
+<li>如果记录的<code>trx_id</code><strong>不在</strong><code>m_ids</code>中，则表明生成该版本记录的活跃事务<strong>在创建Read View时已经提交</strong>，因此该版本的记录对当前事务是可见的。</li>
+</ul>
+</li>
+</ul>
+<blockquote>
+<p>这种通过「版本链」来控制并发事务访问同一条记录时的行为就叫MVCC（多版本并发控制）。</p>
+</blockquote>
+<h3 id="可重复读是如何工作的？"><a href="#可重复读是如何工作的？" class="headerlink" title="可重复读是如何工作的？"></a>可重复读是如何工作的？</h3><p><strong>可重复读隔离级别是启动事务时生成一个 Read View，然后整个事务期间都在用这个 Read View</strong>。</p>
+<p>分析一个场景，假设事务A（事务id为51）启动后，紧接着启动了事务B（事务id为52），那么两个事务创建的Read View及初始记录如下：</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E4%BA%8B%E5%8A%A1ab%E7%9A%84%E8%A7%86%E5%9B%BE-new.png"></p>
+<p>事务 A 和 事务 B 的 Read View 具体内容如下：</p>
+<ul>
+<li>在事务 A 的 Read View 中，它的事务 id 是 51，由于它是第一个启动的事务，所以此时活跃事务的事务 id 列表就只有 51，活跃事务的事务 id 列表中最小的事务 id 是事务 A 本身，下一个事务 id 则是 52。</li>
+<li>在事务 B 的 Read View 中，它的事务 id 是 52，由于事务 A 是活跃的，所以此时活跃事务的事务 id 列表是 51 和 52，<strong>活跃的事务 id 中最小的事务 id 是事务 A</strong>，下一个事务 id 应该是 53。</li>
+</ul>
+<p>接着，在「可重复读」隔离级别下，事务A和事务B按顺序执行了以下操作：</p>
+<ol>
+<li>事务B读取小林的账户余额，显示余额为100万</li>
+<li>事务A更新小林的账户余额为200万，但还未提交</li>
+<li>事务B再读取小林的账户余额，显示100万</li>
+<li>事务A提交事务</li>
+<li>事务B再次读取到小林的账户余额为100万</li>
+</ol>
+<p>分析过程：</p>
+<p>事务B第一次读取账户余额时，记录的<code>trx_id</code>为50，小于Read View中的<code>min_trx_id</code>&#x3D;51，因此记录对于事务B是可见的，因此读取到余额为100万；</p>
+<p>事务A更新余额后，两个事务的Read View及记录的版本信息为</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E4%BA%8B%E5%8A%A1ab%E7%9A%84%E8%A7%86%E5%9B%BE2.png"></p>
+<p>事务B第二次读取账户余额时，最新版本记录的<code>trx_id</code>为51，处于事务B的Read View中<code>min_trx_id=51</code>和<code>max_trx_id=53</code>之间；因此还需判断<code>trx_id</code>是否在事务B的Read View中<code>m_ids=[51, 52]</code>列表中，发现在<code>m_ids</code>列表中，因此最新版本的记录对于事务B是不可见的；此时会根据当前版本记录的<code>roll_pointer</code>沿着<code>undo log</code>链条找历史版本，直到发现<code>trx_id</code>小于事务B的Read View中<code>min_trx_id</code>的第一条记录，所以事务B能读到<code>trx_id=50</code>的记录，也就是余额为100万的记录。</p>
+<p>最后在事务A提交后，由于在「可重复读」隔离级别下，Read View只会在创建事务时生成，因此事务A和事务B的Read View和创建事务是的一样。事务B第三次读取余额时还是基于之前的Read View来判断版本记录是否可见，因此此时读到的数据和第二次读取的结果是一样的，余额也是100万。</p>
+<p><strong>就是通过这样的方式实现了，「可重复读」隔离级别下在事务期间读到的记录都是事务启动前的记录。</strong></p>
+<h3 id="读已提交是怎么工作的？"><a href="#读已提交是怎么工作的？" class="headerlink" title="读已提交是怎么工作的？"></a>读已提交是怎么工作的？</h3><p><strong>读提交隔离级别是在每次读取数据时，都会生成一个新的 Read View。</strong></p>
+<p>同样分析上面那个场景，只不过将隔离级别从原来的「可重复读」改为「读已提交」。操作顺序也同上</p>
+<ol>
+<li>事务B读取小林的账户余额，显示余额为100万</li>
+<li>事务A更新小林的账户余额为200万，但还未提交</li>
+<li>事务B再读取小林的账户余额，显示100万</li>
+<li>事务A提交事务</li>
+<li>事务B再次读取到小林的账户余额为200万</li>
+</ol>
+<p>我们来分析事务B第二次读取记录时，读取不到事务A未提交的修改？</p>
+<p>在「读已提交」隔离级别下，事务B在第二次读取数据时会新创建Read View</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E8%AF%BB%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A1-20220601234013624.png"></p>
+<p>由于事务A还未提交，因此事务B读数据时事务A扔出于活跃状态，因此事务A的修改无法被事务B读取到。</p>
+<p>我们再来分析事务B第三次读数据时，为什么可以读取到事务A（事务已提交）的修改？</p>
+<p>事务B第三次执行读数据操作时创建的Read View如下：</p>
+<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E8%AF%BB%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A12.drawio.png"></p>
+<p>事务B第三次读数据时，事务A已经提交，此时的Read View中的<code>min_trx_id</code>为52，即当前活跃的事务只有事务B，最新版记录由事务A创建，因此其<code>trx_id</code>为51，小于事务B的Read View中的<code>min_trx_id</code>，因此最新版本的记录对于事务B是可见的，因此第三次事务B读取到的余额为200万。</p>
+<p>正是因为在读提交隔离级别下，事务每次读数据时都重新创建 Read View，那么在事务期间的多次读取同一条数据，前后两次读的数据可能会出现不一致，因为可能这期间另外一个事务修改了该记录，并提交了事务。</p>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Redis过期key是否立马被删除？</title>
+    <url>/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/</url>
+    <content><![CDATA[<h3 id="Redis过期key是否立马被删除？"><a href="#Redis过期key是否立马被删除？" class="headerlink" title="Redis过期key是否立马被删除？"></a>Redis过期key是否立马被删除？</h3><p>答案是不会，Redis处理过期key主要有两种方式：</p>
+<ul>
+<li>惰性删除（客户端侧）</li>
+<li>定期随机删除（服务端侧）</li>
+</ul>
+<span id="more"></span>
+
+<h4 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h4><p>当客户端请求查询时，判断当前key已过期，则会删除该key，删除key的主动权交给每次访问的请求。</p>
+<p>弊端：只能处理还会访问的key，无法对一些不再会被访问的key进行删除。</p>
+<p>该实现通过<code>expiredIfNeeded</code>函数实现，源码路径：<code>src/db.c</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">expireIfNeeded</span><span class="params">(redisDb *db, robj *key, <span class="type">int</span> force_delete_expired)</span> &#123;</span><br><span class="line">   <span class="comment">// key 没有过期，return 0</span></span><br><span class="line">    <span class="keyword">if</span> (!keyIsExpired(db,key)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (server.masterhost != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (server.current_client == server.master) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (!force_delete_expired) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (checkClientPauseTimeoutAndReturnIfPaused()) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Delete the key */</span></span><br><span class="line">    deleteExpiredKeyAndPropagate(db,key);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h4><p>对于一些key过期后不再被访问，惰性删除永远无法对其进行删除，这会导致已过期的key不断积压，因此仅靠客户端侧的处理是不够的。</p>
+<ul>
+<li>如何让处理“占着茅坑不拉屎”的key?</li>
+</ul>
+<p>服务端进行定期删除，顾名思义就是Redis默认每100 ms 执行一次，随机抽取一些设置了过期时间的key，判断是否过期，如发现已过期就直接删除。</p>
+<blockquote>
+<p>注意：并不是检查所有key，而是随机抽取一定数量的key</p>
+</blockquote>
+<p>具体步骤如下：</p>
+<img src="/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/image-20220511000559696.png" style="zoom:70%">
+
+<p>该过程通过<code>activeExpireCycle</code>函数实现，源码路径：<code>src/expire.c</code></p>
+<ul>
+<li>为什么不检查所有设置过期时间的key？</li>
+</ul>
+<p>Redis中存放了数以万计的key，如果每隔100 ms 就要轮询检查所有设置过期时间的key，会非常耗费CPU</p>
+<ul>
+<li>删除如何做到主从同步？</li>
+</ul>
+<p>不论是惰性删除还是定期删除，当进行删除时，<code>master</code>会将删除指令记录到<code>AOF</code>和<code>slave</code>节点</p>
+<blockquote>
+<p><strong>如果过期数据太多，定时删除无法完全删除（每次删除完过期的key还是超过25%），同时这些key再也不会被客户端请求，即也无法通过惰性删除，该如何解决？</strong></p>
+<p>答：内存淘汰机制</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>Redis</tag>
       </tags>
   </entry>
   <entry>
@@ -1763,6 +1772,78 @@
       </categories>
       <tags>
         <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何配置git ssh</title>
+    <url>/2022/05/10/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgit-ssh/</url>
+    <content><![CDATA[<h3 id="1-检查用户名和邮箱"><a href="#1-检查用户名和邮箱" class="headerlink" title="1. 检查用户名和邮箱"></a>1. 检查用户名和邮箱</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看用户名</span></span><br><span class="line">git config user.name</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看邮箱</span></span><br><span class="line">git config user.email</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置用户名</span></span><br><span class="line">git config --global user.name &quot;xxx&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置邮箱</span></span><br><span class="line">git config --global user.email &quot;xxx&quot;</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h3 id="2-查看是否配置过SSH-Key"><a href="#2-查看是否配置过SSH-Key" class="headerlink" title="2. 查看是否配置过SSH Key"></a>2. 查看是否配置过SSH Key</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ls ~/.ssh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">hyunmin@HyunmindeMacBook-Air .ssh % <span class="built_in">ls</span> ~/.ssh</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">id_rsa      id_rsa.pub  known_hosts</span></span><br></pre></td></tr></table></figure>
+
+<p>存在id_rsa      id_rsa.pub文件即证明已配置过SSH Key</p>
+<h3 id="3-生成SSH-Key（秘钥）"><a href="#3-生成SSH-Key（秘钥）" class="headerlink" title="3. 生成SSH Key（秘钥）"></a>3. 生成SSH Key（秘钥）</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t -rsa -C &quot;email&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-GitHub远程仓库添加公钥"><a href="#4-GitHub远程仓库添加公钥" class="headerlink" title="4. GitHub远程仓库添加公钥"></a>4. GitHub远程仓库添加公钥</h3><ol>
+<li><p>复制<code>~/.ssh/id_rsa.pub</code>文件内容，并粘贴到GitHub-&gt;settings-&gt;SSH and GPG keys</p>
+</li>
+<li><p>检查是否配置成功</p>
+</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示如下内容则表示配置成功</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Hi Ysfun! You<span class="string">&#x27;ve successfully authenticated, but GitHub does not provide shell access.</span></span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Markdown如何实现页内跳转？</title>
+    <url>/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/</url>
+    <content><![CDATA[<h2 id="1-Markdown怎么实现页内跳转？"><a href="#1-Markdown怎么实现页内跳转？" class="headerlink" title="1. Markdown怎么实现页内跳转？"></a>1. Markdown怎么实现页内跳转？</h2><h3 id="1-利用Markdown语法"><a href="#1-利用Markdown语法" class="headerlink" title="1. 利用Markdown语法"></a>1. 利用Markdown语法</h3><p>格式：[描述文字] (#标题名称)</p>
+<span id="more"></span>
+
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">实践：</span><br><span class="line"></span><br><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line"></span><br><span class="line">[点我去顶部](#1.-我是顶部（空格用`-`代替，转换为html时会跳转失败）)</span><br><span class="line"></span><br><span class="line">[点我去中部](#我是中部)</span><br><span class="line"></span><br><span class="line">##### 1. 我是顶部（空格用`-`代替，转换为html时会跳转失败）</span><br><span class="line"></span><br><span class="line">##### 我是中部</span><br></pre></td></tr></table></figure>
+
+<p><strong>效果展示：</strong></p>
+<hr>
+<p><a href="#1.-%E6%88%91%E6%98%AF%E9%A1%B6%E9%83%A8%EF%BC%88%E7%A9%BA%E6%A0%BC%E7%94%A8%60-%60%E4%BB%A3%E6%9B%BF%EF%BC%8C%E8%BD%AC%E6%8D%A2%E4%B8%BAhtml%E6%97%B6%E4%BC%9A%E8%B7%B3%E8%BD%AC%E5%A4%B1%E8%B4%A5%EF%BC%89">点我去顶部</a></p>
+<p><a href="#%E6%88%91%E6%98%AF%E4%B8%AD%E9%83%A8">点我去中部</a></p>
+<h5 id="1-我是顶部（空格用-代替，转换为html时会跳转失败）"><a href="#1-我是顶部（空格用-代替，转换为html时会跳转失败）" class="headerlink" title="1. 我是顶部（空格用-代替，转换为html时会跳转失败）"></a>1. 我是顶部（空格用<code>-</code>代替，转换为html时会跳转失败）</h5><h5 id="我是中部"><a href="#我是中部" class="headerlink" title="我是中部"></a>我是中部</h5><hr>
+<blockquote>
+<p>注意事项：标题名称要完全一样，标题中的空格要用 <code>-</code>代替，这种跳转方式只能局限于跳转到<code>#</code>目录</p>
+</blockquote>
+<h3 id="2-使用html标签"><a href="#2-使用html标签" class="headerlink" title="2. 使用html标签"></a>2. 使用html标签</h3><p>格式：</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">在需要被跳转到地方添加标签：&lt;a id=&quot;xxx&quot;&gt;&lt;/a&gt;</span><br><span class="line">在跳转的位置添加标签：[跳转名称](#xxx)</span><br></pre></td></tr></table></figure>
+
+<p>实践：</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line">[跳转到位置1](#a1)</span><br><span class="line"></span><br><span class="line">[跳转到地方2](#p2)</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;a id=&quot;a1&quot;&gt;位置1&lt;/a&gt;</span><br><span class="line"></span><br><span class="line">地方2&lt;a id=&quot;p2&quot;&gt;&lt;/a&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>效果展示：</strong></p>
+<hr>
+<p><a href="#a1">跳转到位置1</a></p>
+<p><a href="#p2">跳转到地方2</a></p>
+<br>
+
+<br>
+
+<p><a id="a1">位置1</a></p>
+<p>地方2<a id="p2"></a></p>
+<hr>
+<blockquote>
+<p>采用这种方式在转换为html时仍然生效，且可控制性高，推荐这种方式。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Markdown</tag>
       </tags>
   </entry>
 </search>

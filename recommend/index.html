@@ -20,30 +20,28 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"www.ysfun.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":null,"post_header":null,"post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":null}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="官网地址：Sublime Text  下载官方下载地址 Sublime Text文档">
-<meta property="og:type" content="article">
-<meta property="og:title" content="mac上使用SublimeText">
-<meta property="og:url" content="https://www.ysfun.cn/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/index.html">
+    <meta name="description" content="源码剖析：HashMap中插入节点put(k, v)和扩容resize()  Hexo博客Next主题安装配置教程  MySQL:事务&amp;MVCC详解  将hexo博客部署到个人服务器  MySQL:总算把B+树搞明白了  MySQL:InnoDB存储引擎和MyISAM的区别？  BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？">
+<meta property="og:type" content="website">
+<meta property="og:title" content="精选">
+<meta property="og:url" content="https://www.ysfun.cn/recommend/index.html">
 <meta property="og:site_name" content="阳素凡的个人博客">
-<meta property="og:description" content="官网地址：Sublime Text  下载官方下载地址 Sublime Text文档">
+<meta property="og:description" content="源码剖析：HashMap中插入节点put(k, v)和扩容resize()  Hexo博客Next主题安装配置教程  MySQL:事务&amp;MVCC详解  将hexo博客部署到个人服务器  MySQL:总算把B+树搞明白了  MySQL:InnoDB存储引擎和MyISAM的区别？  BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://www.ysfun.cn/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/image-20211211145804287.png">
-<meta property="article:published_time" content="2021-12-11T06:29:58.000Z">
-<meta property="article:modified_time" content="2022-05-27T08:21:20.322Z">
+<meta property="article:published_time" content="2022-06-10T02:05:03.000Z">
+<meta property="article:modified_time" content="2022-06-10T02:47:59.478Z">
 <meta property="article:author" content="Ysfun">
-<meta property="article:tag" content="教程">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://www.ysfun.cn/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/image-20211211145804287.png">
 
 
-<link rel="canonical" href="https://www.ysfun.cn/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/">
+<link rel="canonical" href="https://www.ysfun.cn/recommend/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.ysfun.cn/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/","path":"2021/12/11/mac上使用SublimeText/","title":"mac上使用SublimeText"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":false,"lang":"zh-CN","comments":true,"permalink":"https://www.ysfun.cn/recommend/index.html","path":"recommend/index.html","title":"精选"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>mac上使用SublimeText | 阳素凡的个人博客</title>
+<title>精选 | 阳素凡的个人博客
+</title>
   
 
 
@@ -132,7 +130,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+    <div class="sidebar-inner sidebar-overview-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -145,7 +143,6 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%8B%E8%BD%BD"><span class="nav-number">1.</span> <span class="nav-text">下载</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7"><span class="nav-number">2.</span> <span class="nav-text">使用技巧</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8Sublime-Text%E4%B8%8A%E8%BF%90%E8%A1%8CJava%E7%A8%8B%E5%BA%8F"><span class="nav-number">2.1.</span> <span class="nav-text">在Sublime Text上运行Java程序</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -209,181 +206,50 @@
 </noscript>
 
 
-    <div class="main-inner post posts-expand">
+    <div class="main-inner page posts-expand">
 
 
-  
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.ysfun.cn/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/avatar.png">
-      <meta itemprop="name" content="Ysfun">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="阳素凡的个人博客">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="mac上使用SublimeText | 阳素凡的个人博客">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          mac上使用SublimeText
-        </h1>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-12-11 14:29:58" itemprop="dateCreated datePublished" datetime="2021-12-11T14:29:58+08:00">2021-12-11</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-05-27 16:21:20" itemprop="dateModified" datetime="2022-05-27T16:21:20+08:00">2022-05-27</time>
-    </span>
-
-  
-    <span class="post-meta-item">
-        <a href="/tags/%E6%95%99%E7%A8%8B/" rel="tag"><i class="fa fa-tag"></i> 教程</a>
-    </span>
-
-  
-    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
-      <span class="post-meta-item-icon">
-        <i class="far fa-eye"></i>
-      </span>
-      <span class="post-meta-item-text">阅读次数：</span>
-      <span id="busuanzi_value_page_pv"></span>
-    </span>
-  
-  <span class="post-meta-item">
     
-    <span class="post-meta-item-icon">
-      <i class="far fa-comment"></i>
-    </span>
-    <span class="post-meta-item-text">评论数：</span>
-  
-    <a title="waline" href="/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/#waline" itemprop="discussionUrl">
-      <span class="post-comments-count waline-comment-count" data-path="/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/" itemprop="commentCount"></span>
-    </a>
-  </span>
-  
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>441</span>
-    </span>
+    
+    
+    <div class="post-block" lang="zh-CN"><header class="post-header">
 
+<h1 class="post-title" itemprop="name headline">精选
+</h1>
+
+<div class="post-meta-container">
 </div>
 
-        </div>
-      </header>
+</header>
 
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-        <blockquote>
-<p>官网地址：<a target="_blank" rel="noopener" href="https://www.sublimetext.com/">Sublime Text</a></p>
-</blockquote>
-<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p><a target="_blank" rel="noopener" href="https://www.sublimetext.com/download">官方下载地址</a></p>
-<p><a target="_blank" rel="noopener" href="https://www.sublimetext.com/docs/index.html">Sublime Text文档</a></p>
-<span id="more"></span>
+      
+      
+      <div class="post-body">
+          <ul>
+<li><p><a href="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/">源码剖析：HashMap中插入节点put(k, v)和扩容resize()</a></p>
+</li>
+<li><p><a href="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B">Hexo博客Next主题安装配置教程</a></p>
+</li>
+<li><p><a href="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/">MySQL:事务&amp;MVCC详解</a></p>
+</li>
+<li><p><a href="/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/">将hexo博客部署到个人服务器</a></p>
+</li>
+<li><p><a href="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/">MySQL:总算把B+树搞明白了</a></p>
+</li>
+<li><p><a href="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/">MySQL:InnoDB存储引擎和MyISAM的区别？</a></p>
+</li>
+<li><p><a href="/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/">BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？</a></p>
+</li>
+</ul>
 
-<h2 id="使用技巧"><a href="#使用技巧" class="headerlink" title="使用技巧"></a>使用技巧</h2><h3 id="在Sublime-Text上运行Java程序"><a href="#在Sublime-Text上运行Java程序" class="headerlink" title="在Sublime Text上运行Java程序"></a>在Sublime Text上运行Java程序</h3><ol>
-<li>编译</li>
-</ol>
-<p><code>command+B</code></p>
-<ol start="2">
-<li>安装JDK环境</li>
-<li>打开 Sublime Text -&gt; Tools -&gt;Build System -&gt; New Build System…</li>
-<li>复制下面代码，并保存文件为java.sublime-build到默认的User文件夹即可</li>
-</ol>
-<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;shell_cmd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;javac \&quot;$file\&quot; &amp;&amp; java \&quot;$file_base_name\&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;file_regex&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^(...*?):([0-9]*):?([0-9]*)&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;selector&quot;</span><span class="punctuation">:</span> <span class="string">&quot;source.java&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>选择Tools -&gt; Build System -&gt; java</li>
-</ol>
-<img src="/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/image-20211211145804287.png" style="zoom:50%;" align="left">
-
+      </div>
+      
+      
+      
     </div>
 
     
     
-    
-      
-  <div class="popular-posts-header">相关文章</div>
-  <ul class="popular-posts">
-    <li class="popular-posts-item">
-        <div class="popular-posts-date">2021-11-22</div>
-      <div class="popular-posts-title"><a href="/2021/11/22/Docker常用命令/" rel="bookmark">Docker常用命令</a></div>
-    </li>
-  </ul>
-
-
-    <footer class="post-footer">
-          
-
-<div class="post-copyright">
-<ul>
-  <li class="post-copyright-author">
-      <strong>本文作者： </strong>Ysfun
-  </li>
-  <li class="post-copyright-link">
-      <strong>本文链接：</strong>
-      <a href="https://www.ysfun.cn/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/" title="mac上使用SublimeText">https://www.ysfun.cn/2021/12/11/mac上使用SublimeText/</a>
-  </li>
-  <li class="post-copyright-license">
-    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
-  </li>
-</ul>
-</div>
-
-          <div class="post-tags">
-              <a href="/tags/%E6%95%99%E7%A8%8B/" rel="tag"><i class="fa fa-tag"></i> 教程</a>
-          </div>
-
-        
-
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/2021/12/02/mac%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/" rel="prev" title="mac使用技巧">
-                  <i class="fa fa-chevron-left"></i> mac使用技巧
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/" rel="next" title="Https、ssh加密原理">
-                  Https、ssh加密原理 <i class="fa fa-chevron-right"></i>
-                </a>
-            </div>
-          </div>
-    </footer>
-  </article>
-</div>
-
-
-
-
 
 
     <div class="comments" id="waline"></div>
@@ -458,7 +324,7 @@
 
 
 
-<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-cn","enable":true,"serverURL":"waline-server-repo-six.vercel.app","cssUrl":"https://unpkg.com/@waline/client@v2/dist/waline.css","commentCount":false,"pageview":false,"copyright":true,"allowUploadImage":true,"locale":{"placeholder":"欢迎评论呀"},"avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"requiredMeta":["nick"],"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","el":"#waline","comment":true,"path":"/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/","dark":"auto"}</script>
+<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-cn","enable":true,"serverURL":"waline-server-repo-six.vercel.app","cssUrl":"https://unpkg.com/@waline/client@v2/dist/waline.css","commentCount":false,"pageview":false,"copyright":true,"allowUploadImage":true,"locale":{"placeholder":"欢迎评论呀"},"avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"requiredMeta":["nick"],"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","el":"#waline","comment":true,"path":"/recommend/","dark":"auto"}</script>
 <link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css">
 <script>
 document.addEventListener('page:loaded', () => {

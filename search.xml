@@ -1,6 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Https、ssh加密原理</title>
+    <url>/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/</url>
+    <content><![CDATA[<h2 id="1-Https与Http区别"><a href="#1-Https与Http区别" class="headerlink" title="1. Https与Http区别"></a>1. Https与Http区别</h2><p>相比于Http，Https采用了加密传输方式，可以有效防止网络攻击。可以近似理解为Https &#x3D; Http + SSL证书。</p>
+<p>Http默认端口为8080，Https默认端口为443。</p>
+<h2 id="2-Https加密原理"><a href="#2-Https加密原理" class="headerlink" title="2. Https加密原理"></a>2. Https加密原理</h2><p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/Https%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png"></p>
+<span id="more"></span>
+
+<ol>
+<li>客户端（浏览器）向服务端发起请求</li>
+<li>服务端接收请求，并明文传输公钥A给客户端，为了证实服务端的身份，服务端会将CA证书一同传输给客户端（这个步骤是与ssh建立连接的区别所在）</li>
+<li>客户端接收到公钥A，并用公钥A加密自己本地随机生成的对称加密密钥X</li>
+<li>公钥A加密的信息只有通过私钥才能解密，因此只有服务端才能解密并获取对称密钥X</li>
+<li>至此，服务端和客户端双方都持有对称密钥X，且第三方无法窃取，此后通过密钥X加密传输数据</li>
+</ol>
+<h2 id="3-SSH加密原理"><a href="#3-SSH加密原理" class="headerlink" title="3. SSH加密原理"></a>3. SSH加密原理</h2><p>SSH是一种网络协议，用于计算机之间的加密登录。如果一个用户从本地计算机，使用SSH协议登录另一台远程计算机，我们就可以认为，这种登录是安全的，即使被中途截获，密码也不会泄露。</p>
+<p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png"></p>
+<p>SSH加密原理与https基本相同，唯一的区别在于ssh没有CA证书，容易收到中间人攻击（Man-in-the-middle attack）。客户端无法验证公钥有没有被篡改过，如果有人截取数据，并返回篡改后的假公钥给客户端，客户端通过假公钥加密后的密码信息被截取并解密，就会导致客户端密码信息泄漏。</p>
+<ul>
+<li>下图展示了SSH被攻击的情况</li>
+</ul>
+<p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E8%A2%AB%E6%94%BB%E5%87%BB.png"></p>
+<p>问题在于客户端无法验证公钥A是不是来自服务端真实的公钥，Https采用CA证书来验证服务端的身份，而SSH则没有。</p>
+<h2 id="4-SSH解决中间人攻击的办法"><a href="#4-SSH解决中间人攻击的办法" class="headerlink" title="4. SSH解决中间人攻击的办法"></a>4. SSH解决中间人攻击的办法</h2><p>SSH的publish key和private key都是自己生成的，没法公证。只能通过Client端自己对公钥进行确认。</p>
+<p>通常在第一次登录的时候，系统会出现下面提示信息：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ssh user@host</span></span><br><span class="line">The authenticity of host &#x27;host (12.18.429.21)&#x27; can&#x27;t be established.</span><br><span class="line">RSA key fingerprint is 98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d.</span><br><span class="line">Are you sure you want to continue connecting (yes/no)?</span><br></pre></td></tr></table></figure>
+
+<p>上面信息的意思是：无法确认主机host(12.18.429.21)的真实性，不过知道它的公钥指纹，询问你是否继续连接？</p>
+<p>所谓”公钥指纹”，是指公钥长度较长（这里采用RSA算法，长达1024位），很难比对，所以对其进行MD5计算，将它变成一个128位的指纹。上例中是98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d，再进行比较，就容易多了。</p>
+<p>之所以用fingerprint代替key，主要是key过于长（RSA算法生成的公钥有1024位），很难直接比较。所以，对公钥进行hash生成一个128位的指纹，这样就方便比较了。</p>
+<p>很自然的一个问题就是，用户怎么知道远程主机的公钥指纹应该是多少？</p>
+<p>回答是没有好办法，远程主机必须在自己的网站上贴出公钥指纹，以便用户自行核对，或者自己甄别host地址是否正确。</p>
+<p>假定经过风险衡量以后（一般用户直接就选择yes吧），用户决定接受这个远程主机的公钥。<br>　　Are you sure you want to continue connecting (yes&#x2F;no)? yes<br>系统会出现一句提示，表示host主机已经得到认可。<br>　　Warning: Permanently added ‘host,12.18.429.21’ (RSA) to the list of known hosts.<br>然后，会要求输入密码。<br>　　Password: (enter password)<br>如果密码正确，就可以登录了。</p>
+<p>当远程主机的公钥被接受以后，它就会被保存在文件$HOME&#x2F;.ssh&#x2F;known_hosts之中。下次再连接这台主机，系统就会认出它的公钥已经保存在本地了，从而跳过警告部分，直接提示输入密码。<br>每个SSH用户都有自己的known_hosts文件，此外系统也有一个这样的文件，通常是&#x2F;etc&#x2F;ssh&#x2F;ssh_known_hosts，保存一些对所有用户都可信赖的远程主机的公钥。</p>
+]]></content>
+      <categories>
+        <category>计算机基础</category>
+      </categories>
+      <tags>
+        <tag>计算机网络</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Docker常用命令</title>
     <url>/2021/11/22/Docker%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h2 id="帮助命令"><a href="#帮助命令" class="headerlink" title="帮助命令"></a>帮助命令</h2><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看版本信息</span></span><br><span class="line">docker version</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">信息</span></span><br><span class="line">docker info</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看命令帮助信息</span></span><br><span class="line">docker 命令 --help</span><br></pre></td></tr></table></figure>
@@ -140,48 +182,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Https、ssh加密原理</title>
-    <url>/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/</url>
-    <content><![CDATA[<h2 id="1-Https与Http区别"><a href="#1-Https与Http区别" class="headerlink" title="1. Https与Http区别"></a>1. Https与Http区别</h2><p>相比于Http，Https采用了加密传输方式，可以有效防止网络攻击。可以近似理解为Https &#x3D; Http + SSL证书。</p>
-<p>Http默认端口为8080，Https默认端口为443。</p>
-<h2 id="2-Https加密原理"><a href="#2-Https加密原理" class="headerlink" title="2. Https加密原理"></a>2. Https加密原理</h2><p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/Https%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png"></p>
-<span id="more"></span>
-
-<ol>
-<li>客户端（浏览器）向服务端发起请求</li>
-<li>服务端接收请求，并明文传输公钥A给客户端，为了证实服务端的身份，服务端会将CA证书一同传输给客户端（这个步骤是与ssh建立连接的区别所在）</li>
-<li>客户端接收到公钥A，并用公钥A加密自己本地随机生成的对称加密密钥X</li>
-<li>公钥A加密的信息只有通过私钥才能解密，因此只有服务端才能解密并获取对称密钥X</li>
-<li>至此，服务端和客户端双方都持有对称密钥X，且第三方无法窃取，此后通过密钥X加密传输数据</li>
-</ol>
-<h2 id="3-SSH加密原理"><a href="#3-SSH加密原理" class="headerlink" title="3. SSH加密原理"></a>3. SSH加密原理</h2><p>SSH是一种网络协议，用于计算机之间的加密登录。如果一个用户从本地计算机，使用SSH协议登录另一台远程计算机，我们就可以认为，这种登录是安全的，即使被中途截获，密码也不会泄露。</p>
-<p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86.png"></p>
-<p>SSH加密原理与https基本相同，唯一的区别在于ssh没有CA证书，容易收到中间人攻击（Man-in-the-middle attack）。客户端无法验证公钥有没有被篡改过，如果有人截取数据，并返回篡改后的假公钥给客户端，客户端通过假公钥加密后的密码信息被截取并解密，就会导致客户端密码信息泄漏。</p>
-<ul>
-<li>下图展示了SSH被攻击的情况</li>
-</ul>
-<p><img src="/2022/03/31/Https%E3%80%81ssh%E5%8A%A0%E5%AF%86%E5%8E%9F%E7%90%86%E4%B8%8E%E5%8C%BA%E5%88%AB/ssh%E8%A2%AB%E6%94%BB%E5%87%BB.png"></p>
-<p>问题在于客户端无法验证公钥A是不是来自服务端真实的公钥，Https采用CA证书来验证服务端的身份，而SSH则没有。</p>
-<h2 id="4-SSH解决中间人攻击的办法"><a href="#4-SSH解决中间人攻击的办法" class="headerlink" title="4. SSH解决中间人攻击的办法"></a>4. SSH解决中间人攻击的办法</h2><p>SSH的publish key和private key都是自己生成的，没法公证。只能通过Client端自己对公钥进行确认。</p>
-<p>通常在第一次登录的时候，系统会出现下面提示信息：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">ssh user@host</span></span><br><span class="line">The authenticity of host &#x27;host (12.18.429.21)&#x27; can&#x27;t be established.</span><br><span class="line">RSA key fingerprint is 98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d.</span><br><span class="line">Are you sure you want to continue connecting (yes/no)?</span><br></pre></td></tr></table></figure>
-
-<p>上面信息的意思是：无法确认主机host(12.18.429.21)的真实性，不过知道它的公钥指纹，询问你是否继续连接？</p>
-<p>所谓”公钥指纹”，是指公钥长度较长（这里采用RSA算法，长达1024位），很难比对，所以对其进行MD5计算，将它变成一个128位的指纹。上例中是98:2e:d7:e0:de:9f:ac:67:28:c2:42:2d:37:16:58:4d，再进行比较，就容易多了。</p>
-<p>之所以用fingerprint代替key，主要是key过于长（RSA算法生成的公钥有1024位），很难直接比较。所以，对公钥进行hash生成一个128位的指纹，这样就方便比较了。</p>
-<p>很自然的一个问题就是，用户怎么知道远程主机的公钥指纹应该是多少？</p>
-<p>回答是没有好办法，远程主机必须在自己的网站上贴出公钥指纹，以便用户自行核对，或者自己甄别host地址是否正确。</p>
-<p>假定经过风险衡量以后（一般用户直接就选择yes吧），用户决定接受这个远程主机的公钥。<br>　　Are you sure you want to continue connecting (yes&#x2F;no)? yes<br>系统会出现一句提示，表示host主机已经得到认可。<br>　　Warning: Permanently added ‘host,12.18.429.21’ (RSA) to the list of known hosts.<br>然后，会要求输入密码。<br>　　Password: (enter password)<br>如果密码正确，就可以登录了。</p>
-<p>当远程主机的公钥被接受以后，它就会被保存在文件$HOME&#x2F;.ssh&#x2F;known_hosts之中。下次再连接这台主机，系统就会认出它的公钥已经保存在本地了，从而跳过警告部分，直接提示输入密码。<br>每个SSH用户都有自己的known_hosts文件，此外系统也有一个这样的文件，通常是&#x2F;etc&#x2F;ssh&#x2F;ssh_known_hosts，保存一些对所有用户都可信赖的远程主机的公钥。</p>
-]]></content>
-      <categories>
-        <category>计算机基础</category>
-      </categories>
-      <tags>
-        <tag>计算机网络</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>hexo博客安装Icarus主题</title>
     <url>/2021/11/28/hexo%E5%8D%9A%E5%AE%A2%E5%AE%89%E8%A3%85Icarus%E4%B8%BB%E9%A2%98/</url>
     <content><![CDATA[<p><strong>官方链接：</strong><a href="https://ppoffice.github.io/hexo-theme-icarus/Configuration/icarus%E7%94%A8%E6%88%B7%E6%8C%87%E5%8D%97-%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE/">Icarus用户指南-主题配置</a></p>
@@ -274,7 +274,7 @@
 
 <blockquote>
 <ol start="2">
-<li>安装<a href="mailto:&#109;&#x79;&#115;&#113;&#108;&#64;&#x35;&#x2e;&#55;">&#109;&#x79;&#115;&#113;&#108;&#64;&#x35;&#x2e;&#55;</a></li>
+<li>安装<a href="mailto:&#109;&#121;&#115;&#x71;&#108;&#64;&#x35;&#46;&#x37;">&#109;&#121;&#115;&#x71;&#108;&#64;&#x35;&#46;&#x37;</a></li>
 </ol>
 </blockquote>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_">% </span><span class="language-bash">brew install mysql@5.7</span></span><br><span class="line"></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/manifests/5.7.36</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Downloading https://ghcr.io/v2/homebrew/core/mysql/5.7/blobs/sha256:e23df0f6e8bfc83fe2e982ec60e8</span><br><span class="line">==&gt; Downloading from https://pkg-containers.githubusercontent.com/ghcr1/blobs/sha256:e23df0f6e8bfc83</span><br><span class="line"><span class="meta prompt_">#</span><span class="language-bash"><span class="comment">####################################################################### 100.0%</span></span></span><br><span class="line">==&gt; Pouring mysql@5.7--5.7.36.arm64_big_sur.bottle.tar.gz</span><br><span class="line">==&gt; /opt/homebrew/Cellar/mysql@5.7/5.7.36/bin/mysqld --initialize-insecure --user=hyunmin --basedir=</span><br><span class="line">==&gt; Caveats</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
@@ -308,36 +308,6 @@
 </ol>
 </blockquote>
 <p><img src="/2021/11/24/mac%E4%B8%8A%E4%BD%BF%E7%94%A8Homebrew%E5%AE%89%E8%A3%85mysql/image-20211124204950548.png" alt="image-20211124204950548"></p>
-]]></content>
-      <tags>
-        <tag>教程</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>mac上使用SublimeText</title>
-    <url>/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/</url>
-    <content><![CDATA[<blockquote>
-<p>官网地址：<a href="https://www.sublimetext.com/">Sublime Text</a></p>
-</blockquote>
-<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p><a href="https://www.sublimetext.com/download">官方下载地址</a></p>
-<p><a href="https://www.sublimetext.com/docs/index.html">Sublime Text文档</a></p>
-<span id="more"></span>
-
-<h2 id="使用技巧"><a href="#使用技巧" class="headerlink" title="使用技巧"></a>使用技巧</h2><h3 id="在Sublime-Text上运行Java程序"><a href="#在Sublime-Text上运行Java程序" class="headerlink" title="在Sublime Text上运行Java程序"></a>在Sublime Text上运行Java程序</h3><ol>
-<li>编译</li>
-</ol>
-<p><code>command+B</code></p>
-<ol start="2">
-<li>安装JDK环境</li>
-<li>打开 Sublime Text -&gt; Tools -&gt;Build System -&gt; New Build System…</li>
-<li>复制下面代码，并保存文件为java.sublime-build到默认的User文件夹即可</li>
-</ol>
-<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;shell_cmd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;javac \&quot;$file\&quot; &amp;&amp; java \&quot;$file_base_name\&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;file_regex&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^(...*?):([0-9]*):?([0-9]*)&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;selector&quot;</span><span class="punctuation">:</span> <span class="string">&quot;source.java&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
-
-<ol start="5">
-<li>选择Tools -&gt; Build System -&gt; java</li>
-</ol>
-<img src="/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/image-20211211145804287.png" style="zoom:50%;" align="left">
 ]]></content>
       <tags>
         <tag>教程</tag>
@@ -381,62 +351,33 @@
       </tags>
   </entry>
   <entry>
-    <title>mac使用技巧</title>
-    <url>/2021/12/02/mac%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/</url>
-    <content><![CDATA[<h3 id="1-Mac终端"><a href="#1-Mac终端" class="headerlink" title="1. Mac终端"></a>1. Mac终端</h3><p><a href="https://support.apple.com/zh-cn/HT208050">Mac终端官方文档</a></p>
-<p>从 macOS Catalina 版开始，您的 Mac 将使用 zsh 作为默认登录 Shell 和交互式 Shell。您还可以在较低版本的 macOS 中将 zsh 设置为默认 Shell。</p>
+    <title>mac上使用SublimeText</title>
+    <url>/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/</url>
+    <content><![CDATA[<blockquote>
+<p>官网地址：<a href="https://www.sublimetext.com/">Sublime Text</a></p>
+</blockquote>
+<h2 id="下载"><a href="#下载" class="headerlink" title="下载"></a>下载</h2><p><a href="https://www.sublimetext.com/download">官方下载地址</a></p>
+<p><a href="https://www.sublimetext.com/docs/index.html">Sublime Text文档</a></p>
 <span id="more"></span>
 
-<p>默认情况下，您的 Mac 使用 zsh 或 bash 作为登录 Shell 和交互式 Shell 的命令行解释器：</p>
-<ul>
-<li>从 macOS Catalina 版开始，<strong>zsh</strong> (Z shell) 是所有新建用户帐户的默认 Shell。</li>
-<li><strong>bash</strong> 是 <a href="https://support.apple.com/zh-cn/HT201260">macOS Mojave 及更低版本</a>中的默认 Shell。</li>
-</ul>
-<p>zsh 与 Bourne Shell (sh) 高度兼容，并且与 bash 基本兼容，但存在一些差别。要进一步了解 zsh 及其全面的命令行完成系统，请在“终端”中输入 <code>man zsh</code>。</p>
-<h4 id="从命令行中更改默认shell"><a href="#从命令行中更改默认shell" class="headerlink" title="从命令行中更改默认shell"></a>从命令行中更改默认shell</h4><p>在“终端”中，输入 <code>$ chsh -s path</code>，其中的 path 是 &#x2F;etc&#x2F;shells 中列出的某个 Shell 路径，例如 &#x2F;bin&#x2F;zsh、&#x2F;bin&#x2F;bash、&#x2F;bin&#x2F;csh、&#x2F;bin&#x2F;dash、&#x2F;bin&#x2F;ksh、&#x2F;bin&#x2F;sh 或 &#x2F;bin&#x2F;tcsh。</p>
-<h4 id="终端高亮显示"><a href="#终端高亮显示" class="headerlink" title="终端高亮显示"></a>终端高亮显示</h4><p>修改配置文件，<code>~/.bash_profile</code>或<code>~/.zshrc</code></p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">export CLICOLOR=1</span><br><span class="line">export LSCOLORS=gxfxaxdxcxegedabagacad</span><br></pre></td></tr></table></figure>
-
-<h3 id="2-Mac版IDEA快捷键"><a href="#2-Mac版IDEA快捷键" class="headerlink" title="2. Mac版IDEA快捷键"></a>2. Mac版IDEA快捷键</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line"># 更多操作，如导包，引入变量</span><br><span class="line">Option+Enter</span><br><span class="line"># 将当前行复制一行到下一行</span><br><span class="line">Command+D</span><br><span class="line"># 返回上一次编辑的地方</span><br><span class="line">Command+Option+⬅️ 或 Command+[</span><br><span class="line"># 全局搜索类</span><br><span class="line">Command+O</span><br><span class="line"># 删除当前行</span><br><span class="line">Command+Delete</span><br><span class="line"># 大小写切换</span><br><span class="line">Command+Shift+U</span><br><span class="line"># 查看类的继承结构</span><br><span class="line">Ctrl+h</span><br></pre></td></tr></table></figure>
-
-<h3 id="3-给Mac命令添加别名"><a href="#3-给Mac命令添加别名" class="headerlink" title="3. 给Mac命令添加别名"></a>3. 给Mac命令添加别名</h3><ol>
-<li>修改.bash_profile（或.zshrc，取决于使用的哪个bash，新版本macOS默认是zsh）文件</li>
+<h2 id="使用技巧"><a href="#使用技巧" class="headerlink" title="使用技巧"></a>使用技巧</h2><h3 id="在Sublime-Text上运行Java程序"><a href="#在Sublime-Text上运行Java程序" class="headerlink" title="在Sublime Text上运行Java程序"></a>在Sublime Text上运行Java程序</h3><ol>
+<li>编译</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">vim ~/.zshrc</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 在.zshrc文件中添加alias语句 </span><br><span class="line">alias ll=&quot;ls -alF&quot;</span><br></pre></td></tr></table></figure>
-
-
-
-<p><img src="/2021/12/02/mac%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/image-20220516164058025.png"></p>
+<p><code>command+B</code></p>
 <ol start="2">
-<li>刷新文件</li>
+<li>安装JDK环境</li>
+<li>打开 Sublime Text -&gt; Tools -&gt;Build System -&gt; New Build System…</li>
+<li>复制下面代码，并保存文件为java.sublime-build到默认的User文件夹即可</li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">source ~/.zshrc</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;shell_cmd&quot;</span><span class="punctuation">:</span> <span class="string">&quot;javac \&quot;$file\&quot; &amp;&amp; java \&quot;$file_base_name\&quot;&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;file_regex&quot;</span><span class="punctuation">:</span> <span class="string">&quot;^(...*?):([0-9]*):?([0-9]*)&quot;</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;selector&quot;</span><span class="punctuation">:</span> <span class="string">&quot;source.java&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
 
-<h3 id="4-Mac环境变量"><a href="#4-Mac环境变量" class="headerlink" title="4. Mac环境变量"></a>4. Mac环境变量</h3><ol>
-<li>Mac中环境变量加载顺序如下</li>
+<ol start="5">
+<li>选择Tools -&gt; Build System -&gt; java</li>
 </ol>
-<blockquote>
-<p>a. 	&#x2F;etc&#x2F;profile<br>b. 	&#x2F;etc&#x2F;paths<br>c. 	~&#x2F;.bash_profile<br>d. 	~&#x2F;.bash_login<br>e. 	~&#x2F;.profile<br>f. 	~&#x2F;.bashrc</p>
-</blockquote>
-<p>其中a, b是系统级别</p>
-<ol start="2">
-<li>添加步骤</li>
-</ol>
-<p>推荐在c层级添加，对于最新版的Mac由于默认使用zsh shell，因此环境变量在<code>~/.zshrc</code>里修改</p>
-<p>基本语法：</p>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">export PATH=&quot;$PATH:&lt;path1&gt;:&lt;path2&gt;&quot;</span><br></pre></td></tr></table></figure>
-
-<p>其中<code>path1</code>和<code>path2</code>是自定义环境变量，多个环境变量使用<code>:</code>进行分隔。</p>
-<p>注意要加上<code>$PATH</code>，否则会导致一些系统内置的命令失效。</p>
+<img src="/2021/12/11/mac%E4%B8%8A%E4%BD%BF%E7%94%A8SublimeText/image-20211211145804287.png" style="zoom:50%;" align="left">
 ]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
       <tags>
         <tag>教程</tag>
-        <tag>Mac</tag>
       </tags>
   </entry>
   <entry>
@@ -557,6 +498,76 @@
       <tags>
         <tag>教程</tag>
         <tag>vim</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>刷题分享：LeetCode139.单词拆分【字典树，动态规划】</title>
+    <url>/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/</url>
+    <content><![CDATA[<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/leetcode-1.jpg"></p>
+<p>题目对应<code>LeetCode</code><a href="https://leetcode.cn/problems/word-break/">139. 单词拆分</a></p>
+<span id="more"></span>
+
+<h3 id="1-题目描述"><a href="#1-题目描述" class="headerlink" title="1. 题目描述"></a>1. 题目描述</h3><p>给你一个字符串 s 和一个字符串列表 wordDict 作为字典。请你判断是否可以利用字典中出现的单词拼接出 s 。</p>
+<p>注意：不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。</p>
+<blockquote>
+<p>示例 1：</p>
+<p>输入: s &#x3D; “leetcode”, wordDict &#x3D; [“leet”, “code”]<br>输出: true<br>解释: 返回 true 因为 “leetcode” 可以由 “leet” 和 “code” 拼接成。</p>
+<p>示例 2：</p>
+<p>输入: s &#x3D; “applepenapple”, wordDict &#x3D; [“apple”, “pen”]<br>输出: true<br>解释: 返回 true 因为 “applepenapple” 可以由 “apple” “pen” “apple” 拼接成。<br>     注意，你可以重复使用字典中的单词。</p>
+<p>示例 3：</p>
+<p>输入: s &#x3D; “catsandog”, wordDict &#x3D; [“cats”, “dog”, “sand”, “and”, “cat”]<br>输出: false</p>
+</blockquote>
+<h3 id="2-代码分析"><a href="#2-代码分析" class="headerlink" title="2. 代码分析"></a>2. 代码分析</h3><p>【动态规划】+【字典树】</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">wordBreak</span><span class="params">(String s, List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> build(wordDict);</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> s.length();</span><br><span class="line">        <span class="comment">// 动态规划，转移方程：dp[i] = dp[i-k] &amp;&amp; (s[i-k,i] in wordDict)</span></span><br><span class="line">        <span class="type">boolean</span>[] dp = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;n; i++) &#123;</span><br><span class="line">            List&lt;Integer&gt; list = check(s, root, i);</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> idx : list) &#123;</span><br><span class="line">                <span class="comment">// 可能有多个位置匹配，只要存在一个k满足 dp[i-k] &amp;&amp; (s[i-k,i] in wordDict) == true，则dp[i]为true</span></span><br><span class="line">                <span class="keyword">if</span> (idx==<span class="number">0</span> || dp[idx-<span class="number">1</span>]) &#123;</span><br><span class="line">                    dp[i] = <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n-<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断是否满足最右匹配</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Integer&gt; <span class="title function_">check</span><span class="params">(String s, Trie root, <span class="type">int</span> lastIndex)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">        List&lt;Integer&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">while</span> (lastIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> s.charAt(lastIndex) - <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span> (node.children[index] == <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            node = node.children[index];</span><br><span class="line">            <span class="keyword">if</span> (node.isEnd) &#123;</span><br><span class="line">                <span class="comment">// 如果满足最右匹配，且到达单词末尾，将该Index加入List</span></span><br><span class="line">                list.add(lastIndex);</span><br><span class="line">            &#125;</span><br><span class="line">            lastIndex--;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 建立字典树，建立字典树的基本套路</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> Trie <span class="title function_">build</span><span class="params">(List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">        <span class="keyword">for</span> (String s : wordDict) &#123;</span><br><span class="line">            <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">            <span class="comment">// 这里需要注意，单词尾部向头部遍历，方便check时的最右匹配</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i=s.length()-<span class="number">1</span>; i&gt;=<span class="number">0</span>; i--) &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">idx</span> <span class="operator">=</span> s.charAt(i)-<span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">                <span class="keyword">if</span> (node.children[idx] == <span class="literal">null</span>) &#123;</span><br><span class="line">                    node.children[idx] = <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">                &#125;</span><br><span class="line">                node = node.children[idx];</span><br><span class="line">            &#125;</span><br><span class="line">            node.isEnd = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> root;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 字典树的典型结构</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Trie</span>&#123;</span><br><span class="line">    Trie[] children;</span><br><span class="line">    <span class="type">boolean</span> isEnd;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Trie</span><span class="params">()</span> &#123;</span><br><span class="line">        children = <span class="keyword">new</span> <span class="title class_">Trie</span>[<span class="number">26</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/image-20220524165305435.png"></p>
+]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>算法题</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>孤儿进程和僵尸进程</title>
+    <url>/2022/05/25/%E5%AD%A4%E5%84%BF%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%83%B5%E5%B0%B8%E8%BF%9B%E7%A8%8B/</url>
+    <content><![CDATA[<p><img src="/2022/05/25/%E5%AD%A4%E5%84%BF%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%83%B5%E5%B0%B8%E8%BF%9B%E7%A8%8B/linux-1.jpg"></p>
+<h2 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. 基本概念</h2><p>操作系统允许一个进程创建另一个进程，而且允许子进程继承父进程所拥有的资源，当子进程被终止时，其在父进程处继承的资源应当还给父进程。同时，终止父进程时同时也会终止其所有的子进程。</p>
+<span id="more"></span>
+
+<blockquote>
+<p> 注意：Linux 操作系统对于终止有子进程的父进程，会把子进程交给 1 号进程接管。</p>
+</blockquote>
+<p>正常情况下：子进程由父进程创建，子进程再创建新的进程。父子进程是一个<strong>异步过程</strong>，父进程永远无法预测子进程的结束，所以，当子进程结束后，它的父进程会调用wait()或waitpid()取得子进程的终止状态，回收掉子进程的资源。</p>
+<h3 id="1-孤儿进程"><a href="#1-孤儿进程" class="headerlink" title="1. 孤儿进程"></a>1. 孤儿进程</h3><p><strong>孤儿进程</strong>：一个父进程退出，而它的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。孤儿进程将被init进程(进程号为1)所收养，并由init进程对它们完成状态收集工作。</p>
+<h3 id="2-僵尸进程"><a href="#2-僵尸进程" class="headerlink" title="2. 僵尸进程"></a>2. 僵尸进程</h3><p><strong>僵尸进程</strong>：一个进程使用fork创建子进程，如果子进程退出，而父进程并没有调用wait或waitpid获取子进程的状态信息，那么子进程的进程描述符仍然保存在系统中。这种进程称之为僵死进程。</p>
+<h2 id="2-问题危害"><a href="#2-问题危害" class="headerlink" title="2. 问题危害"></a>2. 问题危害</h2><p>注意：unix提供了一种保证父进程知道子进程状态信息的机制。</p>
+<p>这种机制是：在每个进程退出的时候，内核会释放所有的资源，包括打开的文件，占用的内存等。但是仍保留一部分信息(进程号PID，退出状态，运行时间等)。直到父进程通过wait或waitpid来取时才释放。</p>
+<p><strong>暴露的问题：如果父进程不调用wait或waitpid的话，那么保留的那部分信息就不会释放，进程号一直被占用着。但是系统所能使用的进程号是有限的，如果大量产生僵死进程，将因没有可用的进程号而导致系统无法产生新的进程，这就是僵尸进程的危害。</strong></p>
+<p>孤儿进程是没有父进程的进程，它由init进程循环的wait()回收资源，init进程充当父进程。因此孤儿进程并没有什么危害。</p>
+<blockquote>
+<p>补充：任何一个子进程(init除外)在exit()之后，并非马上就消失掉，而是留下一个称为僵尸进程的数据结构，等待父进程去处理。如果父进程在子进程exit()之后，没有及时处理，出现僵尸进程，并可以用ps命令去查看，它的状态是“Z”。</p>
+</blockquote>
+<p>如果父进程能及时处理，可能用<code>ps</code>命令就来不及看到子进程的僵尸状态，但这并不等于子进程不经过僵尸状态。  <strong>如果父进程在子进程结束之前退出，则子进程将由init接管。init将会以父进程的身份对僵尸状态的子进程进行处理。</strong></p>
+<h2 id="3-解决方案"><a href="#3-解决方案" class="headerlink" title="3. 解决方案"></a>3. 解决方案</h2><ol>
+<li>kill杀死元凶父进程（一般不用）</li>
+</ol>
+<p>严格的说，僵尸进程并不是问题的根源，罪魁祸首是产生大量僵死进程的父进程。因此，我们可以直接除掉元凶，通过kill发送SIGTERM或者SIGKILL信号。元凶死后，僵尸进程进程变成孤儿进程，由init充当父进程，并回收资源。</p>
+<ol start="2">
+<li>父进程用wait或waitpid去回收资源（方案不好）</li>
+</ol>
+<p>父进程通过wait或waitpid等函数去等待子进程结束，但是不好，会导致父进程一直等待被挂起，相当于一个进程在干活，没有起到多进程的作用。</p>
+<ol start="3">
+<li>通过信号机制，在处理函数中调用wait，回收资源</li>
+</ol>
+<p>通过信号机制，子进程退出时向父进程发送SIGCHLD信号，父进程调用signal(SIGCHLD,sig_child)去处理SIGCHLD信号，在信号处理函数sig_child()中调用wait进行处理僵尸进程。什么时候得到子进程信号，什么时候进行信号处理，父进程可以继续干其他活，不用去阻塞等待。</p>
+]]></content>
+      <categories>
+        <category>计算机基础</category>
+      </categories>
+      <tags>
+        <tag>操作系统</tag>
       </tags>
   </entry>
   <entry>
@@ -687,73 +698,143 @@
       </tags>
   </entry>
   <entry>
-    <title>孤儿进程和僵尸进程</title>
-    <url>/2022/05/25/%E5%AD%A4%E5%84%BF%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%83%B5%E5%B0%B8%E8%BF%9B%E7%A8%8B/</url>
-    <content><![CDATA[<p><img src="/2022/05/25/%E5%AD%A4%E5%84%BF%E8%BF%9B%E7%A8%8B%E5%92%8C%E5%83%B5%E5%B0%B8%E8%BF%9B%E7%A8%8B/linux-1.jpg"></p>
-<h2 id="1-基本概念"><a href="#1-基本概念" class="headerlink" title="1. 基本概念"></a>1. 基本概念</h2><p>操作系统允许一个进程创建另一个进程，而且允许子进程继承父进程所拥有的资源，当子进程被终止时，其在父进程处继承的资源应当还给父进程。同时，终止父进程时同时也会终止其所有的子进程。</p>
+    <title>刷题分享：LeetCode[729,731,732]我的日程安排表【TreeMap、查分数组、线段树】</title>
+    <url>/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/</url>
+    <content><![CDATA[<p><img src="/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/leetcode-1.jpg"></p>
+<p>题目对应<code>LeetCode</code><a href="https://leetcode.cn/problems/my-calendar-i/">729. 我的日程安排表 I</a> <a href="https://leetcode.cn/problems/my-calendar-ii/">731. 我的日程安排表 II</a> <a href="https://leetcode.cn/problems/my-calendar-iii/">732. 我的日程安排表 III</a></p>
 <span id="more"></span>
 
-<blockquote>
-<p> 注意：Linux 操作系统对于终止有子进程的父进程，会把子进程交给 1 号进程接管。</p>
-</blockquote>
-<p>正常情况下：子进程由父进程创建，子进程再创建新的进程。父子进程是一个<strong>异步过程</strong>，父进程永远无法预测子进程的结束，所以，当子进程结束后，它的父进程会调用wait()或waitpid()取得子进程的终止状态，回收掉子进程的资源。</p>
-<h3 id="1-孤儿进程"><a href="#1-孤儿进程" class="headerlink" title="1. 孤儿进程"></a>1. 孤儿进程</h3><p><strong>孤儿进程</strong>：一个父进程退出，而它的一个或多个子进程还在运行，那么那些子进程将成为孤儿进程。孤儿进程将被init进程(进程号为1)所收养，并由init进程对它们完成状态收集工作。</p>
-<h3 id="2-僵尸进程"><a href="#2-僵尸进程" class="headerlink" title="2. 僵尸进程"></a>2. 僵尸进程</h3><p><strong>僵尸进程</strong>：一个进程使用fork创建子进程，如果子进程退出，而父进程并没有调用wait或waitpid获取子进程的状态信息，那么子进程的进程描述符仍然保存在系统中。这种进程称之为僵死进程。</p>
-<h2 id="2-问题危害"><a href="#2-问题危害" class="headerlink" title="2. 问题危害"></a>2. 问题危害</h2><p>注意：unix提供了一种保证父进程知道子进程状态信息的机制。</p>
-<p>这种机制是：在每个进程退出的时候，内核会释放所有的资源，包括打开的文件，占用的内存等。但是仍保留一部分信息(进程号PID，退出状态，运行时间等)。直到父进程通过wait或waitpid来取时才释放。</p>
-<p><strong>暴露的问题：如果父进程不调用wait或waitpid的话，那么保留的那部分信息就不会释放，进程号一直被占用着。但是系统所能使用的进程号是有限的，如果大量产生僵死进程，将因没有可用的进程号而导致系统无法产生新的进程，这就是僵尸进程的危害。</strong></p>
-<p>孤儿进程是没有父进程的进程，它由init进程循环的wait()回收资源，init进程充当父进程。因此孤儿进程并没有什么危害。</p>
-<blockquote>
-<p>补充：任何一个子进程(init除外)在exit()之后，并非马上就消失掉，而是留下一个称为僵尸进程的数据结构，等待父进程去处理。如果父进程在子进程exit()之后，没有及时处理，出现僵尸进程，并可以用ps命令去查看，它的状态是“Z”。</p>
-</blockquote>
-<p>如果父进程能及时处理，可能用<code>ps</code>命令就来不及看到子进程的僵尸状态，但这并不等于子进程不经过僵尸状态。  <strong>如果父进程在子进程结束之前退出，则子进程将由init接管。init将会以父进程的身份对僵尸状态的子进程进行处理。</strong></p>
-<h2 id="3-解决方案"><a href="#3-解决方案" class="headerlink" title="3. 解决方案"></a>3. 解决方案</h2><ol>
-<li>kill杀死元凶父进程（一般不用）</li>
-</ol>
-<p>严格的说，僵尸进程并不是问题的根源，罪魁祸首是产生大量僵死进程的父进程。因此，我们可以直接除掉元凶，通过kill发送SIGTERM或者SIGKILL信号。元凶死后，僵尸进程进程变成孤儿进程，由init充当父进程，并回收资源。</p>
-<ol start="2">
-<li>父进程用wait或waitpid去回收资源（方案不好）</li>
-</ol>
-<p>父进程通过wait或waitpid等函数去等待子进程结束，但是不好，会导致父进程一直等待被挂起，相当于一个进程在干活，没有起到多进程的作用。</p>
-<ol start="3">
-<li>通过信号机制，在处理函数中调用wait，回收资源</li>
-</ol>
-<p>通过信号机制，子进程退出时向父进程发送SIGCHLD信号，父进程调用signal(SIGCHLD,sig_child)去处理SIGCHLD信号，在信号处理函数sig_child()中调用wait进行处理僵尸进程。什么时候得到子进程信号，什么时候进行信号处理，父进程可以继续干其他活，不用去阻塞等待。</p>
-]]></content>
-      <categories>
-        <category>计算机基础</category>
-      </categories>
-      <tags>
-        <tag>操作系统</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>刷题分享：LeetCode139.单词拆分【字典树，动态规划】</title>
-    <url>/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/</url>
-    <content><![CDATA[<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/leetcode-1.jpg"></p>
-<p>题目对应<code>LeetCode</code><a href="https://leetcode.cn/problems/word-break/">139. 单词拆分</a></p>
-<span id="more"></span>
+<h2 id="我的日程安排表I"><a href="#我的日程安排表I" class="headerlink" title="我的日程安排表I"></a>我的日程安排表I</h2><p><a href="https://leetcode.cn/problems/my-calendar-i/">729. 我的日程安排表 I</a></p>
+<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p>实现一个 MyCalendar 类来存放你的日程安排。如果要添加的日程安排不会造成 重复预订 ，则可以存储这个新的日程安排。</p>
+<p>当两个日程安排有一些时间上的交叉时（例如两个日程安排都在同一时间内），就会产生 重复预订 。</p>
+<p>日程可以用一对整数 start 和 end 表示，这里的时间是半开区间，即 [start, end), 实数 x 的范围为，  start &lt;&#x3D; x &lt; end 。</p>
+<p>实现 MyCalendar 类：</p>
+<p>MyCalendar() 初始化日历对象。<br>boolean book(int start, int end) 如果可以将日程安排成功添加到日历中而不会导致重复预订，返回 true 。否则，返回 false 并且不要将该日程安排添加到日历中。</p>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">输入：</span><br><span class="line">[&quot;MyCalendar&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;]</span><br><span class="line">[[], [10, 20], [15, 25], [20, 30]]</span><br><span class="line">输出：</span><br><span class="line">[null, true, false, true]</span><br><span class="line"></span><br><span class="line">解释：</span><br><span class="line">MyCalendar myCalendar = new MyCalendar();</span><br><span class="line">myCalendar.book(10, 20); // return True</span><br><span class="line">myCalendar.book(15, 25); // return False ，这个日程安排不能添加到日历中，因为时间 15 已经被另一个日程安排预订了。</span><br><span class="line">myCalendar.book(20, 30); // return True ，这个日程安排可以添加到日历中，因为第一个日程安排预订的每个时间都小于 20 ，且不包含时间 20 。</span><br></pre></td></tr></table></figure>
 
-<h3 id="1-题目描述"><a href="#1-题目描述" class="headerlink" title="1. 题目描述"></a>1. 题目描述</h3><p>给你一个字符串 s 和一个字符串列表 wordDict 作为字典。请你判断是否可以利用字典中出现的单词拼接出 s 。</p>
-<p>注意：不要求字典中出现的单词全部都使用，并且字典中的单词可以重复使用。</p>
-<blockquote>
-<p>示例 1：</p>
-<p>输入: s &#x3D; “leetcode”, wordDict &#x3D; [“leet”, “code”]<br>输出: true<br>解释: 返回 true 因为 “leetcode” 可以由 “leet” 和 “code” 拼接成。</p>
-<p>示例 2：</p>
-<p>输入: s &#x3D; “applepenapple”, wordDict &#x3D; [“apple”, “pen”]<br>输出: true<br>解释: 返回 true 因为 “applepenapple” 可以由 “apple” “pen” “apple” 拼接成。<br>     注意，你可以重复使用字典中的单词。</p>
-<p>示例 3：</p>
-<p>输入: s &#x3D; “catsandog”, wordDict &#x3D; [“cats”, “dog”, “sand”, “and”, “cat”]<br>输出: false</p>
-</blockquote>
-<h3 id="2-代码分析"><a href="#2-代码分析" class="headerlink" title="2. 代码分析"></a>2. 代码分析</h3><p>【动态规划】+【字典树】</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">wordBreak</span><span class="params">(String s, List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> build(wordDict);</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> s.length();</span><br><span class="line">        <span class="comment">// 动态规划，转移方程：dp[i] = dp[i-k] &amp;&amp; (s[i-k,i] in wordDict)</span></span><br><span class="line">        <span class="type">boolean</span>[] dp = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;n; i++) &#123;</span><br><span class="line">            List&lt;Integer&gt; list = check(s, root, i);</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> idx : list) &#123;</span><br><span class="line">                <span class="comment">// 可能有多个位置匹配，只要存在一个k满足 dp[i-k] &amp;&amp; (s[i-k,i] in wordDict) == true，则dp[i]为true</span></span><br><span class="line">                <span class="keyword">if</span> (idx==<span class="number">0</span> || dp[idx-<span class="number">1</span>]) &#123;</span><br><span class="line">                    dp[i] = <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n-<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断是否满足最右匹配</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Integer&gt; <span class="title function_">check</span><span class="params">(String s, Trie root, <span class="type">int</span> lastIndex)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">        List&lt;Integer&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">while</span> (lastIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> s.charAt(lastIndex) - <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span> (node.children[index] == <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            node = node.children[index];</span><br><span class="line">            <span class="keyword">if</span> (node.isEnd) &#123;</span><br><span class="line">                <span class="comment">// 如果满足最右匹配，且到达单词末尾，将该Index加入List</span></span><br><span class="line">                list.add(lastIndex);</span><br><span class="line">            &#125;</span><br><span class="line">            lastIndex--;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 建立字典树，建立字典树的基本套路</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> Trie <span class="title function_">build</span><span class="params">(List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">        <span class="keyword">for</span> (String s : wordDict) &#123;</span><br><span class="line">            <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">            <span class="comment">// 这里需要注意，单词尾部向头部遍历，方便check时的最右匹配</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i=s.length()-<span class="number">1</span>; i&gt;=<span class="number">0</span>; i--) &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">idx</span> <span class="operator">=</span> s.charAt(i)-<span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">                <span class="keyword">if</span> (node.children[idx] == <span class="literal">null</span>) &#123;</span><br><span class="line">                    node.children[idx] = <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">                &#125;</span><br><span class="line">                node = node.children[idx];</span><br><span class="line">            &#125;</span><br><span class="line">            node.isEnd = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> root;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 字典树的典型结构</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Trie</span>&#123;</span><br><span class="line">    Trie[] children;</span><br><span class="line">    <span class="type">boolean</span> isEnd;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Trie</span><span class="params">()</span> &#123;</span><br><span class="line">        children = <span class="keyword">new</span> <span class="title class_">Trie</span>[<span class="number">26</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="题解【TreeMap】"><a href="#题解【TreeMap】" class="headerlink" title="题解【TreeMap】"></a>题解【TreeMap】</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendar</span> &#123;</span><br><span class="line">    TreeMap&lt;Integer, Integer&gt; treeMap;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendar</span><span class="params">()</span> &#123;</span><br><span class="line">        treeMap = <span class="keyword">new</span> <span class="title class_">TreeMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        Map.Entry&lt;Integer, Integer&gt; floor = treeMap.floorEntry(start);</span><br><span class="line">        Map.Entry&lt;Integer, Integer&gt; ceiling = treeMap.ceilingEntry(start);</span><br><span class="line">        <span class="keyword">if</span> (floor != <span class="literal">null</span> &amp;&amp; floor.getValue() &gt; start) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (ceiling != <span class="literal">null</span> &amp;&amp; ceiling.getKey() &lt; end) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        treeMap.put(start, end);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/image-20220524165305435.png"></p>
+<h3 id="复杂度分析"><a href="#复杂度分析" class="headerlink" title="复杂度分析"></a>复杂度分析</h3><p>在book()方法中，<code>TreeMap</code>是排序二叉树，<code>treeMap.floorEntry()</code>和<code>treeMap.ceilingEntry()</code>都是通过二分查找实现的，时间复杂度都是<code>o (log n)</code>.</p>
+<h2 id="我的日程安排表II"><a href="#我的日程安排表II" class="headerlink" title="我的日程安排表II"></a>我的日程安排表II</h2><p><a href="https://leetcode.cn/problems/my-calendar-ii/">731. 我的日程安排表 II</a></p>
+<h3 id="题目描述-1"><a href="#题目描述-1" class="headerlink" title="题目描述"></a>题目描述</h3><p>实现一个 MyCalendar 类来存放你的日程安排。如果要添加的时间内不会导致三重预订时，则可以存储这个新的日程安排。</p>
+<p>MyCalendar 有一个 book(int start, int end)方法。它意味着在 start 到 end 时间内增加一个日程安排，注意，这里的时间是半开区间，即 [start, end), 实数 x 的范围为，  start &lt;&#x3D; x &lt; end。</p>
+<p>当三个日程安排有一些时间上的交叉时（例如三个日程安排都在同一时间内），就会产生三重预订。</p>
+<p>每次调用 MyCalendar.book方法时，如果可以将日程安排成功添加到日历中而不会导致三重预订，返回 true。否则，返回 false 并且不要将该日程安排添加到日历中。</p>
+<p>请按照以下步骤调用MyCalendar 类: MyCalendar cal &#x3D; new MyCalendar(); MyCalendar.book(start, end)</p>
+<h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">MyCalendar();</span><br><span class="line">MyCalendar.book(10, 20); // returns true</span><br><span class="line">MyCalendar.book(50, 60); // returns true</span><br><span class="line">MyCalendar.book(10, 40); // returns true</span><br><span class="line">MyCalendar.book(5, 15); // returns false</span><br><span class="line">MyCalendar.book(5, 10); // returns true</span><br><span class="line">MyCalendar.book(25, 55); // returns true</span><br><span class="line">解释： </span><br><span class="line">前两个日程安排可以添加至日历中。 第三个日程安排会导致双重预订，但可以添加至日历中。</span><br><span class="line">第四个日程安排活动（5,15）不能添加至日历中，因为它会导致三重预订。</span><br><span class="line">第五个日程安排（5,10）可以添加至日历中，因为它未使用已经双重预订的时间10。</span><br><span class="line">第六个日程安排（25,55）可以添加至日历中，因为时间 [25,40] 将和第三个日程安排双重预订；</span><br><span class="line">时间 [40,50] 将单独预订，时间 [50,55）将和第二个日程安排双重预订</span><br></pre></td></tr></table></figure>
+
+<h3 id="题解【差分数组思想、TreeMap】"><a href="#题解【差分数组思想、TreeMap】" class="headerlink" title="题解【差分数组思想、TreeMap】"></a>题解【差分数组思想、TreeMap】<a id="t2"></a></h3><p>边界计数，边界开始时计数加一<code>delta[start]++</code>，边界计数时计数减一<code>delta[end]--</code>，按照排序从小到达统计<code>count</code>之和，一旦<code>count==3</code>则表明当前区间有三次重叠。考虑到需要排序结构，delta使用TreeMap。</p>
+<p><strong>图解：</strong></p>
+<p><img src="/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/image-20220606120852444.png"></p>
+<p>注意：当<code>count==3</code>时应撤销添加日程</p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendarTwo</span> &#123;</span><br><span class="line">    TreeMap&lt;Integer, Integer&gt; treeMap;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendarTwo</span><span class="params">()</span> &#123;</span><br><span class="line">        treeMap = <span class="keyword">new</span> <span class="title class_">TreeMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        treeMap.put(start, treeMap.getOrDefault(start, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">        treeMap.put(end, treeMap.getOrDefault(end, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">        <span class="type">int</span> <span class="variable">sum</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> count : treeMap.values()) &#123;</span><br><span class="line">            sum += count;</span><br><span class="line">            <span class="keyword">if</span> (sum &gt;= <span class="number">3</span>) &#123;</span><br><span class="line">                <span class="comment">// 出现三重预定，取消将该日程添加到日历</span></span><br><span class="line">                treeMap.put(start, treeMap.getOrDefault(start, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">                treeMap.put(end, treeMap.getOrDefault(end, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="我的日程安排表III"><a href="#我的日程安排表III" class="headerlink" title="我的日程安排表III"></a>我的日程安排表III</h2><p><a href="https://leetcode.cn/problems/my-calendar-iii/">732. 我的日程安排表 III</a></p>
+<h3 id="题目描述-2"><a href="#题目描述-2" class="headerlink" title="题目描述"></a>题目描述</h3><p>当 k 个日程安排有一些时间上的交叉时（例如 k 个日程安排都在同一时间内），就会产生 k 次预订。</p>
+<p>给你一些日程安排 [start, end) ，请你在每个日程安排添加后，返回一个整数 k ，表示所有先前日程安排会产生的最大 k 次预订。</p>
+<p>实现一个 MyCalendarThree 类来存放你的日程安排，你可以一直添加新的日程安排。</p>
+<p>MyCalendarThree() 初始化对象。<br>int book(int start, int end) 返回一个整数 k ，表示日历中存在的 k 次预订的最大值。</p>
+<h3 id="示例-2"><a href="#示例-2" class="headerlink" title="示例"></a>示例</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">输入：</span><br><span class="line">[&quot;MyCalendarThree&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;]</span><br><span class="line">[[], [10, 20], [50, 60], [10, 40], [5, 15], [5, 10], [25, 55]]</span><br><span class="line">输出：</span><br><span class="line">[null, 1, 1, 2, 3, 3, 3]</span><br><span class="line"></span><br><span class="line">解释：</span><br><span class="line">MyCalendarThree myCalendarThree = new MyCalendarThree();</span><br><span class="line">myCalendarThree.book(10, 20); // 返回 1 ，第一个日程安排可以预订并且不存在相交，所以最大 k 次预订是 1 次预订。</span><br><span class="line">myCalendarThree.book(50, 60); // 返回 1 ，第二个日程安排可以预订并且不存在相交，所以最大 k 次预订是 1 次预订。</span><br><span class="line">myCalendarThree.book(10, 40); // 返回 2 ，第三个日程安排 [10, 40) 与第一个日程安排相交，所以最大 k 次预订是 2 次预订。</span><br><span class="line">myCalendarThree.book(5, 15); // 返回 3 ，剩下的日程安排的最大 k 次预订是 3 次预订。</span><br><span class="line">myCalendarThree.book(5, 10); // 返回 3</span><br><span class="line">myCalendarThree.book(25, 55); // 返回 3</span><br></pre></td></tr></table></figure>
+
+<h3 id="题解【线段树】"><a href="#题解【线段树】" class="headerlink" title="题解【线段树】"></a>题解【线段树】</h3><h3 id="方法一：差分数组"><a href="#方法一：差分数组" class="headerlink" title="方法一：差分数组"></a>方法一：差分数组</h3><p>采用差分数组解法，同<a href="#t2">我的日程安排表II</a></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendarThree</span> &#123;</span><br><span class="line">    TreeMap&lt;Integer, Integer&gt; delta;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendarThree</span><span class="params">()</span> &#123;</span><br><span class="line">        delta = <span class="keyword">new</span> <span class="title class_">TreeMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        delta.put(start, delta.getOrDefault(start, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">        delta.put(end, delta.getOrDefault(end, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">        <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>, maxCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> val : delta.values()) &#123;</span><br><span class="line">            count += val;</span><br><span class="line">            maxCount = Math.max(count, maxCount);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> maxCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="方法二：线段树"><a href="#方法二：线段树" class="headerlink" title="方法二：线段树"></a>方法二：线段树</h3><p>针对本题的线段树初级教程可以参考：<a href="https://leetcode.cn/problems/my-calendar-iii/solution/xian-duan-shu-by-xiaohu9527-rfzj/">线段树 – 新手篇</a></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendarThree</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;Integer, Integer&gt; tree;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;Integer, Integer&gt; lazy;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendarThree</span><span class="params">()</span> &#123;</span><br><span class="line">        tree = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;Integer, Integer&gt;();</span><br><span class="line">        lazy = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;Integer, Integer&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        update(start, end - <span class="number">1</span>, <span class="number">0</span>, <span class="number">1000000000</span>, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">return</span> tree.getOrDefault(<span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">update</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (r &lt; start || end &lt; l) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125; </span><br><span class="line">        <span class="keyword">if</span> (start &lt;= l &amp;&amp; r &lt;= end) &#123;</span><br><span class="line">            tree.put(idx, tree.getOrDefault(idx, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            lazy.put(idx, lazy.getOrDefault(idx, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">mid</span> <span class="operator">=</span> (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            update(start, end, l, mid, <span class="number">2</span> * idx);</span><br><span class="line">            update(start, end, mid + <span class="number">1</span>, r, <span class="number">2</span> * idx + <span class="number">1</span>);</span><br><span class="line">            tree.put(idx, lazy.getOrDefault(idx, <span class="number">0</span>) + Math.max(tree.getOrDefault(<span class="number">2</span> * idx, <span class="number">0</span>), tree.getOrDefault(<span class="number">2</span> * idx + <span class="number">1</span>, <span class="number">0</span>)));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<blockquote>
+<p>后续会出一篇关于线段树的详细教程！！！</p>
+</blockquote>
 ]]></content>
       <categories>
         <category>算法</category>
       </categories>
       <tags>
         <tag>算法题</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>源码剖析：HashMap中插入节点put(k, v)和扩容resize()</title>
+    <url>/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/</url>
+    <content><![CDATA[<img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/337690-20200704174405569-752263172-20220608125854874.png" style="zoom:80%">
+
+<p><code>HashMap</code>在不同JDK版本的实现方式和源码有所区别，本文针对<code>jdk1.8</code>展开分析，从源码出发深入探讨<code>HashMap</code>插入元素及其中涉及的扩容的过程。</p>
+<span id="more"></span>
+
+<h2 id="HashMap数据结构"><a href="#HashMap数据结构" class="headerlink" title="HashMap数据结构"></a>HashMap数据结构</h2><p><code>HashMap</code>本质由数组+链表&#x2F;红黑树，其源码中定义了一个核心属性<code>table</code>（一个<code>Node</code>数组），<code>Node</code>可以理解为存储哈希表中<strong>键值对</strong>的容器。</p>
+<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/image-20220608130154836.png"></p>
+<p><code>HashMap</code>会根据<code>key</code>的<code>哈希值</code>找到当前键值对存放在<code>table</code>中的下标<code>index</code>，当多个<code>key</code>位于同一个下标时（称之为哈希冲突），会采用链表的方式，将当前<code>Node</code>插入到链表尾端；当链表的长度超过<code>TREEIFY_THRESHOLD</code>时，会将链表转换为二叉查找树进行存储（HashMap采用的是红黑树）；当发现<code>key</code>相同时只替换<code>value</code>值即可。</p>
+<p>上面提到发现”<code>key</code>相同“，进行<code>key</code>比较的时候会按照如下顺序进行比对：</p>
+<ol>
+<li>先判断两个<code>key</code>的哈希值是否相同，如果不同则两个<code>key</code>不同，否则继续比较</li>
+<li>判断是否指向同一个引用，即是否<code>==</code>，如果指向同一个引用则两个<code>key</code>相同，否则继续比较</li>
+<li>判断<code>equals</code>是否相等，如果相等则两个<code>key</code>相同，否则不相同</li>
+</ol>
+<blockquote>
+<p>从这里我们解释为什么说“重写equals方法就一定要重写hashCode方法”？</p>
+<p>当我们需要使用到散列结构（HashMap, HashSet等）时，如果只重写equals方法而没有重写hashCode方法，在比较key是否相同时会先进行hashCode比较，没有重写hashCode方法会导致两个equals相等的对象的hashCode不同，因此在put操作时会当做两个不同的key来处理。</p>
+</blockquote>
+<h2 id="HashMap插入节点和扩容"><a href="#HashMap插入节点和扩容" class="headerlink" title="HashMap插入节点和扩容"></a>HashMap插入节点和扩容</h2><p><code>put</code>方法源码注释：</p>
+<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/image-20220608131355501.png"></p>
+<p>我们可以发现<code>put</code>方法实际是调用了<code>putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict)</code>方法，我们先来看计算哈希值的过程：</p>
+<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/image-20220608131606962.png"></p>
+<p>从源码我们可以发现，计算哈希值的时候，当<code>key</code>为<code>null</code>时指定了哈希值为0，说明<code>HashMap</code>是允许<code>key</code>为<code>null</code>的，并且只能有一个<code>key</code>为<code>null</code>。这里和其他的哈希表不同（如<code>HashTable</code>,<code>ConcurrentHashMap</code>），其他哈希结构都是不允许<code>key</code>为<code>null</code>的。</p>
+<h3 id="putVal-插入节点"><a href="#putVal-插入节点" class="headerlink" title="putVal()插入节点"></a>putVal()插入节点</h3><p>插入节点的步骤：</p>
+<ol>
+<li>根据哈希值找到当前key在table数组（哈希桶）中的位置</li>
+<li>table数组当前位置为空，则在此处创建新Node并放在table的当前位置即可，break</li>
+<li>当前位置不为空，且发现当前位置的节点是一颗红黑树，执行红黑树插入节点的操作，break</li>
+<li>当前位置不为空，也不是红黑树，则当前位置只有可能是链表，执行链表的插入操作<ol>
+<li>遍历链表，查找是否有相同key，如果发现了相同key，则进行值替换，break</li>
+<li>遍历到链表尾部，仍未发现相同key，此处创建行Node，并将其插入到链表尾部；插入节点后若发现当前链表长度超过<code>TREEIFY_THRESHOLD</code>时，将链表变成红黑树，break</li>
+</ol>
+</li>
+<li>插入节点后，判断当前<code>size</code>是否超过<code>threshold</code>，如超过进行<code>resize()</code></li>
+<li>Return</li>
+</ol>
+<p><strong>源码分析：（详细分析过程见注释）</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Implements Map.put and related methods.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> hash hash for key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key the key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> value the value to put</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> onlyIfAbsent if true, don&#x27;t change existing value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> evict if false, the table is in creation mode.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> previous value, or null if none</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="keyword">final</span> V <span class="title function_">putVal</span><span class="params">(<span class="type">int</span> hash, K key, V value, <span class="type">boolean</span> onlyIfAbsent,</span></span><br><span class="line"><span class="params">               <span class="type">boolean</span> evict)</span> &#123;</span><br><span class="line">  Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="type">int</span> n, i;</span><br><span class="line">  <span class="keyword">if</span> ((tab = table) == <span class="literal">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">    <span class="comment">// table为空时，初始化table</span></span><br><span class="line">    n = (tab = resize()).length;</span><br><span class="line">  <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="literal">null</span>)</span><br><span class="line">    <span class="comment">// 哈希桶当前位置为空，则直接把新的Node放到table数组的当前位置即可</span></span><br><span class="line">    tab[i] = newNode(hash, key, value, <span class="literal">null</span>);</span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// 发生哈希冲突</span></span><br><span class="line">    Node&lt;K,V&gt; e; K k;</span><br><span class="line">    <span class="comment">// p.hash == hash &amp;&amp; ((k = p.key) == key || (key != null &amp;&amp; key.equals(k)))就是上面提到的「比较key」的源码</span></span><br><span class="line">    <span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">        ((k = p.key) == key || (key != <span class="literal">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">      <span class="comment">// 发现key相同，把当前Node赋给e，后面进行value替换操作</span></span><br><span class="line">      e = p;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">      <span class="comment">// 发现哈希桶当前位置已经是一颗树，进行红黑树插入节点操作，此处不进行详细阐述</span></span><br><span class="line">      e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="built_in">this</span>, tab, hash, key, value);</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// table当前位置为链表，遍历链表，寻找是否有相同的key</span></span><br><span class="line">      <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">binCount</span> <span class="operator">=</span> <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">        <span class="keyword">if</span> ((e = p.next) == <span class="literal">null</span>) &#123;</span><br><span class="line">          <span class="comment">// 遍历到链表尾部，仍未发现相同的key，创建新Node，并插入到链表尾部</span></span><br><span class="line">          p.next = newNode(hash, key, value, <span class="literal">null</span>);</span><br><span class="line">          <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st</span></span><br><span class="line">            <span class="comment">// 发现当前链表的长度达到了TREEIFY_THRESHOLD，链表变红黑树，提升查询效率</span></span><br><span class="line">            treeifyBin(tab, hash);</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 此处同样是「比较key」的过程</span></span><br><span class="line">        <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">            ((k = e.key) == key || (key != <span class="literal">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">        <span class="comment">// 发现有相同的key，把当前Node赋给e，后面进行value替换操作</span></span><br><span class="line">        p = e;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (e != <span class="literal">null</span>) &#123; <span class="comment">// existing mapping for key</span></span><br><span class="line">      <span class="comment">// 发现key相同，进行value替换操作</span></span><br><span class="line">      <span class="type">V</span> <span class="variable">oldValue</span> <span class="operator">=</span> e.value;</span><br><span class="line">      <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="literal">null</span>)</span><br><span class="line">        e.value = value;</span><br><span class="line">      afterNodeAccess(e);</span><br><span class="line">      <span class="keyword">return</span> oldValue;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ++modCount;</span><br><span class="line">  <span class="keyword">if</span> (++size &gt; threshold)</span><br><span class="line">    <span class="comment">// 当前HashMap的节点数超过了门槛值，进行扩容</span></span><br><span class="line">    resize();  <span class="comment">// 扩容操作</span></span><br><span class="line">  afterNodeInsertion(evict);</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="resize-扩容"><a href="#resize-扩容" class="headerlink" title="resize()扩容"></a>resize()扩容</h3><p>源码注释：</p>
+<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/image-20220608134431428.png"></p>
+<p>从上面注释我们可以知道，当初始化或者哈希桶大小翻倍时会执行<code>resize()</code>方法。</p>
+<p><code>resize()</code>方法分为两个部分：</p>
+<ol>
+<li>重新计算<code>threshold</code>及<code>capacity</code></li>
+<li>重新放置所有Node</li>
+</ol>
+<p>第一个过程较为简单，基本过程就是<code>table</code>大小翻倍，然后重新计算<code>threshold = newCap * loadFactor</code>，源码部分涉及到很多越界处理，看着有些复杂。</p>
+<p>第二个过程遍历旧<code>table</code>，将节点放入到新<code>table</code>对应的位置，主要分为以下几步：</p>
+<ol>
+<li><p>旧<code>table</code>当前位置为空，直接跳过</p>
+</li>
+<li><p>旧<code>table</code>当前位置只有一个节点，将该节点放到新<code>table</code>的<code>e.hash &amp; (newCap - 1)</code>位置上即可</p>
+</li>
+<li><p>旧<code>table</code>当前位置是一颗二叉树，执行红黑树的重新放置节点操作</p>
+</li>
+<li><p>旧<code>table</code>当前位置是一个长度大于1的链表</p>
+<ol>
+<li>在链表中存在位置不变和位置往后移动<code>oldCap</code>的节点，使用<code>loHead,loTail</code>来记录位置不变节点的头尾节点，使用<code>hiHead, hiTail</code>记录位置需要往后移动<code>oldCap</code>的头尾节点</li>
+</ol>
+<blockquote>
+<p>怎么判断哪些节点位置不变，哪些需要移动？为什么是向后移动oldCap个位置？<br>e.hash &amp; (newCap - 1) 代表新table的位置，且newCap &#x3D; oldCap &lt;&lt; 1，并且newCap和oldCap都是2的倍数<br>举例说明：<br>我们假定oldCap &#x3D; 8（即0b1000），则newCap &#x3D; 16（即0b10000）<br>e.hash &amp;  0b111 表示在旧table中的位置，&amp; 操作是对e.hash进行截断，即e.hash的后三位即代表旧位置<br>e.hash &amp; 0b1111 表示在新table中的位置，同理，e.hash的后四位代表新位置<br>因此我们只要判断e.hash在第四位是否为0即可，如果为0，则表示新位置和旧位置一致；如果不为0，则新位置比旧位置大0b1000<br>结论：<br>e.hash &amp; oldCap &#x3D;&#x3D; 0 : 新位置和旧位置一致<br>e.hash &amp; oldCap !&#x3D; 0 : 新位置比旧位置大oldCap</p>
+</blockquote>
+<ol start="2">
+<li>位置不动的节点通过<code>newTab[j] = loHead</code>来实现；位置往后移动通过<code>newTab[j + oldCap] = hiHead</code>来实现</li>
+</ol>
+</li>
+</ol>
+<p><strong>源码分析：（详细分析过程见注释）</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">  Node&lt;K,V&gt;[] oldTab = table;</span><br><span class="line">  <span class="comment">// ==============第一部分 开始==============</span></span><br><span class="line">  <span class="type">int</span> <span class="variable">oldCap</span> <span class="operator">=</span> (oldTab == <span class="literal">null</span>) ? <span class="number">0</span> : oldTab.length;</span><br><span class="line">  <span class="type">int</span> <span class="variable">oldThr</span> <span class="operator">=</span> threshold;</span><br><span class="line">  <span class="type">int</span> newCap, newThr = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">if</span> (oldCap &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (oldCap &gt;= MAXIMUM_CAPACITY) &#123;</span><br><span class="line">      threshold = Integer.MAX_VALUE;</span><br><span class="line">      <span class="keyword">return</span> oldTab;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// newCap = oldCap &lt;&lt; 1，capacity翻倍，即table大小翻倍</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ((newCap = oldCap &lt;&lt; <span class="number">1</span>) &lt; MAXIMUM_CAPACITY &amp;&amp;</span><br><span class="line">             oldCap &gt;= DEFAULT_INITIAL_CAPACITY)</span><br><span class="line">      <span class="comment">// threshold翻倍</span></span><br><span class="line">      newThr = oldThr &lt;&lt; <span class="number">1</span>; <span class="comment">// double threshold</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> (oldThr &gt; <span class="number">0</span>) <span class="comment">// initial capacity was placed in threshold</span></span><br><span class="line">    newCap = oldThr;</span><br><span class="line">  <span class="keyword">else</span> &#123;               <span class="comment">// zero initial threshold signifies using defaults</span></span><br><span class="line">    newCap = DEFAULT_INITIAL_CAPACITY;</span><br><span class="line">    newThr = (<span class="type">int</span>)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (newThr == <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="comment">// 重新计算threshold = newCap * loadFactor</span></span><br><span class="line">    <span class="type">float</span> <span class="variable">ft</span> <span class="operator">=</span> (<span class="type">float</span>)newCap * loadFactor;</span><br><span class="line">    newThr = (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (<span class="type">float</span>)MAXIMUM_CAPACITY ?</span><br><span class="line">              (<span class="type">int</span>)ft : Integer.MAX_VALUE);</span><br><span class="line">  &#125;</span><br><span class="line">  threshold = newThr;</span><br><span class="line">  <span class="comment">// ==============第一部分 结束==============</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// ==============第二部分 开始==============</span></span><br><span class="line">  <span class="meta">@SuppressWarnings(&#123;&quot;rawtypes&quot;,&quot;unchecked&quot;&#125;)</span></span><br><span class="line">  Node&lt;K,V&gt;[] newTab = (Node&lt;K,V&gt;[])<span class="keyword">new</span> <span class="title class_">Node</span>[newCap];</span><br><span class="line">  table = newTab;</span><br><span class="line">  <span class="keyword">if</span> (oldTab != <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="comment">// 遍历原来的table</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; oldCap; ++j) &#123;</span><br><span class="line">      Node&lt;K,V&gt; e;</span><br><span class="line">      <span class="comment">// 原来table当前位置为null的直接跳过</span></span><br><span class="line">      <span class="keyword">if</span> ((e = oldTab[j]) != <span class="literal">null</span>) &#123;</span><br><span class="line">        oldTab[j] = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (e.next == <span class="literal">null</span>)</span><br><span class="line">          <span class="comment">// 当前位置上的链表只有一个节点，重新计算在新table中的位置，并放置到新table对应位置即可</span></span><br><span class="line">          newTab[e.hash &amp; (newCap - <span class="number">1</span>)] = e;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (e <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">          <span class="comment">// 当前位置上是一颗红黑树，进行树的重新放置操作，此处不进行详细阐述</span></span><br><span class="line">          ((TreeNode&lt;K,V&gt;)e).split(<span class="built_in">this</span>, newTab, j, oldCap);</span><br><span class="line">        <span class="keyword">else</span> &#123; <span class="comment">// preserve order</span></span><br><span class="line">          <span class="comment">// 当前位置上是一颗节点数大于1的链表</span></span><br><span class="line">          <span class="comment">// 不需要改变位置的头结点和尾节点</span></span><br><span class="line">          Node&lt;K,V&gt; loHead = <span class="literal">null</span>, loTail = <span class="literal">null</span>;</span><br><span class="line">          <span class="comment">// 需要将位置往后移动oldCap个位置的头节点和尾节点</span></span><br><span class="line">          Node&lt;K,V&gt; hiHead = <span class="literal">null</span>, hiTail = <span class="literal">null</span>;</span><br><span class="line">          Node&lt;K,V&gt; next;</span><br><span class="line">          <span class="keyword">do</span> &#123;</span><br><span class="line">            next = e.next;</span><br><span class="line">            <span class="comment">/* </span></span><br><span class="line"><span class="comment">            (e.hash &amp; oldCap) == 0 是判断当前节点哈希值在新table中的位置是否需要改变</span></span><br><span class="line"><span class="comment">            e.hash &amp; (newCap - 1) 代表新table的位置，且newCap = oldCap &lt;&lt; 1，并且newCap和oldCap都是2的倍数</span></span><br><span class="line"><span class="comment">            举例说明：</span></span><br><span class="line"><span class="comment">            我们假定oldCap = 8（即0b1000），则newCap = 16（即0b10000）</span></span><br><span class="line"><span class="comment">            e.hash &amp;  0b111 表示在旧table中的位置，&amp; 操作是对e.hash进行截断，即e.hash的后三位即代表旧位置</span></span><br><span class="line"><span class="comment">            e.hash &amp; 0b1111 表示在新table中的位置，同理，e.hash的后四位代表新位置</span></span><br><span class="line"><span class="comment">            因此我们只要判断e.hash在第四位是否为0即可，如果为0，则表示新位置和旧位置一致；如果不为0，则新位置比旧位置大0b1000</span></span><br><span class="line"><span class="comment">            结论：</span></span><br><span class="line"><span class="comment">            e.hash &amp; oldCap == 0 : 新位置和旧位置一致</span></span><br><span class="line"><span class="comment">            e.hash &amp; oldCap != 0 : 新位置比旧位置大oldCap</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line">            <span class="keyword">if</span> ((e.hash &amp; oldCap) == <span class="number">0</span>) &#123;</span><br><span class="line">              <span class="keyword">if</span> (loTail == <span class="literal">null</span>)</span><br><span class="line">                loHead = e;</span><br><span class="line">              <span class="keyword">else</span></span><br><span class="line">                loTail.next = e;</span><br><span class="line">              loTail = e;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">              <span class="keyword">if</span> (hiTail == <span class="literal">null</span>)</span><br><span class="line">                hiHead = e;</span><br><span class="line">              <span class="keyword">else</span></span><br><span class="line">                hiTail.next = e;</span><br><span class="line">              hiTail = e;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125; <span class="keyword">while</span> ((e = next) != <span class="literal">null</span>);</span><br><span class="line">          <span class="keyword">if</span> (loTail != <span class="literal">null</span>) &#123;</span><br><span class="line">            loTail.next = <span class="literal">null</span>;</span><br><span class="line">            <span class="comment">// 将新旧位置不变的节点仍放到j位置上</span></span><br><span class="line">            newTab[j] = loHead;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">if</span> (hiTail != <span class="literal">null</span>) &#123;</span><br><span class="line">            hiTail.next = <span class="literal">null</span>;</span><br><span class="line">            <span class="comment">// 将需要往后移的节点放到j+oldCap位置上</span></span><br><span class="line">            newTab[j + oldCap] = hiHead;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> newTab;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -793,6 +874,35 @@
       </categories>
       <tags>
         <tag>Git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？</title>
+    <url>/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/</url>
+    <content><![CDATA[<h3 id="问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数"><a href="#问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数" class="headerlink" title="问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数"></a>问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数</h3><p>解法：采用BitMap，每个整数分配2个bit</p>
+<blockquote>
+<p>00	&#x3D;&gt; 0	表示没出现过</p>
+<p>01	&#x3D;&gt; 1	表示出现过1次</p>
+<p>10	&#x3D;&gt;2	表示出现过多次</p>
+<p>11	&#x3D;&gt;3	表示无效数据。</p>
+</blockquote>
+<span id="more"></span>
+
+<ul>
+<li>内存分析</li>
+</ul>
+<p>每个无符号整数的取值范围为0~2^32-1，BitMap空间复杂度取决于MAX_VALUE，因此需要一个长度为2 ^ 32的BitMap，总占用空间为2^32 * 2bit &#x3D; 1 GB。</p>
+<h3 id="使用Java程序进行实现："><a href="#使用Java程序进行实现：" class="headerlink" title="使用Java程序进行实现："></a>使用Java程序进行实现：</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BitMapTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 00 没出现过</span></span><br><span class="line"><span class="comment">     * 01 出现过1次</span></span><br><span class="line"><span class="comment">     * 10 出现过多次</span></span><br><span class="line"><span class="comment">     * 11 无效表示</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 1 byte = 8 bit，可分配四个数字，长度为1000可覆盖4000个数字，因此我们设置输入整数不超过4000</span></span><br><span class="line"><span class="comment">     * 真实情况下该数组的长度应该为 2.5亿/4，才能覆盖所有无符号整数，此处测试用较小数字进行</span></span><br><span class="line"><span class="comment">     * flags默认初始值都为0</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |3 2 1 0| flag[0] 例如：10000100 表示3出现过多次, 2, 0都没有出现过，1出现过一次</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |7 6 5 4| flag[1]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="type">byte</span>[] flags = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1000</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] nums = <span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">2000</span>];  <span class="comment">// 2000个测试输入数据</span></span><br><span class="line">        <span class="comment">// 验证结果的正确性</span></span><br><span class="line">        Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(nums.length);</span><br><span class="line">        <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">        System.out.println(<span class="string">&quot;原始数据：&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="comment">// 填充随机数输入进行验证</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> random.nextInt(flags.length * <span class="number">4</span>);  <span class="comment">// flags长度为1000，整数最大只能为4000</span></span><br><span class="line">            nums[i] = num;</span><br><span class="line">            System.out.print(num + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            map.put(num, map.getOrDefault(num, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            setVal(num);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();</span><br><span class="line">        System.out.println(<span class="string">&quot;-------------------&quot;</span>);</span><br><span class="line">        List&lt;Integer&gt; bitMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        List&lt;Integer&gt; hashMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (getVal(nums[i]) == <span class="number">1</span>) &#123;</span><br><span class="line">                bitMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (map.getOrDefault(nums[i], <span class="number">0</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">                hashMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;只出现过一次的数据：&quot;</span>);</span><br><span class="line">        System.out.println(bitMapAns);</span><br><span class="line">        System.out.println(<span class="string">&quot;bitMapAns 是否和 hashMapAns相同：&quot;</span> + bitMapAns.equals(hashMapAns));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> getVal(idx);</span><br><span class="line">        <span class="keyword">if</span> (val &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="comment">// 11 或 10 表示出现过多次，保持不变即可</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        ~(3&lt;&lt;loc) =&gt; 11001111 即让2bit对应位置为0，其他都为1</span></span><br><span class="line"><span class="comment">        (flags[pos] &amp; ~(3&lt;&lt;loc)) =&gt; 效果就是让2bit对应位置置为00，其他为保持不变</span></span><br><span class="line"><span class="comment">        | ((val + 1) &lt;&lt; loc) =&gt; 效果就是让val+1的值填充2bit的位置</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">newVal</span> <span class="operator">=</span> (flags[pos] &amp; ~(<span class="number">3</span> &lt;&lt; (loc * <span class="number">2</span>))) | ((val + <span class="number">1</span>) &lt;&lt; (loc * <span class="number">2</span>));</span><br><span class="line">        flags[pos] = (<span class="type">byte</span>) newVal;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">getVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        flags[pos] &gt;&gt; (loc * 2)  =&gt; 00001001  (左边自动补0) 这个操作的效果是让2这个整数在bitmap中对应的两个bit移动到最右端</span></span><br><span class="line"><span class="comment">        拿上面的结果  (0b00001001) &amp; (byte)3  =&gt; (0b00001001) &amp; (0b00000011) =&gt; (0b00000001) 即可得到目标的两个bit对应的数字</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> (flags[pos] &gt;&gt; (loc * <span class="number">2</span>)) &amp; (<span class="type">byte</span>) <span class="number">3</span>;</span><br><span class="line">        <span class="keyword">return</span> val;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>运行结果：</p>
+<p><img src="/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/image-20220512221937915.png"></p>
+<p>上述通过<code>HashMap</code>的方案可以检验<code>BitMap</code>的答案是正确的，并且成功节省了内存空间。</p>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>Java</tag>
       </tags>
   </entry>
   <entry>
@@ -1121,88 +1231,6 @@
       </tags>
   </entry>
   <entry>
-    <title>MySQL:InnoDB存储引擎和MyISAM的区别？</title>
-    <url>/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/</url>
-    <content><![CDATA[<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/mysql-logo-800-400.jpg"></p>
-<p>本文从<strong>事务</strong>，<strong>外键</strong>，<strong>索引</strong>， <strong>存储文件</strong>，<strong>日志</strong>，<strong>count行数</strong>，<strong>锁</strong>，<strong>主键</strong>八个方面系统地对比了在<code>MySQL</code>中<code>InnoDB</code>存储引擎和<code>MyISAM</code>存储引擎的区别。</p>
-<span id="more"></span>
-
-<h3 id="1-事务"><a href="#1-事务" class="headerlink" title="1. 事务"></a>1. 事务</h3><ul>
-<li><p><code>InnoDB</code>：支持事务。</p>
-</li>
-<li><p><code>MyISAM</code>：不支持事务，强调的是性能，每次查询具有原子性，一般情况下其查询数度比<code>InnoDB</code>更快，但是不提供事务支持。</p>
-</li>
-</ul>
-<blockquote>
-<p>一般情况下<code>MyISAM</code>查询速度比<code>InnoDB</code>快的原因：</p>
-<p>答：在查询的时候，InnoDB要维护的东西比MyISAM多很多，具体以下几点：</p>
-<ul>
-<li>InnoDB缓存数据块，MyISAM只缓存索引块， 这中间还有换进换出的减少；</li>
-<li>InnoDB寻址要映射到块，再到行，MyISAM记录的直接是文件的OFFSET，定位比InnoDB要快 </li>
-<li>InnoDB还需要维护MVCC一致； 虽然你的场景没有，但他还是需要去检查和维护</li>
-</ul>
-</blockquote>
-<h3 id="2-外键"><a href="#2-外键" class="headerlink" title="2. 外键"></a>2. 外键</h3><ul>
-<li><code>InnoDB</code>：支持外键</li>
-<li><code>MyISAM</code>：不支持外键，对一个包含外键的InnoDB表转为MyISAM会失败</li>
-</ul>
-<h3 id="3-索引"><a href="#3-索引" class="headerlink" title="3. 索引"></a>3. 索引</h3><ul>
-<li><code>InnoDB</code>：聚集索引，数据文件和索引存储在一起，必须要有主键，通过主键查询效率很高，一次查询即可得到完整的行数据。辅助索引存储的数据是对应的主键索引的值，通过辅助索引查询需要两次查询，根据辅助索引查询到对应的主键索引，再根据主键索引查询到对应的行数据（这一过程称之为<strong>回表</strong>）。</li>
-<li><code>MyISAM</code>：非聚集索引，索引和数据文件分开保存，索引保存的是数据文件的指针。主键索引和辅助索引相互独立。</li>
-</ul>
-<blockquote>
-<p>InnoDB的B+树主键索引的叶子节点就是数据文件，辅助索引的叶子节点是主键的值；而MyISAM的B+树主键索引和辅助索引的叶子节点都是数据文件的地址指针。</p>
-</blockquote>
-<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png"></p>
-<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130322302.png"></p>
-<h3 id="4-存储文件"><a href="#4-存储文件" class="headerlink" title="4. 存储文件"></a>4. 存储文件</h3><ul>
-<li><code>InnoDB</code>：存储文件有<strong>frm、ibd</strong>，<strong>frm</strong>是表定义文件，<strong>ibd</strong>是数据文件。</li>
-<li><code>MyISAM</code>：存储文件有<strong>frm、myd、myi</strong>，<strong>frm</strong>是表定义文件，<strong>myd</strong>是数据文件，<strong>myi</strong>是索引文件。</li>
-</ul>
-<h3 id="5-日志"><a href="#5-日志" class="headerlink" title="5. 日志"></a>5. 日志</h3><ul>
-<li><code>InnoDB</code>：有<code>redo log</code>，使用 InnoDB 的数据库在异常崩溃后，数据库重新启动的时候会保证数据库恢复到崩溃前的状态，这个恢复的过程依赖于 <code>redo log</code> 。 <code>redo log</code> 保证事务的持久性， <code>undo log</code> 保证事务的原子性。</li>
-<li><code>MyISAM</code>：没有<code>redo log</code>，不支持数据库异常崩溃后的安全恢复。</li>
-</ul>
-<h3 id="6-count"><a href="#6-count" class="headerlink" title="6. count"></a>6. count</h3><ul>
-<li><code>InnoDB</code>：不保存表的具体行数，如果使用<code>select count(*) from table</code>，就会遍历整个表，消耗相当大，但是在加了<code>where</code>条件后，myisam和innodb处理的方式都一样。</li>
-<li><code>MyISAM</code>：使用一个变量保存整个表的行数，如果使用<code>select count(*) from table</code>，会直接读取该变量。</li>
-</ul>
-<blockquote>
-<p> 因为InnoDB的事务特性，在同一时刻表中的行数对于不同的事务而言是不一样的，因此count统计会计算对于当前事务而言可以统计到的行数，而不是将总行数储存起来方便快速查询。</p>
-</blockquote>
-<h3 id="7-锁"><a href="#7-锁" class="headerlink" title="7. 锁"></a>7. 锁</h3><ul>
-<li><code>InnoDB</code>：支持行级锁和表锁。行锁是基于索引实现的，如果没有命中索引，也无法使用行锁，会退化到表锁。</li>
-<li><code>MyISAM</code>：仅支持表锁，不支持行锁。</li>
-</ul>
-<h3 id="8-主键"><a href="#8-主键" class="headerlink" title="8. 主键"></a>8. 主键</h3><ul>
-<li><code>InnoDB</code>：如果没有设定主键，会自动生成一个6字节的隐藏主键（用户不可见），数据保存在主键索引的叶子节点上。</li>
-<li><code>MyISAM</code>：允许不含有主键。</li>
-</ul>
-<blockquote>
-<p>删除部分自增主键后，二者的区别？</p>
-<ol>
-<li>不重启服务器</li>
-</ol>
-<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，插入一行新的数据，无论是<code>InnoDB</code>还是<code>MyISAM</code>都会从<code>6</code>开始插入。</p>
-<ol start="2">
-<li>重启服务器</li>
-</ol>
-<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，重启服务器，再插入一行新的数据，<code>InnoDB</code>主键会从<code>4</code>开始插入，而<code>MyISAM</code>会从<code>6</code>开始插入。</p>
-<blockquote>
-<p>原因：Innodb表把自增主键的最大ID记录到内存中，重启数据库后，都会导致最大自增ID重置；MyISAM表会把自增主键的最大ID记录到数据文件里，重启MySQL自增主键的最大ID也不会丢失。</p>
-</blockquote>
-<p><strong>说明：mysql8.0版本，重启数据库后，不会导致最大自增ID重置</strong></p>
-<p><strong>原因：</strong>在 MySQL 8.0 中，<code>AUTO_INCREMENT</code>计数器的逻辑变了，每当计数器的值有变，InnoDB 会将其写入 redo log，保存到引擎专用的系统表中。MySQL 正常关闭后重启：从系统表中获取计数器的值。MySQL 故障后重启：从系统表中获取计数器的值；从最后一个检查点开始扫描 redo log 中记录的计数器值；取这两者的最大值作为新值。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>MySQL</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>MySQL:事务&amp;MVCC详解</title>
     <url>/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/</url>
     <content><![CDATA[<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/mysql-logo-800-400.jpg"></p>
@@ -1372,32 +1400,109 @@
       </tags>
   </entry>
   <entry>
-    <title>BitMap应用：如何在2.5亿个无符号正整数中找出不重复的整数？</title>
-    <url>/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/</url>
-    <content><![CDATA[<h3 id="问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数"><a href="#问题：如何在2-5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2-5亿个整数" class="headerlink" title="问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数"></a>问题：如何在2.5亿个无符号正整数中找出不重复的整数，内存不足以容纳这2.5亿个整数</h3><p>解法：采用BitMap，每个整数分配2个bit</p>
-<blockquote>
-<p>00	&#x3D;&gt; 0	表示没出现过</p>
-<p>01	&#x3D;&gt; 1	表示出现过1次</p>
-<p>10	&#x3D;&gt;2	表示出现过多次</p>
-<p>11	&#x3D;&gt;3	表示无效数据。</p>
-</blockquote>
+    <title>mac使用技巧</title>
+    <url>/2021/12/02/mac%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/</url>
+    <content><![CDATA[<h3 id="1-Mac终端"><a href="#1-Mac终端" class="headerlink" title="1. Mac终端"></a>1. Mac终端</h3><p><a href="https://support.apple.com/zh-cn/HT208050">Mac终端官方文档</a></p>
+<p>从 macOS Catalina 版开始，您的 Mac 将使用 zsh 作为默认登录 Shell 和交互式 Shell。您还可以在较低版本的 macOS 中将 zsh 设置为默认 Shell。</p>
 <span id="more"></span>
 
+<p>默认情况下，您的 Mac 使用 zsh 或 bash 作为登录 Shell 和交互式 Shell 的命令行解释器：</p>
 <ul>
-<li>内存分析</li>
+<li>从 macOS Catalina 版开始，<strong>zsh</strong> (Z shell) 是所有新建用户帐户的默认 Shell。</li>
+<li><strong>bash</strong> 是 <a href="https://support.apple.com/zh-cn/HT201260">macOS Mojave 及更低版本</a>中的默认 Shell。</li>
 </ul>
-<p>每个无符号整数的取值范围为0~2^32-1，BitMap空间复杂度取决于MAX_VALUE，因此需要一个长度为2 ^ 32的BitMap，总占用空间为2^32 * 2bit &#x3D; 1 GB。</p>
-<h3 id="使用Java程序进行实现："><a href="#使用Java程序进行实现：" class="headerlink" title="使用Java程序进行实现："></a>使用Java程序进行实现：</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BitMapTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 00 没出现过</span></span><br><span class="line"><span class="comment">     * 01 出现过1次</span></span><br><span class="line"><span class="comment">     * 10 出现过多次</span></span><br><span class="line"><span class="comment">     * 11 无效表示</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 1 byte = 8 bit，可分配四个数字，长度为1000可覆盖4000个数字，因此我们设置输入整数不超过4000</span></span><br><span class="line"><span class="comment">     * 真实情况下该数组的长度应该为 2.5亿/4，才能覆盖所有无符号整数，此处测试用较小数字进行</span></span><br><span class="line"><span class="comment">     * flags默认初始值都为0</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |3 2 1 0| flag[0] 例如：10000100 表示3出现过多次, 2, 0都没有出现过，1出现过一次</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |7 6 5 4| flag[1]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="type">byte</span>[] flags = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1000</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] nums = <span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">2000</span>];  <span class="comment">// 2000个测试输入数据</span></span><br><span class="line">        <span class="comment">// 验证结果的正确性</span></span><br><span class="line">        Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(nums.length);</span><br><span class="line">        <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">        System.out.println(<span class="string">&quot;原始数据：&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="comment">// 填充随机数输入进行验证</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> random.nextInt(flags.length * <span class="number">4</span>);  <span class="comment">// flags长度为1000，整数最大只能为4000</span></span><br><span class="line">            nums[i] = num;</span><br><span class="line">            System.out.print(num + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            map.put(num, map.getOrDefault(num, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            setVal(num);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();</span><br><span class="line">        System.out.println(<span class="string">&quot;-------------------&quot;</span>);</span><br><span class="line">        List&lt;Integer&gt; bitMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        List&lt;Integer&gt; hashMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (getVal(nums[i]) == <span class="number">1</span>) &#123;</span><br><span class="line">                bitMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (map.getOrDefault(nums[i], <span class="number">0</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">                hashMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;只出现过一次的数据：&quot;</span>);</span><br><span class="line">        System.out.println(bitMapAns);</span><br><span class="line">        System.out.println(<span class="string">&quot;bitMapAns 是否和 hashMapAns相同：&quot;</span> + bitMapAns.equals(hashMapAns));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> getVal(idx);</span><br><span class="line">        <span class="keyword">if</span> (val &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="comment">// 11 或 10 表示出现过多次，保持不变即可</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        ~(3&lt;&lt;loc) =&gt; 11001111 即让2bit对应位置为0，其他都为1</span></span><br><span class="line"><span class="comment">        (flags[pos] &amp; ~(3&lt;&lt;loc)) =&gt; 效果就是让2bit对应位置置为00，其他为保持不变</span></span><br><span class="line"><span class="comment">        | ((val + 1) &lt;&lt; loc) =&gt; 效果就是让val+1的值填充2bit的位置</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">newVal</span> <span class="operator">=</span> (flags[pos] &amp; ~(<span class="number">3</span> &lt;&lt; (loc * <span class="number">2</span>))) | ((val + <span class="number">1</span>) &lt;&lt; (loc * <span class="number">2</span>));</span><br><span class="line">        flags[pos] = (<span class="type">byte</span>) newVal;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">getVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        flags[pos] &gt;&gt; (loc * 2)  =&gt; 00001001  (左边自动补0) 这个操作的效果是让2这个整数在bitmap中对应的两个bit移动到最右端</span></span><br><span class="line"><span class="comment">        拿上面的结果  (0b00001001) &amp; (byte)3  =&gt; (0b00001001) &amp; (0b00000011) =&gt; (0b00000001) 即可得到目标的两个bit对应的数字</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> (flags[pos] &gt;&gt; (loc * <span class="number">2</span>)) &amp; (<span class="type">byte</span>) <span class="number">3</span>;</span><br><span class="line">        <span class="keyword">return</span> val;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>zsh 与 Bourne Shell (sh) 高度兼容，并且与 bash 基本兼容，但存在一些差别。要进一步了解 zsh 及其全面的命令行完成系统，请在“终端”中输入 <code>man zsh</code>。</p>
+<h4 id="从命令行中更改默认shell"><a href="#从命令行中更改默认shell" class="headerlink" title="从命令行中更改默认shell"></a>从命令行中更改默认shell</h4><p>在“终端”中，输入 <code>$ chsh -s path</code>，其中的 path 是 &#x2F;etc&#x2F;shells 中列出的某个 Shell 路径，例如 &#x2F;bin&#x2F;zsh、&#x2F;bin&#x2F;bash、&#x2F;bin&#x2F;csh、&#x2F;bin&#x2F;dash、&#x2F;bin&#x2F;ksh、&#x2F;bin&#x2F;sh 或 &#x2F;bin&#x2F;tcsh。</p>
+<h4 id="终端高亮显示"><a href="#终端高亮显示" class="headerlink" title="终端高亮显示"></a>终端高亮显示</h4><p>修改配置文件，<code>~/.bash_profile</code>或<code>~/.zshrc</code></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">export CLICOLOR=1</span><br><span class="line">export LSCOLORS=gxfxaxdxcxegedabagacad</span><br></pre></td></tr></table></figure>
 
-<p>运行结果：</p>
-<p><img src="/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/image-20220512221937915.png"></p>
-<p>上述通过<code>HashMap</code>的方案可以检验<code>BitMap</code>的答案是正确的，并且成功节省了内存空间。</p>
+<h3 id="2-Mac版IDEA快捷键"><a href="#2-Mac版IDEA快捷键" class="headerlink" title="2. Mac版IDEA快捷键"></a>2. Mac版IDEA快捷键</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line"># 更多操作，如导包，引入变量</span><br><span class="line">Option+Enter</span><br><span class="line"># 将当前行复制一行到下一行</span><br><span class="line">Command+D</span><br><span class="line"># 返回上一次编辑的地方</span><br><span class="line">Command+Option+⬅️ 或 Command+[</span><br><span class="line"># 全局搜索类</span><br><span class="line">Command+O</span><br><span class="line"># 删除当前行</span><br><span class="line">Command+Delete</span><br><span class="line"># 大小写切换</span><br><span class="line">Command+Shift+U</span><br><span class="line"># 查看类的继承结构</span><br><span class="line">Ctrl+h</span><br></pre></td></tr></table></figure>
+
+<h3 id="3-给Mac命令添加别名"><a href="#3-给Mac命令添加别名" class="headerlink" title="3. 给Mac命令添加别名"></a>3. 给Mac命令添加别名</h3><ol>
+<li>修改.bash_profile（或.zshrc，取决于使用的哪个bash，新版本macOS默认是zsh）文件</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">vim ~/.zshrc</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 在.zshrc文件中添加alias语句 </span><br><span class="line">alias ll=&quot;ls -alF&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="/2021/12/02/mac%E4%BD%BF%E7%94%A8%E6%8A%80%E5%B7%A7/image-20220516164058025.png"></p>
+<ol start="2">
+<li>刷新文件</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">source ~/.zshrc</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-Mac环境变量"><a href="#4-Mac环境变量" class="headerlink" title="4. Mac环境变量"></a>4. Mac环境变量</h3><ol>
+<li>Mac中环境变量加载顺序如下</li>
+</ol>
+<blockquote>
+<p>a. 	&#x2F;etc&#x2F;profile<br>b. 	&#x2F;etc&#x2F;paths<br>c. 	~&#x2F;.bash_profile<br>d. 	~&#x2F;.bash_login<br>e. 	~&#x2F;.profile<br>f. 	~&#x2F;.bashrc</p>
+</blockquote>
+<p>其中a, b是系统级别</p>
+<ol start="2">
+<li>添加步骤</li>
+</ol>
+<p>推荐在c层级添加，对于最新版的Mac由于默认使用zsh shell，因此环境变量在<code>~/.zshrc</code>里修改</p>
+<p>基本语法：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">export PATH=&quot;$PATH:&lt;path1&gt;:&lt;path2&gt;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>其中<code>path1</code>和<code>path2</code>是自定义环境变量，多个环境变量使用<code>:</code>进行分隔。</p>
+<p>注意要加上<code>$PATH</code>，否则会导致一些系统内置的命令失效。</p>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>教程</tag>
+        <tag>Mac</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Redis过期key是否立马被删除？</title>
+    <url>/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/</url>
+    <content><![CDATA[<h3 id="Redis过期key是否立马被删除？"><a href="#Redis过期key是否立马被删除？" class="headerlink" title="Redis过期key是否立马被删除？"></a>Redis过期key是否立马被删除？</h3><p>答案是不会，Redis处理过期key主要有两种方式：</p>
+<ul>
+<li>惰性删除（客户端侧）</li>
+<li>定期随机删除（服务端侧）</li>
+</ul>
+<span id="more"></span>
+
+<h4 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h4><p>当客户端请求查询时，判断当前key已过期，则会删除该key，删除key的主动权交给每次访问的请求。</p>
+<p>弊端：只能处理还会访问的key，无法对一些不再会被访问的key进行删除。</p>
+<p>该实现通过<code>expiredIfNeeded</code>函数实现，源码路径：<code>src/db.c</code></p>
+<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">expireIfNeeded</span><span class="params">(redisDb *db, robj *key, <span class="type">int</span> force_delete_expired)</span> &#123;</span><br><span class="line">   <span class="comment">// key 没有过期，return 0</span></span><br><span class="line">    <span class="keyword">if</span> (!keyIsExpired(db,key)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (server.masterhost != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (server.current_client == server.master) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (!force_delete_expired) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (checkClientPauseTimeoutAndReturnIfPaused()) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Delete the key */</span></span><br><span class="line">    deleteExpiredKeyAndPropagate(db,key);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h4><p>对于一些key过期后不再被访问，惰性删除永远无法对其进行删除，这会导致已过期的key不断积压，因此仅靠客户端侧的处理是不够的。</p>
+<ul>
+<li>如何让处理“占着茅坑不拉屎”的key?</li>
+</ul>
+<p>服务端进行定期删除，顾名思义就是Redis默认每100 ms 执行一次，随机抽取一些设置了过期时间的key，判断是否过期，如发现已过期就直接删除。</p>
+<blockquote>
+<p>注意：并不是检查所有key，而是随机抽取一定数量的key</p>
+</blockquote>
+<p>具体步骤如下：</p>
+<img src="/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/image-20220511000559696.png" style="zoom:70%">
+
+<p>该过程通过<code>activeExpireCycle</code>函数实现，源码路径：<code>src/expire.c</code></p>
+<ul>
+<li>为什么不检查所有设置过期时间的key？</li>
+</ul>
+<p>Redis中存放了数以万计的key，如果每隔100 ms 就要轮询检查所有设置过期时间的key，会非常耗费CPU</p>
+<ul>
+<li>删除如何做到主从同步？</li>
+</ul>
+<p>不论是惰性删除还是定期删除，当进行删除时，<code>master</code>会将删除指令记录到<code>AOF</code>和<code>slave</code>节点</p>
+<blockquote>
+<p><strong>如果过期数据太多，定时删除无法完全删除（每次删除完过期的key还是超过25%），同时这些key再也不会被客户端请求，即也无法通过惰性删除，该如何解决？</strong></p>
+<p>答：内存淘汰机制</p>
+</blockquote>
 ]]></content>
       <categories>
         <category>技术</category>
       </categories>
       <tags>
-        <tag>Java</tag>
+        <tag>Redis</tag>
       </tags>
   </entry>
   <entry>
@@ -1534,264 +1639,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Redis过期key是否立马被删除？</title>
-    <url>/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/</url>
-    <content><![CDATA[<h3 id="Redis过期key是否立马被删除？"><a href="#Redis过期key是否立马被删除？" class="headerlink" title="Redis过期key是否立马被删除？"></a>Redis过期key是否立马被删除？</h3><p>答案是不会，Redis处理过期key主要有两种方式：</p>
-<ul>
-<li>惰性删除（客户端侧）</li>
-<li>定期随机删除（服务端侧）</li>
-</ul>
-<span id="more"></span>
-
-<h4 id="惰性删除"><a href="#惰性删除" class="headerlink" title="惰性删除"></a>惰性删除</h4><p>当客户端请求查询时，判断当前key已过期，则会删除该key，删除key的主动权交给每次访问的请求。</p>
-<p>弊端：只能处理还会访问的key，无法对一些不再会被访问的key进行删除。</p>
-<p>该实现通过<code>expiredIfNeeded</code>函数实现，源码路径：<code>src/db.c</code></p>
-<figure class="highlight c"><table><tr><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">expireIfNeeded</span><span class="params">(redisDb *db, robj *key, <span class="type">int</span> force_delete_expired)</span> &#123;</span><br><span class="line">   <span class="comment">// key 没有过期，return 0</span></span><br><span class="line">    <span class="keyword">if</span> (!keyIsExpired(db,key)) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (server.masterhost != <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (server.current_client == server.master) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">if</span> (!force_delete_expired) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (checkClientPauseTimeoutAndReturnIfPaused()) <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/* Delete the key */</span></span><br><span class="line">    deleteExpiredKeyAndPropagate(db,key);</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h4 id="定期删除"><a href="#定期删除" class="headerlink" title="定期删除"></a>定期删除</h4><p>对于一些key过期后不再被访问，惰性删除永远无法对其进行删除，这会导致已过期的key不断积压，因此仅靠客户端侧的处理是不够的。</p>
-<ul>
-<li>如何让处理“占着茅坑不拉屎”的key?</li>
-</ul>
-<p>服务端进行定期删除，顾名思义就是Redis默认每100 ms 执行一次，随机抽取一些设置了过期时间的key，判断是否过期，如发现已过期就直接删除。</p>
-<blockquote>
-<p>注意：并不是检查所有key，而是随机抽取一定数量的key</p>
-</blockquote>
-<p>具体步骤如下：</p>
-<img src="/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/image-20220511000559696.png" style="zoom:70%">
-
-<p>该过程通过<code>activeExpireCycle</code>函数实现，源码路径：<code>src/expire.c</code></p>
-<ul>
-<li>为什么不检查所有设置过期时间的key？</li>
-</ul>
-<p>Redis中存放了数以万计的key，如果每隔100 ms 就要轮询检查所有设置过期时间的key，会非常耗费CPU</p>
-<ul>
-<li>删除如何做到主从同步？</li>
-</ul>
-<p>不论是惰性删除还是定期删除，当进行删除时，<code>master</code>会将删除指令记录到<code>AOF</code>和<code>slave</code>节点</p>
-<blockquote>
-<p><strong>如果过期数据太多，定时删除无法完全删除（每次删除完过期的key还是超过25%），同时这些key再也不会被客户端请求，即也无法通过惰性删除，该如何解决？</strong></p>
-<p>答：内存淘汰机制</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>Redis</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>如何配置git ssh</title>
-    <url>/2022/05/10/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgit-ssh/</url>
-    <content><![CDATA[<h3 id="1-检查用户名和邮箱"><a href="#1-检查用户名和邮箱" class="headerlink" title="1. 检查用户名和邮箱"></a>1. 检查用户名和邮箱</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看用户名</span></span><br><span class="line">git config user.name</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看邮箱</span></span><br><span class="line">git config user.email</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置用户名</span></span><br><span class="line">git config --global user.name &quot;xxx&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置邮箱</span></span><br><span class="line">git config --global user.email &quot;xxx&quot;</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
-
-<h3 id="2-查看是否配置过SSH-Key"><a href="#2-查看是否配置过SSH-Key" class="headerlink" title="2. 查看是否配置过SSH Key"></a>2. 查看是否配置过SSH Key</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ls ~/.ssh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">hyunmin@HyunmindeMacBook-Air .ssh % <span class="built_in">ls</span> ~/.ssh</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">id_rsa      id_rsa.pub  known_hosts</span></span><br></pre></td></tr></table></figure>
-
-<p>存在id_rsa      id_rsa.pub文件即证明已配置过SSH Key</p>
-<h3 id="3-生成SSH-Key（秘钥）"><a href="#3-生成SSH-Key（秘钥）" class="headerlink" title="3. 生成SSH Key（秘钥）"></a>3. 生成SSH Key（秘钥）</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t -rsa -C &quot;email&quot;</span><br></pre></td></tr></table></figure>
-
-<h3 id="4-GitHub远程仓库添加公钥"><a href="#4-GitHub远程仓库添加公钥" class="headerlink" title="4. GitHub远程仓库添加公钥"></a>4. GitHub远程仓库添加公钥</h3><ol>
-<li><p>复制<code>~/.ssh/id_rsa.pub</code>文件内容，并粘贴到GitHub-&gt;settings-&gt;SSH and GPG keys</p>
-</li>
-<li><p>检查是否配置成功</p>
-</li>
-</ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示如下内容则表示配置成功</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Hi Ysfun! You<span class="string">&#x27;ve successfully authenticated, but GitHub does not provide shell access.</span></span></span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Git</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>刷题分享：LeetCode[729,731,732]我的日程安排表【TreeMap、查分数组、线段树】</title>
-    <url>/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/</url>
-    <content><![CDATA[<p><img src="/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/leetcode-1.jpg"></p>
-<p>题目对应<code>LeetCode</code><a href="https://leetcode.cn/problems/my-calendar-i/">729. 我的日程安排表 I</a> <a href="https://leetcode.cn/problems/my-calendar-ii/">731. 我的日程安排表 II</a> <a href="https://leetcode.cn/problems/my-calendar-iii/">732. 我的日程安排表 III</a></p>
-<span id="more"></span>
-
-<h2 id="我的日程安排表I"><a href="#我的日程安排表I" class="headerlink" title="我的日程安排表I"></a>我的日程安排表I</h2><p><a href="https://leetcode.cn/problems/my-calendar-i/">729. 我的日程安排表 I</a></p>
-<h3 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h3><p>实现一个 MyCalendar 类来存放你的日程安排。如果要添加的日程安排不会造成 重复预订 ，则可以存储这个新的日程安排。</p>
-<p>当两个日程安排有一些时间上的交叉时（例如两个日程安排都在同一时间内），就会产生 重复预订 。</p>
-<p>日程可以用一对整数 start 和 end 表示，这里的时间是半开区间，即 [start, end), 实数 x 的范围为，  start &lt;&#x3D; x &lt; end 。</p>
-<p>实现 MyCalendar 类：</p>
-<p>MyCalendar() 初始化日历对象。<br>boolean book(int start, int end) 如果可以将日程安排成功添加到日历中而不会导致重复预订，返回 true 。否则，返回 false 并且不要将该日程安排添加到日历中。</p>
-<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">输入：</span><br><span class="line">[&quot;MyCalendar&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;]</span><br><span class="line">[[], [10, 20], [15, 25], [20, 30]]</span><br><span class="line">输出：</span><br><span class="line">[null, true, false, true]</span><br><span class="line"></span><br><span class="line">解释：</span><br><span class="line">MyCalendar myCalendar = new MyCalendar();</span><br><span class="line">myCalendar.book(10, 20); // return True</span><br><span class="line">myCalendar.book(15, 25); // return False ，这个日程安排不能添加到日历中，因为时间 15 已经被另一个日程安排预订了。</span><br><span class="line">myCalendar.book(20, 30); // return True ，这个日程安排可以添加到日历中，因为第一个日程安排预订的每个时间都小于 20 ，且不包含时间 20 。</span><br></pre></td></tr></table></figure>
-
-<h3 id="题解【TreeMap】"><a href="#题解【TreeMap】" class="headerlink" title="题解【TreeMap】"></a>题解【TreeMap】</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendar</span> &#123;</span><br><span class="line">    TreeMap&lt;Integer, Integer&gt; treeMap;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendar</span><span class="params">()</span> &#123;</span><br><span class="line">        treeMap = <span class="keyword">new</span> <span class="title class_">TreeMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        Map.Entry&lt;Integer, Integer&gt; floor = treeMap.floorEntry(start);</span><br><span class="line">        Map.Entry&lt;Integer, Integer&gt; ceiling = treeMap.ceilingEntry(start);</span><br><span class="line">        <span class="keyword">if</span> (floor != <span class="literal">null</span> &amp;&amp; floor.getValue() &gt; start) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (ceiling != <span class="literal">null</span> &amp;&amp; ceiling.getKey() &lt; end) &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        treeMap.put(start, end);</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="复杂度分析"><a href="#复杂度分析" class="headerlink" title="复杂度分析"></a>复杂度分析</h3><p>在book()方法中，<code>TreeMap</code>是排序二叉树，<code>treeMap.floorEntry()</code>和<code>treeMap.ceilingEntry()</code>都是通过二分查找实现的，时间复杂度都是<code>o (log n)</code>.</p>
-<h2 id="我的日程安排表II"><a href="#我的日程安排表II" class="headerlink" title="我的日程安排表II"></a>我的日程安排表II</h2><p><a href="https://leetcode.cn/problems/my-calendar-ii/">731. 我的日程安排表 II</a></p>
-<h3 id="题目描述-1"><a href="#题目描述-1" class="headerlink" title="题目描述"></a>题目描述</h3><p>实现一个 MyCalendar 类来存放你的日程安排。如果要添加的时间内不会导致三重预订时，则可以存储这个新的日程安排。</p>
-<p>MyCalendar 有一个 book(int start, int end)方法。它意味着在 start 到 end 时间内增加一个日程安排，注意，这里的时间是半开区间，即 [start, end), 实数 x 的范围为，  start &lt;&#x3D; x &lt; end。</p>
-<p>当三个日程安排有一些时间上的交叉时（例如三个日程安排都在同一时间内），就会产生三重预订。</p>
-<p>每次调用 MyCalendar.book方法时，如果可以将日程安排成功添加到日历中而不会导致三重预订，返回 true。否则，返回 false 并且不要将该日程安排添加到日历中。</p>
-<p>请按照以下步骤调用MyCalendar 类: MyCalendar cal &#x3D; new MyCalendar(); MyCalendar.book(start, end)</p>
-<h3 id="示例-1"><a href="#示例-1" class="headerlink" title="示例"></a>示例</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">MyCalendar();</span><br><span class="line">MyCalendar.book(10, 20); // returns true</span><br><span class="line">MyCalendar.book(50, 60); // returns true</span><br><span class="line">MyCalendar.book(10, 40); // returns true</span><br><span class="line">MyCalendar.book(5, 15); // returns false</span><br><span class="line">MyCalendar.book(5, 10); // returns true</span><br><span class="line">MyCalendar.book(25, 55); // returns true</span><br><span class="line">解释： </span><br><span class="line">前两个日程安排可以添加至日历中。 第三个日程安排会导致双重预订，但可以添加至日历中。</span><br><span class="line">第四个日程安排活动（5,15）不能添加至日历中，因为它会导致三重预订。</span><br><span class="line">第五个日程安排（5,10）可以添加至日历中，因为它未使用已经双重预订的时间10。</span><br><span class="line">第六个日程安排（25,55）可以添加至日历中，因为时间 [25,40] 将和第三个日程安排双重预订；</span><br><span class="line">时间 [40,50] 将单独预订，时间 [50,55）将和第二个日程安排双重预订</span><br></pre></td></tr></table></figure>
-
-<h3 id="题解【差分数组思想、TreeMap】"><a href="#题解【差分数组思想、TreeMap】" class="headerlink" title="题解【差分数组思想、TreeMap】"></a>题解【差分数组思想、TreeMap】<a id="t2"></a></h3><p>边界计数，边界开始时计数加一<code>delta[start]++</code>，边界计数时计数减一<code>delta[end]--</code>，按照排序从小到达统计<code>count</code>之和，一旦<code>count==3</code>则表明当前区间有三次重叠。考虑到需要排序结构，delta使用TreeMap。</p>
-<p><strong>图解：</strong></p>
-<p><img src="/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/image-20220606120852444.png"></p>
-<p>注意：当<code>count==3</code>时应撤销添加日程</p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendarTwo</span> &#123;</span><br><span class="line">    TreeMap&lt;Integer, Integer&gt; treeMap;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendarTwo</span><span class="params">()</span> &#123;</span><br><span class="line">        treeMap = <span class="keyword">new</span> <span class="title class_">TreeMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        treeMap.put(start, treeMap.getOrDefault(start, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">        treeMap.put(end, treeMap.getOrDefault(end, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">        <span class="type">int</span> <span class="variable">sum</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> count : treeMap.values()) &#123;</span><br><span class="line">            sum += count;</span><br><span class="line">            <span class="keyword">if</span> (sum &gt;= <span class="number">3</span>) &#123;</span><br><span class="line">                <span class="comment">// 出现三重预定，取消将该日程添加到日历</span></span><br><span class="line">                treeMap.put(start, treeMap.getOrDefault(start, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">                treeMap.put(end, treeMap.getOrDefault(end, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h2 id="我的日程安排表III"><a href="#我的日程安排表III" class="headerlink" title="我的日程安排表III"></a>我的日程安排表III</h2><p><a href="https://leetcode.cn/problems/my-calendar-iii/">732. 我的日程安排表 III</a></p>
-<h3 id="题目描述-2"><a href="#题目描述-2" class="headerlink" title="题目描述"></a>题目描述</h3><p>当 k 个日程安排有一些时间上的交叉时（例如 k 个日程安排都在同一时间内），就会产生 k 次预订。</p>
-<p>给你一些日程安排 [start, end) ，请你在每个日程安排添加后，返回一个整数 k ，表示所有先前日程安排会产生的最大 k 次预订。</p>
-<p>实现一个 MyCalendarThree 类来存放你的日程安排，你可以一直添加新的日程安排。</p>
-<p>MyCalendarThree() 初始化对象。<br>int book(int start, int end) 返回一个整数 k ，表示日历中存在的 k 次预订的最大值。</p>
-<h3 id="示例-2"><a href="#示例-2" class="headerlink" title="示例"></a>示例</h3><figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">输入：</span><br><span class="line">[&quot;MyCalendarThree&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;, &quot;book&quot;]</span><br><span class="line">[[], [10, 20], [50, 60], [10, 40], [5, 15], [5, 10], [25, 55]]</span><br><span class="line">输出：</span><br><span class="line">[null, 1, 1, 2, 3, 3, 3]</span><br><span class="line"></span><br><span class="line">解释：</span><br><span class="line">MyCalendarThree myCalendarThree = new MyCalendarThree();</span><br><span class="line">myCalendarThree.book(10, 20); // 返回 1 ，第一个日程安排可以预订并且不存在相交，所以最大 k 次预订是 1 次预订。</span><br><span class="line">myCalendarThree.book(50, 60); // 返回 1 ，第二个日程安排可以预订并且不存在相交，所以最大 k 次预订是 1 次预订。</span><br><span class="line">myCalendarThree.book(10, 40); // 返回 2 ，第三个日程安排 [10, 40) 与第一个日程安排相交，所以最大 k 次预订是 2 次预订。</span><br><span class="line">myCalendarThree.book(5, 15); // 返回 3 ，剩下的日程安排的最大 k 次预订是 3 次预订。</span><br><span class="line">myCalendarThree.book(5, 10); // 返回 3</span><br><span class="line">myCalendarThree.book(25, 55); // 返回 3</span><br></pre></td></tr></table></figure>
-
-<h3 id="题解【线段树】"><a href="#题解【线段树】" class="headerlink" title="题解【线段树】"></a>题解【线段树】</h3><h3 id="方法一：差分数组"><a href="#方法一：差分数组" class="headerlink" title="方法一：差分数组"></a>方法一：差分数组</h3><p>采用差分数组解法，同<a href="#t2">我的日程安排表II</a></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendarThree</span> &#123;</span><br><span class="line">    TreeMap&lt;Integer, Integer&gt; delta;</span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendarThree</span><span class="params">()</span> &#123;</span><br><span class="line">        delta = <span class="keyword">new</span> <span class="title class_">TreeMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        delta.put(start, delta.getOrDefault(start, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">        delta.put(end, delta.getOrDefault(end, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">        <span class="type">int</span> <span class="variable">count</span> <span class="operator">=</span> <span class="number">0</span>, maxCount = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> val : delta.values()) &#123;</span><br><span class="line">            count += val;</span><br><span class="line">            maxCount = Math.max(count, maxCount);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> maxCount;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="方法二：线段树"><a href="#方法二：线段树" class="headerlink" title="方法二：线段树"></a>方法二：线段树</h3><p>针对本题的线段树初级教程可以参考：<a href="https://leetcode.cn/problems/my-calendar-iii/solution/xian-duan-shu-by-xiaohu9527-rfzj/">线段树 – 新手篇</a></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendarThree</span> &#123;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;Integer, Integer&gt; tree;</span><br><span class="line">    <span class="keyword">private</span> Map&lt;Integer, Integer&gt; lazy;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendarThree</span><span class="params">()</span> &#123;</span><br><span class="line">        tree = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;Integer, Integer&gt;();</span><br><span class="line">        lazy = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;Integer, Integer&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        update(start, end - <span class="number">1</span>, <span class="number">0</span>, <span class="number">1000000000</span>, <span class="number">1</span>);</span><br><span class="line">        <span class="keyword">return</span> tree.getOrDefault(<span class="number">1</span>, <span class="number">0</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">update</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end, <span class="type">int</span> l, <span class="type">int</span> r, <span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="keyword">if</span> (r &lt; start || end &lt; l) &#123;</span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125; </span><br><span class="line">        <span class="keyword">if</span> (start &lt;= l &amp;&amp; r &lt;= end) &#123;</span><br><span class="line">            tree.put(idx, tree.getOrDefault(idx, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            lazy.put(idx, lazy.getOrDefault(idx, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">mid</span> <span class="operator">=</span> (l + r) &gt;&gt; <span class="number">1</span>;</span><br><span class="line">            update(start, end, l, mid, <span class="number">2</span> * idx);</span><br><span class="line">            update(start, end, mid + <span class="number">1</span>, r, <span class="number">2</span> * idx + <span class="number">1</span>);</span><br><span class="line">            tree.put(idx, lazy.getOrDefault(idx, <span class="number">0</span>) + Math.max(tree.getOrDefault(<span class="number">2</span> * idx, <span class="number">0</span>), tree.getOrDefault(<span class="number">2</span> * idx + <span class="number">1</span>, <span class="number">0</span>)));</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-
-
-<blockquote>
-<p>后续会出一篇关于线段树的详细教程！！！</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>算法</category>
-      </categories>
-      <tags>
-        <tag>算法题</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>源码剖析：HashMap中插入节点put(k, v)和扩容resize()</title>
-    <url>/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/</url>
-    <content><![CDATA[<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/337690-20200704174405569-752263172-20220608125854874.png"></p>
-<p><code>HashMap</code>在不同JDK版本的实现方式和源码有所区别，本文针对<code>jdk1.8</code>展开分析，从源码出发深入探讨<code>HashMap</code>插入元素及其中涉及的扩容的过程。</p>
-<span id="more"></span>
-
-<h2 id="HashMap数据结构"><a href="#HashMap数据结构" class="headerlink" title="HashMap数据结构"></a>HashMap数据结构</h2><p><code>HashMap</code>本质由数组+链表&#x2F;红黑树，其源码中定义了一个核心属性<code>table</code>（一个<code>Node</code>数组），<code>Node</code>可以理解为存储哈希表中<strong>键值对</strong>的容器。</p>
-<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/image-20220608130154836.png"></p>
-<p><code>HashMap</code>会根据<code>key</code>的<code>哈希值</code>找到当前键值对存放在<code>table</code>中的下标<code>index</code>，当多个<code>key</code>位于同一个下标时（称之为哈希冲突），会采用链表的方式，将当前<code>Node</code>插入到链表尾端；当链表的长度超过<code>TREEIFY_THRESHOLD</code>时，会将链表转换为二叉查找树进行存储（HashMap采用的是红黑树）；当发现<code>key</code>相同时只替换<code>value</code>值即可。</p>
-<p>上面提到发现”<code>key</code>相同“，进行<code>key</code>比较的时候会按照如下顺序进行比对：</p>
-<ol>
-<li>先判断两个<code>key</code>的哈希值是否相同，如果不同则两个<code>key</code>不同，否则继续比较</li>
-<li>判断是否指向同一个引用，即是否<code>==</code>，如果指向同一个引用则两个<code>key</code>相同，否则继续比较</li>
-<li>判断<code>equals</code>是否相等，如果相等则两个<code>key</code>相同，否则不相同</li>
-</ol>
-<blockquote>
-<p>从这里我们解释为什么说“重写equals方法就一定要重写hashCode方法”？</p>
-<p>当我们需要使用到散列结构（HashMap, HashSet等）时，如果只重写equals方法而没有重写hashCode方法，在比较key是否相同时会先进行hashCode比较，没有重写hashCode方法会导致两个equals相等的对象的hashCode不同，因此在put操作时会当做两个不同的key来处理。</p>
-</blockquote>
-<h2 id="HashMap插入节点和扩容"><a href="#HashMap插入节点和扩容" class="headerlink" title="HashMap插入节点和扩容"></a>HashMap插入节点和扩容</h2><p><code>put</code>方法源码注释：</p>
-<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/image-20220608131355501.png"></p>
-<p>我们可以发现<code>put</code>方法实际是调用了<code>putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict)</code>方法，我们先来看计算哈希值的过程：</p>
-<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/image-20220608131606962.png"></p>
-<p>从源码我们可以发现，计算哈希值的时候，当<code>key</code>为<code>null</code>时指定了哈希值为0，说明<code>HashMap</code>是允许<code>key</code>为<code>null</code>的，并且只能有一个<code>key</code>为<code>null</code>。这里和其他的哈希表不同（如<code>HashTable</code>,<code>ConcurrentHashMap</code>），其他哈希结构都是不允许<code>key</code>为<code>null</code>的。</p>
-<h3 id="putVal-插入节点"><a href="#putVal-插入节点" class="headerlink" title="putVal()插入节点"></a>putVal()插入节点</h3><p>插入节点的步骤：</p>
-<ol>
-<li>根据哈希值找到当前key在table数组（哈希桶）中的位置</li>
-<li>table数组当前位置为空，则在此处创建新Node并放在table的当前位置即可，break</li>
-<li>当前位置不为空，且发现当前位置的节点是一颗红黑树，执行红黑树插入节点的操作，break</li>
-<li>当前位置不为空，也不是红黑树，则当前位置只有可能是链表，执行链表的插入操作<ol>
-<li>遍历链表，查找是否有相同key，如果发现了相同key，则进行值替换，break</li>
-<li>遍历到链表尾部，仍未发现相同key，此处创建行Node，并将其插入到链表尾部；插入节点后若发现当前链表长度超过<code>TREEIFY_THRESHOLD</code>时，将链表变成红黑树，break</li>
-</ol>
-</li>
-<li>插入节点后，判断当前<code>size</code>是否超过<code>threshold</code>，如超过进行<code>resize()</code></li>
-<li>Return</li>
-</ol>
-<p><strong>源码分析：（详细分析过程见注释）</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Implements Map.put and related methods.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> hash hash for key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key the key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> value the value to put</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> onlyIfAbsent if true, don&#x27;t change existing value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> evict if false, the table is in creation mode.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> previous value, or null if none</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="keyword">final</span> V <span class="title function_">putVal</span><span class="params">(<span class="type">int</span> hash, K key, V value, <span class="type">boolean</span> onlyIfAbsent,</span></span><br><span class="line"><span class="params">               <span class="type">boolean</span> evict)</span> &#123;</span><br><span class="line">  Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="type">int</span> n, i;</span><br><span class="line">  <span class="keyword">if</span> ((tab = table) == <span class="literal">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">    <span class="comment">// table为空时，初始化table</span></span><br><span class="line">    n = (tab = resize()).length;</span><br><span class="line">  <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="literal">null</span>)</span><br><span class="line">    <span class="comment">// 哈希桶当前位置为空，则直接把新的Node放到table数组的当前位置即可</span></span><br><span class="line">    tab[i] = newNode(hash, key, value, <span class="literal">null</span>);</span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// 发生哈希冲突</span></span><br><span class="line">    Node&lt;K,V&gt; e; K k;</span><br><span class="line">    <span class="comment">// p.hash == hash &amp;&amp; ((k = p.key) == key || (key != null &amp;&amp; key.equals(k)))就是上面提到的「比较key」的源码</span></span><br><span class="line">    <span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">        ((k = p.key) == key || (key != <span class="literal">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">      <span class="comment">// 发现key相同，把当前Node赋给e，后面进行value替换操作</span></span><br><span class="line">      e = p;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">      <span class="comment">// 发现哈希桶当前位置已经是一颗树，进行红黑树插入节点操作，此处不进行详细阐述</span></span><br><span class="line">      e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="built_in">this</span>, tab, hash, key, value);</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// table当前位置为链表，遍历链表，寻找是否有相同的key</span></span><br><span class="line">      <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">binCount</span> <span class="operator">=</span> <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">        <span class="keyword">if</span> ((e = p.next) == <span class="literal">null</span>) &#123;</span><br><span class="line">          <span class="comment">// 遍历到链表尾部，仍未发现相同的key，创建新Node，并插入到链表尾部</span></span><br><span class="line">          p.next = newNode(hash, key, value, <span class="literal">null</span>);</span><br><span class="line">          <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st</span></span><br><span class="line">            <span class="comment">// 发现当前链表的长度达到了TREEIFY_THRESHOLD，链表变红黑树，提升查询效率</span></span><br><span class="line">            treeifyBin(tab, hash);</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 此处同样是「比较key」的过程</span></span><br><span class="line">        <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">            ((k = e.key) == key || (key != <span class="literal">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">        <span class="comment">// 发现有相同的key，把当前Node赋给e，后面进行value替换操作</span></span><br><span class="line">        p = e;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (e != <span class="literal">null</span>) &#123; <span class="comment">// existing mapping for key</span></span><br><span class="line">      <span class="comment">// 发现key相同，进行value替换操作</span></span><br><span class="line">      <span class="type">V</span> <span class="variable">oldValue</span> <span class="operator">=</span> e.value;</span><br><span class="line">      <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="literal">null</span>)</span><br><span class="line">        e.value = value;</span><br><span class="line">      afterNodeAccess(e);</span><br><span class="line">      <span class="keyword">return</span> oldValue;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ++modCount;</span><br><span class="line">  <span class="keyword">if</span> (++size &gt; threshold)</span><br><span class="line">    <span class="comment">// 当前HashMap的节点数超过了门槛值，进行扩容</span></span><br><span class="line">    resize();  <span class="comment">// 扩容操作</span></span><br><span class="line">  afterNodeInsertion(evict);</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<h3 id="resize-扩容"><a href="#resize-扩容" class="headerlink" title="resize()扩容"></a>resize()扩容</h3><p>源码注释：</p>
-<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/image-20220608134431428.png"></p>
-<p>从上面注释我们可以知道，当初始化或者哈希桶大小翻倍时会执行<code>resize()</code>方法。</p>
-<p><code>resize()</code>方法分为两个部分：</p>
-<ol>
-<li>重新计算<code>threshold</code>及<code>capacity</code></li>
-<li>重新放置所有Node</li>
-</ol>
-<p>第一个过程较为简单，基本过程就是<code>table</code>大小翻倍，然后重新计算<code>threshold = newCap * loadFactor</code>，源码部分涉及到很多越界处理，看着有些复杂。</p>
-<p>第二个过程遍历旧<code>table</code>，将节点放入到新<code>table</code>对应的位置，主要分为以下几步：</p>
-<ol>
-<li><p>旧<code>table</code>当前位置为空，直接跳过</p>
-</li>
-<li><p>旧<code>table</code>当前位置只有一个节点，将该节点放到新<code>table</code>的<code>e.hash &amp; (newCap - 1)</code>位置上即可</p>
-</li>
-<li><p>旧<code>table</code>当前位置是一颗二叉树，执行红黑树的重新放置节点操作</p>
-</li>
-<li><p>旧<code>table</code>当前位置是一个长度大于1的链表</p>
-<ol>
-<li>在链表中存在位置不变和位置往后移动<code>oldCap</code>的节点，使用<code>loHead,loTail</code>来记录位置不变节点的头尾节点，使用<code>hiHead, hiTail</code>记录位置需要往后移动<code>oldCap</code>的头尾节点</li>
-</ol>
-<blockquote>
-<p>怎么判断哪些节点位置不变，哪些需要移动？为什么是向后移动oldCap个位置？<br>e.hash &amp; (newCap - 1) 代表新table的位置，且newCap &#x3D; oldCap &lt;&lt; 1，并且newCap和oldCap都是2的倍数<br>举例说明：<br>我们假定oldCap &#x3D; 8（即0b1000），则newCap &#x3D; 16（即0b10000）<br>e.hash &amp;  0b111 表示在旧table中的位置，&amp; 操作是对e.hash进行截断，即e.hash的后三位即代表旧位置<br>e.hash &amp; 0b1111 表示在新table中的位置，同理，e.hash的后四位代表新位置<br>因此我们只要判断e.hash在第四位是否为0即可，如果为0，则表示新位置和旧位置一致；如果不为0，则新位置比旧位置大0b1000<br>结论：<br>e.hash &amp; oldCap &#x3D;&#x3D; 0 : 新位置和旧位置一致<br>e.hash &amp; oldCap !&#x3D; 0 : 新位置比旧位置大oldCap</p>
-</blockquote>
-<ol start="2">
-<li>位置不动的节点通过<code>newTab[j] = loHead</code>来实现；位置往后移动通过<code>newTab[j + oldCap] = hiHead</code>来实现</li>
-</ol>
-</li>
-</ol>
-<p><strong>源码分析：（详细分析过程见注释）</strong></p>
-<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> Node&lt;K,V&gt;[] resize() &#123;</span><br><span class="line">  Node&lt;K,V&gt;[] oldTab = table;</span><br><span class="line">  <span class="comment">// ==============第一部分 开始==============</span></span><br><span class="line">  <span class="type">int</span> <span class="variable">oldCap</span> <span class="operator">=</span> (oldTab == <span class="literal">null</span>) ? <span class="number">0</span> : oldTab.length;</span><br><span class="line">  <span class="type">int</span> <span class="variable">oldThr</span> <span class="operator">=</span> threshold;</span><br><span class="line">  <span class="type">int</span> newCap, newThr = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">if</span> (oldCap &gt; <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="keyword">if</span> (oldCap &gt;= MAXIMUM_CAPACITY) &#123;</span><br><span class="line">      threshold = Integer.MAX_VALUE;</span><br><span class="line">      <span class="keyword">return</span> oldTab;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// newCap = oldCap &lt;&lt; 1，capacity翻倍，即table大小翻倍</span></span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> ((newCap = oldCap &lt;&lt; <span class="number">1</span>) &lt; MAXIMUM_CAPACITY &amp;&amp;</span><br><span class="line">             oldCap &gt;= DEFAULT_INITIAL_CAPACITY)</span><br><span class="line">      <span class="comment">// threshold翻倍</span></span><br><span class="line">      newThr = oldThr &lt;&lt; <span class="number">1</span>; <span class="comment">// double threshold</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> <span class="keyword">if</span> (oldThr &gt; <span class="number">0</span>) <span class="comment">// initial capacity was placed in threshold</span></span><br><span class="line">    newCap = oldThr;</span><br><span class="line">  <span class="keyword">else</span> &#123;               <span class="comment">// zero initial threshold signifies using defaults</span></span><br><span class="line">    newCap = DEFAULT_INITIAL_CAPACITY;</span><br><span class="line">    newThr = (<span class="type">int</span>)(DEFAULT_LOAD_FACTOR * DEFAULT_INITIAL_CAPACITY);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> (newThr == <span class="number">0</span>) &#123;</span><br><span class="line">    <span class="comment">// 重新计算threshold = newCap * loadFactor</span></span><br><span class="line">    <span class="type">float</span> <span class="variable">ft</span> <span class="operator">=</span> (<span class="type">float</span>)newCap * loadFactor;</span><br><span class="line">    newThr = (newCap &lt; MAXIMUM_CAPACITY &amp;&amp; ft &lt; (<span class="type">float</span>)MAXIMUM_CAPACITY ?</span><br><span class="line">              (<span class="type">int</span>)ft : Integer.MAX_VALUE);</span><br><span class="line">  &#125;</span><br><span class="line">  threshold = newThr;</span><br><span class="line">  <span class="comment">// ==============第一部分 结束==============</span></span><br><span class="line">  </span><br><span class="line">  <span class="comment">// ==============第二部分 开始==============</span></span><br><span class="line">  <span class="meta">@SuppressWarnings(&#123;&quot;rawtypes&quot;,&quot;unchecked&quot;&#125;)</span></span><br><span class="line">  Node&lt;K,V&gt;[] newTab = (Node&lt;K,V&gt;[])<span class="keyword">new</span> <span class="title class_">Node</span>[newCap];</span><br><span class="line">  table = newTab;</span><br><span class="line">  <span class="keyword">if</span> (oldTab != <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="comment">// 遍历原来的table</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">j</span> <span class="operator">=</span> <span class="number">0</span>; j &lt; oldCap; ++j) &#123;</span><br><span class="line">      Node&lt;K,V&gt; e;</span><br><span class="line">      <span class="comment">// 原来table当前位置为null的直接跳过</span></span><br><span class="line">      <span class="keyword">if</span> ((e = oldTab[j]) != <span class="literal">null</span>) &#123;</span><br><span class="line">        oldTab[j] = <span class="literal">null</span>;</span><br><span class="line">        <span class="keyword">if</span> (e.next == <span class="literal">null</span>)</span><br><span class="line">          <span class="comment">// 当前位置上的链表只有一个节点，重新计算在新table中的位置，并放置到新table对应位置即可</span></span><br><span class="line">          newTab[e.hash &amp; (newCap - <span class="number">1</span>)] = e;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (e <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">          <span class="comment">// 当前位置上是一颗红黑树，进行树的重新放置操作，此处不进行详细阐述</span></span><br><span class="line">          ((TreeNode&lt;K,V&gt;)e).split(<span class="built_in">this</span>, newTab, j, oldCap);</span><br><span class="line">        <span class="keyword">else</span> &#123; <span class="comment">// preserve order</span></span><br><span class="line">          <span class="comment">// 当前位置上是一颗节点数大于1的链表</span></span><br><span class="line">          <span class="comment">// 不需要改变位置的头结点和尾节点</span></span><br><span class="line">          Node&lt;K,V&gt; loHead = <span class="literal">null</span>, loTail = <span class="literal">null</span>;</span><br><span class="line">          <span class="comment">// 需要将位置往后移动oldCap个位置的头节点和尾节点</span></span><br><span class="line">          Node&lt;K,V&gt; hiHead = <span class="literal">null</span>, hiTail = <span class="literal">null</span>;</span><br><span class="line">          Node&lt;K,V&gt; next;</span><br><span class="line">          <span class="keyword">do</span> &#123;</span><br><span class="line">            next = e.next;</span><br><span class="line">            <span class="comment">/* </span></span><br><span class="line"><span class="comment">            (e.hash &amp; oldCap) == 0 是判断当前节点哈希值在新table中的位置是否需要改变</span></span><br><span class="line"><span class="comment">            e.hash &amp; (newCap - 1) 代表新table的位置，且newCap = oldCap &lt;&lt; 1，并且newCap和oldCap都是2的倍数</span></span><br><span class="line"><span class="comment">            举例说明：</span></span><br><span class="line"><span class="comment">            我们假定oldCap = 8（即0b1000），则newCap = 16（即0b10000）</span></span><br><span class="line"><span class="comment">            e.hash &amp;  0b111 表示在旧table中的位置，&amp; 操作是对e.hash进行截断，即e.hash的后三位即代表旧位置</span></span><br><span class="line"><span class="comment">            e.hash &amp; 0b1111 表示在新table中的位置，同理，e.hash的后四位代表新位置</span></span><br><span class="line"><span class="comment">            因此我们只要判断e.hash在第四位是否为0即可，如果为0，则表示新位置和旧位置一致；如果不为0，则新位置比旧位置大0b1000</span></span><br><span class="line"><span class="comment">            结论：</span></span><br><span class="line"><span class="comment">            e.hash &amp; oldCap == 0 : 新位置和旧位置一致</span></span><br><span class="line"><span class="comment">            e.hash &amp; oldCap != 0 : 新位置比旧位置大oldCap</span></span><br><span class="line"><span class="comment">            */</span></span><br><span class="line">            <span class="keyword">if</span> ((e.hash &amp; oldCap) == <span class="number">0</span>) &#123;</span><br><span class="line">              <span class="keyword">if</span> (loTail == <span class="literal">null</span>)</span><br><span class="line">                loHead = e;</span><br><span class="line">              <span class="keyword">else</span></span><br><span class="line">                loTail.next = e;</span><br><span class="line">              loTail = e;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">              <span class="keyword">if</span> (hiTail == <span class="literal">null</span>)</span><br><span class="line">                hiHead = e;</span><br><span class="line">              <span class="keyword">else</span></span><br><span class="line">                hiTail.next = e;</span><br><span class="line">              hiTail = e;</span><br><span class="line">            &#125;</span><br><span class="line">          &#125; <span class="keyword">while</span> ((e = next) != <span class="literal">null</span>);</span><br><span class="line">          <span class="keyword">if</span> (loTail != <span class="literal">null</span>) &#123;</span><br><span class="line">            loTail.next = <span class="literal">null</span>;</span><br><span class="line">            <span class="comment">// 将新旧位置不变的节点仍放到j位置上</span></span><br><span class="line">            newTab[j] = loHead;</span><br><span class="line">          &#125;</span><br><span class="line">          <span class="keyword">if</span> (hiTail != <span class="literal">null</span>) &#123;</span><br><span class="line">            hiTail.next = <span class="literal">null</span>;</span><br><span class="line">            <span class="comment">// 将需要往后移的节点放到j+oldCap位置上</span></span><br><span class="line">            newTab[j + oldCap] = hiHead;</span><br><span class="line">          &#125;</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> newTab;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>技术</category>
-      </categories>
-      <tags>
-        <tag>Java</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Markdown如何实现页内跳转？</title>
-    <url>/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/</url>
-    <content><![CDATA[<h2 id="1-Markdown怎么实现页内跳转？"><a href="#1-Markdown怎么实现页内跳转？" class="headerlink" title="1. Markdown怎么实现页内跳转？"></a>1. Markdown怎么实现页内跳转？</h2><h3 id="1-利用Markdown语法"><a href="#1-利用Markdown语法" class="headerlink" title="1. 利用Markdown语法"></a>1. 利用Markdown语法</h3><p>格式：[描述文字] (#标题名称)</p>
-<span id="more"></span>
-
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">实践：</span><br><span class="line"></span><br><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line"></span><br><span class="line">[点我去顶部](#1.-我是顶部（空格用`-`代替，转换为html时会跳转失败）)</span><br><span class="line"></span><br><span class="line">[点我去中部](#我是中部)</span><br><span class="line"></span><br><span class="line">##### 1. 我是顶部（空格用`-`代替，转换为html时会跳转失败）</span><br><span class="line"></span><br><span class="line">##### 我是中部</span><br></pre></td></tr></table></figure>
-
-<p><strong>效果展示：</strong></p>
-<hr>
-<p><a href="#1.-%E6%88%91%E6%98%AF%E9%A1%B6%E9%83%A8%EF%BC%88%E7%A9%BA%E6%A0%BC%E7%94%A8%60-%60%E4%BB%A3%E6%9B%BF%EF%BC%8C%E8%BD%AC%E6%8D%A2%E4%B8%BAhtml%E6%97%B6%E4%BC%9A%E8%B7%B3%E8%BD%AC%E5%A4%B1%E8%B4%A5%EF%BC%89">点我去顶部</a></p>
-<p><a href="#%E6%88%91%E6%98%AF%E4%B8%AD%E9%83%A8">点我去中部</a></p>
-<h5 id="1-我是顶部（空格用-代替，转换为html时会跳转失败）"><a href="#1-我是顶部（空格用-代替，转换为html时会跳转失败）" class="headerlink" title="1. 我是顶部（空格用-代替，转换为html时会跳转失败）"></a>1. 我是顶部（空格用<code>-</code>代替，转换为html时会跳转失败）</h5><h5 id="我是中部"><a href="#我是中部" class="headerlink" title="我是中部"></a>我是中部</h5><hr>
-<blockquote>
-<p>注意事项：标题名称要完全一样，标题中的空格要用 <code>-</code>代替，这种跳转方式只能局限于跳转到<code>#</code>目录</p>
-</blockquote>
-<h3 id="2-使用html标签"><a href="#2-使用html标签" class="headerlink" title="2. 使用html标签"></a>2. 使用html标签</h3><p>格式：</p>
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">在需要被跳转到地方添加标签：&lt;a id=&quot;xxx&quot;&gt;&lt;/a&gt;</span><br><span class="line">在跳转的位置添加标签：[跳转名称](#xxx)</span><br></pre></td></tr></table></figure>
-
-<p>实践：</p>
-<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line">[跳转到位置1](#a1)</span><br><span class="line"></span><br><span class="line">[跳转到地方2](#p2)</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;a id=&quot;a1&quot;&gt;位置1&lt;/a&gt;</span><br><span class="line"></span><br><span class="line">地方2&lt;a id=&quot;p2&quot;&gt;&lt;/a&gt;</span><br></pre></td></tr></table></figure>
-
-<p><strong>效果展示：</strong></p>
-<hr>
-<p><a href="#a1">跳转到位置1</a></p>
-<p><a href="#p2">跳转到地方2</a></p>
-<br>
-
-<br>
-
-<p><a id="a1">位置1</a></p>
-<p>地方2<a id="p2"></a></p>
-<hr>
-<blockquote>
-<p>采用这种方式在转换为html时仍然生效，且可控制性高，推荐这种方式。</p>
-</blockquote>
-]]></content>
-      <categories>
-        <category>教程</category>
-      </categories>
-      <tags>
-        <tag>Markdown</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>String s=&quot;a&quot;+&quot;b&quot;+&quot;c&quot;到底创建了几个对象？</title>
     <url>/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/</url>
     <content><![CDATA[<p><strong>常量折叠技术</strong>：在编译期间，编译器会将<strong>编译器常</strong>的加减乘除运算过程在编译过程中折叠。编译器通过语法分析，将常量表达式计算求值，并用求出来的值替换表达式，而不必等到运行期间再进行运算处理，从而在运行期间节省处理器资源。</p>
@@ -1857,6 +1704,160 @@
       </categories>
       <tags>
         <tag>Java</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MySQL:InnoDB存储引擎和MyISAM的区别？</title>
+    <url>/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/</url>
+    <content><![CDATA[<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/mysql-logo-800-400.jpg"></p>
+<p>本文从<strong>事务</strong>，<strong>外键</strong>，<strong>索引</strong>， <strong>存储文件</strong>，<strong>日志</strong>，<strong>count行数</strong>，<strong>锁</strong>，<strong>主键</strong>八个方面系统地对比了在<code>MySQL</code>中<code>InnoDB</code>存储引擎和<code>MyISAM</code>存储引擎的区别。</p>
+<span id="more"></span>
+
+<h3 id="1-事务"><a href="#1-事务" class="headerlink" title="1. 事务"></a>1. 事务</h3><ul>
+<li><p><code>InnoDB</code>：支持事务。</p>
+</li>
+<li><p><code>MyISAM</code>：不支持事务，强调的是性能，每次查询具有原子性，一般情况下其查询数度比<code>InnoDB</code>更快，但是不提供事务支持。</p>
+</li>
+</ul>
+<blockquote>
+<p>一般情况下<code>MyISAM</code>查询速度比<code>InnoDB</code>快的原因：</p>
+<p>答：在查询的时候，InnoDB要维护的东西比MyISAM多很多，具体以下几点：</p>
+<ul>
+<li>InnoDB缓存数据块，MyISAM只缓存索引块， 这中间还有换进换出的减少；</li>
+<li>InnoDB寻址要映射到块，再到行，MyISAM记录的直接是文件的OFFSET，定位比InnoDB要快 </li>
+<li>InnoDB还需要维护MVCC一致； 虽然你的场景没有，但他还是需要去检查和维护</li>
+</ul>
+</blockquote>
+<h3 id="2-外键"><a href="#2-外键" class="headerlink" title="2. 外键"></a>2. 外键</h3><ul>
+<li><code>InnoDB</code>：支持外键</li>
+<li><code>MyISAM</code>：不支持外键，对一个包含外键的InnoDB表转为MyISAM会失败</li>
+</ul>
+<h3 id="3-索引"><a href="#3-索引" class="headerlink" title="3. 索引"></a>3. 索引</h3><ul>
+<li><code>InnoDB</code>：聚集索引，数据文件和索引存储在一起，必须要有主键，通过主键查询效率很高，一次查询即可得到完整的行数据。辅助索引存储的数据是对应的主键索引的值，通过辅助索引查询需要两次查询，根据辅助索引查询到对应的主键索引，再根据主键索引查询到对应的行数据（这一过程称之为<strong>回表</strong>）。</li>
+<li><code>MyISAM</code>：非聚集索引，索引和数据文件分开保存，索引保存的是数据文件的指针。主键索引和辅助索引相互独立。</li>
+</ul>
+<blockquote>
+<p>InnoDB的B+树主键索引的叶子节点就是数据文件，辅助索引的叶子节点是主键的值；而MyISAM的B+树主键索引和辅助索引的叶子节点都是数据文件的地址指针。</p>
+</blockquote>
+<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png"></p>
+<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130322302.png"></p>
+<h3 id="4-存储文件"><a href="#4-存储文件" class="headerlink" title="4. 存储文件"></a>4. 存储文件</h3><ul>
+<li><code>InnoDB</code>：存储文件有<strong>frm、ibd</strong>，<strong>frm</strong>是表定义文件，<strong>ibd</strong>是数据文件。</li>
+<li><code>MyISAM</code>：存储文件有<strong>frm、myd、myi</strong>，<strong>frm</strong>是表定义文件，<strong>myd</strong>是数据文件，<strong>myi</strong>是索引文件。</li>
+</ul>
+<h3 id="5-日志"><a href="#5-日志" class="headerlink" title="5. 日志"></a>5. 日志</h3><ul>
+<li><code>InnoDB</code>：有<code>redo log</code>，使用 InnoDB 的数据库在异常崩溃后，数据库重新启动的时候会保证数据库恢复到崩溃前的状态，这个恢复的过程依赖于 <code>redo log</code> 。 <code>redo log</code> 保证事务的持久性， <code>undo log</code> 保证事务的原子性。</li>
+<li><code>MyISAM</code>：没有<code>redo log</code>，不支持数据库异常崩溃后的安全恢复。</li>
+</ul>
+<h3 id="6-count"><a href="#6-count" class="headerlink" title="6. count"></a>6. count</h3><ul>
+<li><code>InnoDB</code>：不保存表的具体行数，如果使用<code>select count(*) from table</code>，就会遍历整个表，消耗相当大，但是在加了<code>where</code>条件后，myisam和innodb处理的方式都一样。</li>
+<li><code>MyISAM</code>：使用一个变量保存整个表的行数，如果使用<code>select count(*) from table</code>，会直接读取该变量。</li>
+</ul>
+<blockquote>
+<p> 因为InnoDB的事务特性，在同一时刻表中的行数对于不同的事务而言是不一样的，因此count统计会计算对于当前事务而言可以统计到的行数，而不是将总行数储存起来方便快速查询。</p>
+</blockquote>
+<h3 id="7-锁"><a href="#7-锁" class="headerlink" title="7. 锁"></a>7. 锁</h3><ul>
+<li><code>InnoDB</code>：支持行级锁和表锁。行锁是基于索引实现的，如果没有命中索引，也无法使用行锁，会退化到表锁。</li>
+<li><code>MyISAM</code>：仅支持表锁，不支持行锁。</li>
+</ul>
+<h3 id="8-主键"><a href="#8-主键" class="headerlink" title="8. 主键"></a>8. 主键</h3><ul>
+<li><code>InnoDB</code>：如果没有设定主键，会自动生成一个6字节的隐藏主键（用户不可见），数据保存在主键索引的叶子节点上。</li>
+<li><code>MyISAM</code>：允许不含有主键。</li>
+</ul>
+<blockquote>
+<p>删除部分自增主键后，二者的区别？</p>
+<ol>
+<li>不重启服务器</li>
+</ol>
+<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，插入一行新的数据，无论是<code>InnoDB</code>还是<code>MyISAM</code>都会从<code>6</code>开始插入。</p>
+<ol start="2">
+<li>重启服务器</li>
+</ol>
+<p>初始有自增主键<code>1,2,3,4,5</code>，删除<code>4,5</code>后，重启服务器，再插入一行新的数据，<code>InnoDB</code>主键会从<code>4</code>开始插入，而<code>MyISAM</code>会从<code>6</code>开始插入。</p>
+<blockquote>
+<p>原因：Innodb表把自增主键的最大ID记录到内存中，重启数据库后，都会导致最大自增ID重置；MyISAM表会把自增主键的最大ID记录到数据文件里，重启MySQL自增主键的最大ID也不会丢失。</p>
+</blockquote>
+<p><strong>说明：mysql8.0版本，重启数据库后，不会导致最大自增ID重置</strong></p>
+<p><strong>原因：</strong>在 MySQL 8.0 中，<code>AUTO_INCREMENT</code>计数器的逻辑变了，每当计数器的值有变，InnoDB 会将其写入 redo log，保存到引擎专用的系统表中。MySQL 正常关闭后重启：从系统表中获取计数器的值。MySQL 故障后重启：从系统表中获取计数器的值；从最后一个检查点开始扫描 redo log 中记录的计数器值；取这两者的最大值作为新值。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>技术</category>
+      </categories>
+      <tags>
+        <tag>MySQL</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>如何配置git ssh</title>
+    <url>/2022/05/10/%E5%A6%82%E4%BD%95%E9%85%8D%E7%BD%AEgit-ssh/</url>
+    <content><![CDATA[<h3 id="1-检查用户名和邮箱"><a href="#1-检查用户名和邮箱" class="headerlink" title="1. 检查用户名和邮箱"></a>1. 检查用户名和邮箱</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看用户名</span></span><br><span class="line">git config user.name</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看邮箱</span></span><br><span class="line">git config user.email</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置用户名</span></span><br><span class="line">git config --global user.name &quot;xxx&quot;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">配置邮箱</span></span><br><span class="line">git config --global user.email &quot;xxx&quot;</span><br></pre></td></tr></table></figure>
+
+<span id="more"></span>
+
+<h3 id="2-查看是否配置过SSH-Key"><a href="#2-查看是否配置过SSH-Key" class="headerlink" title="2. 查看是否配置过SSH Key"></a>2. 查看是否配置过SSH Key</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ls ~/.ssh</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">hyunmin@HyunmindeMacBook-Air .ssh % <span class="built_in">ls</span> ~/.ssh</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">id_rsa      id_rsa.pub  known_hosts</span></span><br></pre></td></tr></table></figure>
+
+<p>存在id_rsa      id_rsa.pub文件即证明已配置过SSH Key</p>
+<h3 id="3-生成SSH-Key（秘钥）"><a href="#3-生成SSH-Key（秘钥）" class="headerlink" title="3. 生成SSH Key（秘钥）"></a>3. 生成SSH Key（秘钥）</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t -rsa -C &quot;email&quot;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-GitHub远程仓库添加公钥"><a href="#4-GitHub远程仓库添加公钥" class="headerlink" title="4. GitHub远程仓库添加公钥"></a>4. GitHub远程仓库添加公钥</h3><ol>
+<li><p>复制<code>~/.ssh/id_rsa.pub</code>文件内容，并粘贴到GitHub-&gt;settings-&gt;SSH and GPG keys</p>
+</li>
+<li><p>检查是否配置成功</p>
+</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh -T git@github.com</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">显示如下内容则表示配置成功</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">Hi Ysfun! You<span class="string">&#x27;ve successfully authenticated, but GitHub does not provide shell access.</span></span></span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Markdown如何实现页内跳转？</title>
+    <url>/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/</url>
+    <content><![CDATA[<h2 id="1-Markdown怎么实现页内跳转？"><a href="#1-Markdown怎么实现页内跳转？" class="headerlink" title="1. Markdown怎么实现页内跳转？"></a>1. Markdown怎么实现页内跳转？</h2><h3 id="1-利用Markdown语法"><a href="#1-利用Markdown语法" class="headerlink" title="1. 利用Markdown语法"></a>1. 利用Markdown语法</h3><p>格式：[描述文字] (#标题名称)</p>
+<span id="more"></span>
+
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">实践：</span><br><span class="line"></span><br><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line"></span><br><span class="line">[点我去顶部](#1.-我是顶部（空格用`-`代替，转换为html时会跳转失败）)</span><br><span class="line"></span><br><span class="line">[点我去中部](#我是中部)</span><br><span class="line"></span><br><span class="line">##### 1. 我是顶部（空格用`-`代替，转换为html时会跳转失败）</span><br><span class="line"></span><br><span class="line">##### 我是中部</span><br></pre></td></tr></table></figure>
+
+<p><strong>效果展示：</strong></p>
+<hr>
+<p><a href="#1.-%E6%88%91%E6%98%AF%E9%A1%B6%E9%83%A8%EF%BC%88%E7%A9%BA%E6%A0%BC%E7%94%A8%60-%60%E4%BB%A3%E6%9B%BF%EF%BC%8C%E8%BD%AC%E6%8D%A2%E4%B8%BAhtml%E6%97%B6%E4%BC%9A%E8%B7%B3%E8%BD%AC%E5%A4%B1%E8%B4%A5%EF%BC%89">点我去顶部</a></p>
+<p><a href="#%E6%88%91%E6%98%AF%E4%B8%AD%E9%83%A8">点我去中部</a></p>
+<h5 id="1-我是顶部（空格用-代替，转换为html时会跳转失败）"><a href="#1-我是顶部（空格用-代替，转换为html时会跳转失败）" class="headerlink" title="1. 我是顶部（空格用-代替，转换为html时会跳转失败）"></a>1. 我是顶部（空格用<code>-</code>代替，转换为html时会跳转失败）</h5><h5 id="我是中部"><a href="#我是中部" class="headerlink" title="我是中部"></a>我是中部</h5><hr>
+<blockquote>
+<p>注意事项：标题名称要完全一样，标题中的空格要用 <code>-</code>代替，这种跳转方式只能局限于跳转到<code>#</code>目录</p>
+</blockquote>
+<h3 id="2-使用html标签"><a href="#2-使用html标签" class="headerlink" title="2. 使用html标签"></a>2. 使用html标签</h3><p>格式：</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">在需要被跳转到地方添加标签：&lt;a id=&quot;xxx&quot;&gt;&lt;/a&gt;</span><br><span class="line">在跳转的位置添加标签：[跳转名称](#xxx)</span><br></pre></td></tr></table></figure>
+
+<p>实践：</p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line">[跳转到位置1](#a1)</span><br><span class="line"></span><br><span class="line">[跳转到地方2](#p2)</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;a id=&quot;a1&quot;&gt;位置1&lt;/a&gt;</span><br><span class="line"></span><br><span class="line">地方2&lt;a id=&quot;p2&quot;&gt;&lt;/a&gt;</span><br></pre></td></tr></table></figure>
+
+<p><strong>效果展示：</strong></p>
+<hr>
+<p><a href="#a1">跳转到位置1</a></p>
+<p><a href="#p2">跳转到地方2</a></p>
+<br>
+
+<br>
+
+<p><a id="a1">位置1</a></p>
+<p>地方2<a id="p2"></a></p>
+<hr>
+<blockquote>
+<p>采用这种方式在转换为html时仍然生效，且可控制性高，推荐这种方式。</p>
+</blockquote>
+]]></content>
+      <categories>
+        <category>教程</category>
+      </categories>
+      <tags>
+        <tag>Markdown</tag>
       </tags>
   </entry>
 </search>

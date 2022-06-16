@@ -583,7 +583,7 @@
 <h3 id="2-代码分析"><a href="#2-代码分析" class="headerlink" title="2. 代码分析"></a>2. 代码分析</h3><p>【动态规划】+【字典树】</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">wordBreak</span><span class="params">(String s, List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> build(wordDict);</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> s.length();</span><br><span class="line">        <span class="comment">// 动态规划，转移方程：dp[i] = dp[i-k] &amp;&amp; (s[i-k,i] in wordDict)</span></span><br><span class="line">        <span class="type">boolean</span>[] dp = <span class="keyword">new</span> <span class="title class_">boolean</span>[n];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;n; i++) &#123;</span><br><span class="line">            List&lt;Integer&gt; list = check(s, root, i);</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> idx : list) &#123;</span><br><span class="line">                <span class="comment">// 可能有多个位置匹配，只要存在一个k满足 dp[i-k] &amp;&amp; (s[i-k,i] in wordDict) == true，则dp[i]为true</span></span><br><span class="line">                <span class="keyword">if</span> (idx==<span class="number">0</span> || dp[idx-<span class="number">1</span>]) &#123;</span><br><span class="line">                    dp[i] = <span class="literal">true</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> dp[n-<span class="number">1</span>];</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 判断是否满足最右匹配</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> List&lt;Integer&gt; <span class="title function_">check</span><span class="params">(String s, Trie root, <span class="type">int</span> lastIndex)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">        List&lt;Integer&gt; list = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">while</span> (lastIndex &gt;= <span class="number">0</span>) &#123;</span><br><span class="line">            <span class="type">int</span> <span class="variable">index</span> <span class="operator">=</span> s.charAt(lastIndex) - <span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">            <span class="keyword">if</span> (node.children[index] == <span class="literal">null</span>) &#123;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            node = node.children[index];</span><br><span class="line">            <span class="keyword">if</span> (node.isEnd) &#123;</span><br><span class="line">                <span class="comment">// 如果满足最右匹配，且到达单词末尾，将该Index加入List</span></span><br><span class="line">                list.add(lastIndex);</span><br><span class="line">            &#125;</span><br><span class="line">            lastIndex--;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> list;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 建立字典树，建立字典树的基本套路</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">public</span> Trie <span class="title function_">build</span><span class="params">(List&lt;String&gt; wordDict)</span> &#123;</span><br><span class="line">        <span class="type">Trie</span> <span class="variable">root</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">        <span class="keyword">for</span> (String s : wordDict) &#123;</span><br><span class="line">            <span class="type">Trie</span> <span class="variable">node</span> <span class="operator">=</span> root;</span><br><span class="line">            <span class="comment">// 这里需要注意，单词尾部向头部遍历，方便check时的最右匹配</span></span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> i=s.length()-<span class="number">1</span>; i&gt;=<span class="number">0</span>; i--) &#123;</span><br><span class="line">                <span class="type">int</span> <span class="variable">idx</span> <span class="operator">=</span> s.charAt(i)-<span class="string">&#x27;a&#x27;</span>;</span><br><span class="line">                <span class="keyword">if</span> (node.children[idx] == <span class="literal">null</span>) &#123;</span><br><span class="line">                    node.children[idx] = <span class="keyword">new</span> <span class="title class_">Trie</span>();</span><br><span class="line">                &#125;</span><br><span class="line">                node = node.children[idx];</span><br><span class="line">            &#125;</span><br><span class="line">            node.isEnd = <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> root;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 字典树的典型结构</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">class</span> <span class="title class_">Trie</span>&#123;</span><br><span class="line">    Trie[] children;</span><br><span class="line">    <span class="type">boolean</span> isEnd;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">Trie</span><span class="params">()</span> &#123;</span><br><span class="line">        children = <span class="keyword">new</span> <span class="title class_">Trie</span>[<span class="number">26</span>];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2022/05/24/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode139-%E5%8D%95%E8%AF%8D%E6%8B%86%E5%88%86%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%EF%BC%8C%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%92%E3%80%91/image-20220524165305435.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220524165305435.png"></p>
 ]]></content>
       <categories>
         <category>算法</category>
@@ -670,10 +670,10 @@
 
 <h3 id="3-配置nginx"><a href="#3-配置nginx" class="headerlink" title="3. 配置nginx"></a>3. 配置nginx</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看nginx配置文件位置</span></span><br><span class="line">nginx -t</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改nginx配置文件，只需要修改server_name（域名或ip地址）和root（网站文件的根目录，对应上面的/home/blog）即可</span></span><br><span class="line">vim /etc/nginx/nginx.conf</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/image-20220518230056773.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220518230056773.png"></p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">重启nginx</span></span><br><span class="line">systemctl restart nginx.service</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看nginx状态，看到绿色active(running)即为正常运行状态</span></span><br><span class="line">systemctl status nginx.service</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/image-20220518230340561.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220518230340561.png"></p>
 <p>访问ip或者域名，如果出现<code>404</code>则表示配置失败，有问题，可以优先排查服务器是否安全组是否暴露相应端口，如<code>80, 443</code>；如果出现<code>403</code>则正常，因为目前<code>root</code>目录还没有任何文件。</p>
 <p>可以在上面配置的<code>root</code>目录（对应<code>/home/blog</code>）加如下<code>index.html</code>文件：</p>
 <figure class="highlight html"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">p</span>&gt;</span>This is my Blog.<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
@@ -681,16 +681,16 @@
 <p><img src="/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/image-20220518230659751.png"> </p>
 <p>出现这样，即正常。</p>
 <h3 id="4-本地修改hexo配置"><a href="#4-本地修改hexo配置" class="headerlink" title="4. 本地修改hexo配置"></a>4. 本地修改hexo配置</h3><p>修改博客根目录下的<code>_config.yml</code>，主要修改两处：<code>url</code>和<code>deploy</code></p>
-<p><img src="/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/image-20220518230921771.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220518230921771.png"></p>
 <p>同时部署到两个仓库：</p>
 <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span></span><br><span class="line">    <span class="attr">github:</span> <span class="string">git@github.com:Ysfun/Ysfun.github.io.git</span></span><br><span class="line">    <span class="attr">aliyun:</span> <span class="string">root@47.110.56.85:/var/repo/myblog.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
 
-<p><img src="/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/image-20220518231032865.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220518231032865.png"></p>
 <p>至此所有配置工作都完成了！</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">推送至个人服务器</span></span><br><span class="line">hexo g -d</span><br></pre></td></tr></table></figure>
 
 <p>使用Ip或者域名就访问网站了！</p>
-<p><img src="/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/image-20220518231252490.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220518231252490.png"></p>
 <p>如果想要通过域名访问，需要给域名备案，备案成功后就可以了，至此大功告成！！！</p>
 <h3 id="5-启用SSL并部署"><a href="#5-启用SSL并部署" class="headerlink" title="5. 启用SSL并部署"></a>5. 启用SSL并部署</h3><ol>
 <li>阿里云购买ssl证书，可以选择购买一年免费版的<a href="https://yundun.console.aliyun.com/?spm=5176.100251.top-nav.4.3d414f15HkmLHH&p=cas#/overview/cn-hangzhou">阿里云ssl证书</a></li>
@@ -779,7 +779,7 @@
 <h3 id="使用Java程序进行实现："><a href="#使用Java程序进行实现：" class="headerlink" title="使用Java程序进行实现："></a>使用Java程序进行实现：</h3><figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> java.util.*;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">BitMapTest</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 00 没出现过</span></span><br><span class="line"><span class="comment">     * 01 出现过1次</span></span><br><span class="line"><span class="comment">     * 10 出现过多次</span></span><br><span class="line"><span class="comment">     * 11 无效表示</span></span><br><span class="line"><span class="comment">     * ---</span></span><br><span class="line"><span class="comment">     * 1 byte = 8 bit，可分配四个数字，长度为1000可覆盖4000个数字，因此我们设置输入整数不超过4000</span></span><br><span class="line"><span class="comment">     * 真实情况下该数组的长度应该为 2.5亿/4，才能覆盖所有无符号整数，此处测试用较小数字进行</span></span><br><span class="line"><span class="comment">     * flags默认初始值都为0</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |3 2 1 0| flag[0] 例如：10000100 表示3出现过多次, 2, 0都没有出现过，1出现过一次</span></span><br><span class="line"><span class="comment">     * |00 00 00 00|    |7 6 5 4| flag[1]</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="keyword">static</span> <span class="type">byte</span>[] flags = <span class="keyword">new</span> <span class="title class_">byte</span>[<span class="number">1000</span>];</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] nums = <span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">2000</span>];  <span class="comment">// 2000个测试输入数据</span></span><br><span class="line">        <span class="comment">// 验证结果的正确性</span></span><br><span class="line">        Map&lt;Integer, Integer&gt; map = <span class="keyword">new</span> <span class="title class_">HashMap</span>&lt;&gt;(nums.length);</span><br><span class="line">        <span class="type">Random</span> <span class="variable">random</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">Random</span>();</span><br><span class="line">        System.out.println(<span class="string">&quot;原始数据：&quot;</span>);</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="comment">// 填充随机数输入进行验证</span></span><br><span class="line">            <span class="type">int</span> <span class="variable">num</span> <span class="operator">=</span> random.nextInt(flags.length * <span class="number">4</span>);  <span class="comment">// flags长度为1000，整数最大只能为4000</span></span><br><span class="line">            nums[i] = num;</span><br><span class="line">            System.out.print(num + <span class="string">&quot; &quot;</span>);</span><br><span class="line">            map.put(num, map.getOrDefault(num, <span class="number">0</span>) + <span class="number">1</span>);</span><br><span class="line">            setVal(num);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println();</span><br><span class="line">        System.out.println(<span class="string">&quot;-------------------&quot;</span>);</span><br><span class="line">        List&lt;Integer&gt; bitMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        List&lt;Integer&gt; hashMapAns = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i &lt; nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (getVal(nums[i]) == <span class="number">1</span>) &#123;</span><br><span class="line">                bitMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">if</span> (map.getOrDefault(nums[i], <span class="number">0</span>) == <span class="number">1</span>) &#123;</span><br><span class="line">                hashMapAns.add(nums[i]);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(<span class="string">&quot;只出现过一次的数据：&quot;</span>);</span><br><span class="line">        System.out.println(bitMapAns);</span><br><span class="line">        System.out.println(<span class="string">&quot;bitMapAns 是否和 hashMapAns相同：&quot;</span> + bitMapAns.equals(hashMapAns));</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">setVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> getVal(idx);</span><br><span class="line">        <span class="keyword">if</span> (val &gt;= <span class="number">2</span>) &#123;</span><br><span class="line">            <span class="comment">// 11 或 10 表示出现过多次，保持不变即可</span></span><br><span class="line">            <span class="keyword">return</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        ~(3&lt;&lt;loc) =&gt; 11001111 即让2bit对应位置为0，其他都为1</span></span><br><span class="line"><span class="comment">        (flags[pos] &amp; ~(3&lt;&lt;loc)) =&gt; 效果就是让2bit对应位置置为00，其他为保持不变</span></span><br><span class="line"><span class="comment">        | ((val + 1) &lt;&lt; loc) =&gt; 效果就是让val+1的值填充2bit的位置</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">newVal</span> <span class="operator">=</span> (flags[pos] &amp; ~(<span class="number">3</span> &lt;&lt; (loc * <span class="number">2</span>))) | ((val + <span class="number">1</span>) &lt;&lt; (loc * <span class="number">2</span>));</span><br><span class="line">        flags[pos] = (<span class="type">byte</span>) newVal;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="type">int</span> <span class="title function_">getVal</span><span class="params">(<span class="type">int</span> idx)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">pos</span> <span class="operator">=</span> idx / <span class="number">4</span>;  <span class="comment">// 确定在flags中的位置</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">loc</span> <span class="operator">=</span> idx % <span class="number">4</span>;  <span class="comment">// 确定在一个byte中的位置</span></span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        假设flags[0] = 0b10010100</span></span><br><span class="line"><span class="comment">        |00 00 00 00|    |3 2 1 0|</span></span><br><span class="line"><span class="comment">        idx = 2  =&gt; pos = 2/4 = 0;  loc = 2%4 = 2</span></span><br><span class="line"><span class="comment">        flags[pos] &gt;&gt; (loc * 2)  =&gt; 00001001  (左边自动补0) 这个操作的效果是让2这个整数在bitmap中对应的两个bit移动到最右端</span></span><br><span class="line"><span class="comment">        拿上面的结果  (0b00001001) &amp; (byte)3  =&gt; (0b00001001) &amp; (0b00000011) =&gt; (0b00000001) 即可得到目标的两个bit对应的数字</span></span><br><span class="line"><span class="comment">         */</span></span><br><span class="line">        <span class="type">int</span> <span class="variable">val</span> <span class="operator">=</span> (flags[pos] &gt;&gt; (loc * <span class="number">2</span>)) &amp; (<span class="type">byte</span>) <span class="number">3</span>;</span><br><span class="line">        <span class="keyword">return</span> val;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>运行结果：</p>
-<p><img src="/2022/05/12/BitMap%E5%BA%94%E7%94%A8%EF%BC%9A%E5%A6%82%E4%BD%95%E5%9C%A82-5%E4%BA%BF%E4%B8%AA%E6%97%A0%E7%AC%A6%E5%8F%B7%E6%AD%A3%E6%95%B4%E6%95%B0%E4%B8%AD%E6%89%BE%E5%87%BA%E4%B8%8D%E9%87%8D%E5%A4%8D%E7%9A%84%E6%95%B4%E6%95%B0%EF%BC%9F/image-20220512221937915.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220512221937915.png"></p>
 <p>上述通过<code>HashMap</code>的方案可以检验<code>BitMap</code>的答案是正确的，并且成功节省了内存空间。</p>
 ]]></content>
       <categories>
@@ -838,7 +838,7 @@
 
 <p><a href="https://github.com/next-theme/hexo-theme-next/releases">Next历史发行版本</a></p>
 <p>Hexo及插件版本：</p>
-<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220610105650366.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220610105650366.png"></p>
 <h2 id="配置"><a href="#配置" class="headerlink" title="配置"></a>配置</h2><p><a href="https://theme-next.js.org/docs/getting-started/configuration.html">Next配置官方文档</a></p>
 <ul>
 <li>使用<code>Git</code>安装的配置文件位于<code>/themes/next/_config.yml</code></li>
@@ -858,7 +858,7 @@
 </ol>
 <figure class="highlight markdown"><table><tr><td class="code"><pre><span class="line">tags: Hexo</span><br><span class="line">categories: 教程</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220531150131104.png"> </p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220531150131104.png"></p>
 <ol start="2">
 <li>新建<code>page</code></li>
 </ol>
@@ -869,8 +869,8 @@
 <li>修改<code>index.md</code></li>
 </ol>
 <p>分别在<code>tags</code>和<code>categories</code>两个文件夹的<code>index.md</code>文件头部添加<code>type</code></p>
-<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220531150829131.png"> </p>
-<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220531150748063.png"> </p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220531150829131.png"> </p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220531150748063.png"> </p>
 <ol start="4">
 <li>侧边栏显示标签和分类</li>
 </ol>
@@ -934,7 +934,7 @@
 
 <h3 id="9-置顶"><a href="#9-置顶" class="headerlink" title="9. 置顶"></a>9. 置顶</h3><p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220531182846937.png"></p>
 <p>文章<code>header</code>添加<code>sticky</code>，将会按照sticky值从大到小排序展示，默认为0</p>
-<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220531183020834.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220531183020834.png"></p>
 <h3 id="10-更改字体"><a href="#10-更改字体" class="headerlink" title="10. 更改字体"></a>10. 更改字体</h3><p><code>_config.next.yml</code>中<code>font</code>配置</p>
 <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># ---------------------------------------------------------------</span></span><br><span class="line"><span class="comment"># Font Settings</span></span><br><span class="line"><span class="comment"># ---------------------------------------------------------------</span></span><br><span class="line"><span class="comment"># Find fonts on Google Fonts (https://fonts.google.com)</span></span><br><span class="line"><span class="comment"># All fonts set here will have the following styles:</span></span><br><span class="line"><span class="comment">#   light | light italic | normal | normal italic | bold | bold italic</span></span><br><span class="line"><span class="comment"># Be aware that setting too much fonts will cause site running slowly</span></span><br><span class="line"><span class="comment"># ---------------------------------------------------------------</span></span><br><span class="line"><span class="comment"># Web Safe fonts are recommended for `global` (and `title`):</span></span><br><span class="line"><span class="comment"># Arial | Tahoma | Helvetica | Times New Roman | Courier New | Verdana | Georgia | Palatino | Garamond | Comic Sans MS | Trebuchet MS</span></span><br><span class="line"><span class="comment"># ---------------------------------------------------------------</span></span><br><span class="line"></span><br><span class="line"><span class="attr">font:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Uri of fonts host, e.g. https://fonts.googleapis.com (Default).</span></span><br><span class="line">  <span class="attr">host:</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Font options:</span></span><br><span class="line">  <span class="comment"># `external: true` will load this font family from `host` above.</span></span><br><span class="line">  <span class="comment"># `family: Times New Roman`. Without any quotes.</span></span><br><span class="line">  <span class="comment"># `size: x.x`. Use `em` as unit. Default: 1 (16px)</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Global font settings used for all elements inside &lt;body&gt;.</span></span><br><span class="line">  <span class="attr">global:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">family:</span> <span class="string">Noto</span> <span class="string">Serif</span> <span class="string">SC</span></span><br><span class="line">    <span class="comment">#family: Lato</span></span><br><span class="line">    <span class="attr">size:</span> <span class="number">0.8</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Font settings for site title (.site-title).</span></span><br><span class="line">  <span class="attr">title:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">family:</span></span><br><span class="line">    <span class="attr">size:</span></span><br><span class="line"></span><br><span class="line">  <span class="comment"># Font settings for headlines (&lt;h1&gt; to &lt;h6&gt;).</span></span><br><span class="line">  <span class="attr">headings:</span></span><br><span class="line">    <span class="attr">external:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">family:</span></span><br><span class="line">    <span class="attr">size:</span></span><br></pre></td></tr></table></figure>
 
@@ -958,30 +958,30 @@
 <li>修复相关文章无法跳转问题</li>
 </ol>
 <p>查看跳转链接可以发现，相关文章的路径是基于当前文章的，说明跳转连接用的是相对路径导致这个问题的，因此只需要采用绝对路径进行跳转即可。</p>
-<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220601114943783.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220601114943783.png"></p>
 <p>修改<code>/themes/next/layout/_partials/post/post-related.njk</code>，在跳转路径前面加上<code>/</code>即可</p>
-<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220601114732112.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220601114732112.png"></p>
 <h3 id="12-Tags显示在文章头部"><a href="#12-Tags显示在文章头部" class="headerlink" title="12. Tags显示在文章头部"></a>12. Tags显示在文章头部</h3><p>默认标签是显示在文章尾部的：</p>
-<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220601011651834.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220601011651834.png"></p>
 <p>但在文章尾部不容易观察到，现令其显示在文章头部，效果如图：</p>
-<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220601010935179.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220601010935179.png"></p>
 <p>在<code>/themes/next/layout/_partials/post/post-meta.njk</code>文件中添加如下内容：</p>
-<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220601011103847.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220601011103847.png"></p>
 <figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&#123;# custom tags #&#125;</span><br><span class="line">&#123;%- if post.tags and post.tags.length %&#125;</span><br><span class="line">  &#123;%- set tag_indicate = &#x27;&lt;i class=&quot;fa fa-tag&quot;&gt;&lt;/i&gt;&#x27; if theme.tag_icon else &#x27;#&#x27; %&#125;</span><br><span class="line">  &lt;span class=&quot;post-meta-item&quot;&gt;</span><br><span class="line">    &#123;%- for tag in post.tags.toArray() %&#125;</span><br><span class="line">      &lt;a href=&quot;&#123;&#123; url_for(tag.path) &#125;&#125;&quot; rel=&quot;tag&quot;&gt;&#123;&#123; tag_indicate &#125;&#125; &#123;&#123; tag.name &#125;&#125;&lt;/a&gt;</span><br><span class="line">    &#123;%- endfor %&#125;</span><br><span class="line">  &lt;/span&gt;</span><br><span class="line">&#123;%- endif %&#125;</span><br></pre></td></tr></table></figure>
 
 <p>想要tag标签不在文章末尾显示，删除<code>/themes/next/layout/_macro/post.njk</code>文件中的如下内容即可：</p>
-<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220601011527075.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220601011527075.png"></p>
 <h3 id="13-back-to-top"><a href="#13-back-to-top" class="headerlink" title="13. back to top"></a>13. back to top</h3><p><a href="https://theme-next.js.org/docs/theme-settings/miscellaneous.html?highlight=back2#Back-To-Top">Back To Top文档</a></p>
 <p><code>_config.next.yml</code></p>
 <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="attr">back2top:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="comment"># Back to top in sidebar.</span></span><br><span class="line">  <span class="attr">sidebar:</span> <span class="literal">false</span></span><br><span class="line">  <span class="comment"># Scroll percent label in b2t button.</span></span><br><span class="line">  <span class="attr">scrollpercent:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
 
-<h4 id="修改滚轮的大小，默认太小了，不易观察"><a href="#修改滚轮的大小，默认太小了，不易观察" class="headerlink" title="修改滚轮的大小，默认太小了，不易观察"></a>修改滚轮的大小，默认太小了，不易观察</h4><p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220601014140701.png"></p>
+<h4 id="修改滚轮的大小，默认太小了，不易观察"><a href="#修改滚轮的大小，默认太小了，不易观察" class="headerlink" title="修改滚轮的大小，默认太小了，不易观察"></a>修改滚轮的大小，默认太小了，不易观察</h4><p><img src="https://images.ysfun.cn/mac-img/image-20220601014140701.png"></p>
 <p>滚轮样式定义在<code>/themes/next/source/css/_common/components/back-to-top.styl</code>文件中，查看该文件发现具体的大小有变量表示，其值定义在<code>/themes/next/source/css/_variables/base.styl</code>文件中</p>
-<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220601014407611.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220601014407611.png"></p>
 <p>默认大小为<code>12px</code>，现将其改为<code>16px</code></p>
-<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220601014550281.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220601014550281.png"></p>
 <p>查看效果：</p>
-<p><img src="/2022/05/31/Hexo%E5%8D%9A%E5%AE%A2Next%E4%B8%BB%E9%A2%98%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE%E6%95%99%E7%A8%8B/image-20220601014711402.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220601014711402.png"></p>
 <h3 id="14-添加备案信息"><a href="#14-添加备案信息" class="headerlink" title="14. 添加备案信息"></a>14. 添加备案信息</h3><p>修改<code>_config.next.yml</code></p>
 <figure class="highlight yaml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Beian ICP and gongan information for Chinese users. See: https://beian.miit.gov.cn, http://www.beian.gov.cn</span></span><br><span class="line"><span class="attr">footer:</span></span><br><span class="line">  <span class="attr">beian:</span></span><br><span class="line">    <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">icp:</span>   <span class="comment"># 备案号</span></span><br><span class="line">    <span class="comment"># The digit in the num of gongan beian.</span></span><br><span class="line">    <span class="attr">gongan_id:</span>   <span class="comment"># 公安备案号</span></span><br><span class="line">    <span class="comment"># The full num of gongan beian.</span></span><br><span class="line">    <span class="attr">gongan_num:</span>   <span class="comment"># 备案链接</span></span><br><span class="line">    <span class="comment"># The icon for gongan beian. See: http://www.beian.gov.cn/portal/download</span></span><br><span class="line">    <span class="attr">gongan_icon_url:</span>   <span class="string">公安备案图标</span></span><br></pre></td></tr></table></figure>
 
@@ -1056,8 +1056,8 @@
 <blockquote>
 <p>InnoDB的B+树主键索引的叶子节点就是数据文件，辅助索引的叶子节点是主键的值；而MyISAM的B+树主键索引和辅助索引的叶子节点都是数据文件的地址指针。</p>
 </blockquote>
-<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png"></p>
-<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130322302.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220513130213185.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220513130322302.png"></p>
 <h3 id="4-存储文件"><a href="#4-存储文件" class="headerlink" title="4. 存储文件"></a>4. 存储文件</h3><ul>
 <li><code>InnoDB</code>：存储文件有<strong>frm、ibd</strong>，<strong>frm</strong>是表定义文件，<strong>ibd</strong>是数据文件。</li>
 <li><code>MyISAM</code>：存储文件有<strong>frm、myd、myi</strong>，<strong>frm</strong>是表定义文件，<strong>myd</strong>是数据文件，<strong>myi</strong>是索引文件。</li>
@@ -1128,13 +1128,13 @@
 <p>隔离性通过<code>mvcc</code>（多版本并发控制）或锁机制来保证的</p>
 <p>一致性通过持久性+原子性+隔离性来保证的</p>
 <h2 id="并发事务带来的问题"><a href="#并发事务带来的问题" class="headerlink" title="并发事务带来的问题"></a>并发事务带来的问题</h2><h3 id="脏读"><a href="#脏读" class="headerlink" title="脏读"></a>脏读</h3><p><strong>一个事务读到了另一个「未提交事务修改的数据」，如果该数据发生回滚，则读到的数据就是错误的数据，就意味着发生了「脏读」现象。</strong></p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/10b513008ea35ee880c592a88adcb12f.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/10b513008ea35ee880c592a88adcb12f.png"></p>
 <p>因为事务 A 是还没提交事务的，也就是它随时可能发生回滚操作，<strong>如果在上面这种情况事务 A 发生了回滚，那么事务 B 刚才得到的数据就是过期的数据，这种现象就被称为脏读。</strong></p>
 <h3 id="不可重复读"><a href="#不可重复读" class="headerlink" title="不可重复读"></a>不可重复读</h3><p><strong>在一个事务内多次读取同一个数据，如果前后两次读到的数据不一致，就意味着发生了「不可重复读」现象。</strong></p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/f5b4f8f0c0adcf044b34c1f300a95abf.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/f5b4f8f0c0adcf044b34c1f300a95abf.png"></p>
 <p>事务B第一读取余额为100万，第二次读取余额变为200万，两次读同一条数据结果却不一致。</p>
 <h3 id="幻读"><a href="#幻读" class="headerlink" title="幻读"></a>幻读</h3><p><strong>在一个事务中多次查询符合特定条件的记录数量，如果前后两次查询到的记录数量不同，就意味着发生了「幻读」。</strong></p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/d19a1019dc35dfe8cfe7fbff8cd97e31-20220601203800758.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/d19a1019dc35dfe8cfe7fbff8cd97e31-20220601203800758.png"></p>
 <p>事务B第一次查询大于100万的记录有5条，第二次查询同样条件结果却变成了6条，出现了幻读。</p>
 <blockquote>
 <p>MySQL针对「脏读，不可重复读，幻读」等现象，采取了什么措施应对？</p>
@@ -1148,9 +1148,9 @@
 <li><strong>串行化（Serializable）</strong>，会对记录加上读写锁，在多个事务对这条记录进行读写操作时，如果发生了读写冲突的时候，后访问的事务必须等前一个事务执行完成，才能继续执行；</li>
 </ul>
 <p>按「隔离水平」从高到低排序：</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/cce766a69dea725cd8f19b90db2d0430.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/cce766a69dea725cd8f19b90db2d0430.png"></p>
 <p>针对不同隔离级别，并发事务时可能发生的现象：</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/4e98ea2e60923b969790898565b4d643.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/4e98ea2e60923b969790898565b4d643.png"></p>
 <p>解决脏读现象，就要升级到「读提交」以上的隔离级别；要解决不可重复读现象，就要升级到「可重复读」的隔离级别。</p>
 <p>不过，要解决幻读现象不建议将隔离级别升级到「串行化」，因为这样会导致数据库在并发事务时性能很差。</p>
 <p><strong>MySQL的默认隔离级别是「不可重复读」，但是它采用<code>Next-Key Lock</code>锁（行锁和间隙锁的组合），来锁住记录本身以及记录的“间隙”，防止其他事务在记录之间插入新的记录，从而可以有效避免幻读。</strong></p>
@@ -1194,7 +1194,7 @@
 <ol>
 <li><strong>Read View的四个重要字段</strong></li>
 </ol>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/11a65cbc2e97f6855d7692a265dc2651-20220601215949157.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/11a65cbc2e97f6855d7692a265dc2651-20220601215949157.png"></p>
 <p>各个字段的含义：</p>
 <ul>
 <li>creator_trx_id：是指<strong>创建该Read View的事务id</strong></li>
@@ -1205,13 +1205,13 @@
 <ol start="2">
 <li><strong>聚簇索引记录中两个跟事务相关的隐藏列</strong></li>
 </ol>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/f595d13450878acd04affa82731f76c5.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/f595d13450878acd04affa82731f76c5.png"></p>
 <ul>
 <li>trx_id：当某个事务对该条记录改动时，会把<strong>该事务的事务id记录在trx_id中</strong></li>
 <li>roll_pointer：每次对某一条记录进行修改时，都会把这条记录的旧版本保存到<code>undo log</code>中，这个隐藏列是一个指针，指向了上一个版本的记录，于是通过它就能找到历史版本</li>
 </ul>
 <p><strong>在创建Read View时我们可以将记录中的trx_id划分为三种情况：</strong></p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/ReadView.drawio.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/ReadView.drawio.png"></p>
 <p>一个事务去读取数据时，除当前事务的修改记录总是可见的之外，还有一下情况：</p>
 <ul>
 <li>如果记录的<code>trx_id</code>小于Read View中的<code>min_trx_id</code>，表示这个版本的记录是<strong>在创建Read View之前就已经提交了的事务生成的</strong>，因此该版本的记录对当前事务是可见的。</li>
@@ -1227,7 +1227,7 @@
 </blockquote>
 <h3 id="可重复读是如何工作的？"><a href="#可重复读是如何工作的？" class="headerlink" title="可重复读是如何工作的？"></a>可重复读是如何工作的？</h3><p><strong>可重复读隔离级别是启动事务时生成一个 Read View，然后整个事务期间都在用这个 Read View</strong>。</p>
 <p>分析一个场景，假设事务A（事务id为51）启动后，紧接着启动了事务B（事务id为52），那么两个事务创建的Read View及初始记录如下：</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E4%BA%8B%E5%8A%A1ab%E7%9A%84%E8%A7%86%E5%9B%BE-new.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/%E4%BA%8B%E5%8A%A1ab%E7%9A%84%E8%A7%86%E5%9B%BE-new.png"></p>
 <p>事务 A 和 事务 B 的 Read View 具体内容如下：</p>
 <ul>
 <li>在事务 A 的 Read View 中，它的事务 id 是 51，由于它是第一个启动的事务，所以此时活跃事务的事务 id 列表就只有 51，活跃事务的事务 id 列表中最小的事务 id 是事务 A 本身，下一个事务 id 则是 52。</li>
@@ -1244,7 +1244,7 @@
 <p>分析过程：</p>
 <p>事务B第一次读取账户余额时，记录的<code>trx_id</code>为50，小于Read View中的<code>min_trx_id</code>&#x3D;51，因此记录对于事务B是可见的，因此读取到余额为100万；</p>
 <p>事务A更新余额后，两个事务的Read View及记录的版本信息为</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E4%BA%8B%E5%8A%A1ab%E7%9A%84%E8%A7%86%E5%9B%BE2.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/%E4%BA%8B%E5%8A%A1ab%E7%9A%84%E8%A7%86%E5%9B%BE2.png"></p>
 <p>事务B第二次读取账户余额时，最新版本记录的<code>trx_id</code>为51，处于事务B的Read View中<code>min_trx_id=51</code>和<code>max_trx_id=53</code>之间；因此还需判断<code>trx_id</code>是否在事务B的Read View中<code>m_ids=[51, 52]</code>列表中，发现在<code>m_ids</code>列表中，因此最新版本的记录对于事务B是不可见的；此时会根据当前版本记录的<code>roll_pointer</code>沿着<code>undo log</code>链条找历史版本，直到发现<code>trx_id</code>小于事务B的Read View中<code>min_trx_id</code>的第一条记录，所以事务B能读到<code>trx_id=50</code>的记录，也就是余额为100万的记录。</p>
 <p>最后在事务A提交后，由于在「可重复读」隔离级别下，Read View只会在创建事务时生成，因此事务A和事务B的Read View和创建事务是的一样。事务B第三次读取余额时还是基于之前的Read View来判断版本记录是否可见，因此此时读到的数据和第二次读取的结果是一样的，余额也是100万。</p>
 <p><strong>就是通过这样的方式实现了，「可重复读」隔离级别下在事务期间读到的记录都是事务启动前的记录。</strong></p>
@@ -1259,11 +1259,11 @@
 </ol>
 <p>我们来分析事务B第二次读取记录时，读取不到事务A未提交的修改？</p>
 <p>在「读已提交」隔离级别下，事务B在第二次读取数据时会新创建Read View</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E8%AF%BB%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A1-20220601234013624.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/%E8%AF%BB%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A1-20220601234013624.png"></p>
 <p>由于事务A还未提交，因此事务B读数据时事务A扔出于活跃状态，因此事务A的修改无法被事务B读取到。</p>
 <p>我们再来分析事务B第三次读数据时，为什么可以读取到事务A（事务已提交）的修改？</p>
 <p>事务B第三次执行读数据操作时创建的Read View如下：</p>
-<p><img src="/2022/05/30/MySQL-%E4%BA%8B%E5%8A%A1/%E8%AF%BB%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A12.drawio.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/%E8%AF%BB%E6%8F%90%E4%BA%A4%E4%BA%8B%E5%8A%A12.drawio.png"></p>
 <p>事务B第三次读数据时，事务A已经提交，此时的Read View中的<code>min_trx_id</code>为52，即当前活跃的事务只有事务B，最新版记录由事务A创建，因此其<code>trx_id</code>为51，小于事务B的Read View中的<code>min_trx_id</code>，因此最新版本的记录对于事务B是可见的，因此第三次事务B读取到的余额为200万。</p>
 <p>正是因为在读提交隔离级别下，事务每次读数据时都重新创建 Read View，那么在事务期间的多次读取同一条数据，前后两次读的数据可能会出现不一致，因为可能这期间另外一个事务修改了该记录，并提交了事务。</p>
 ]]></content>
@@ -1304,17 +1304,17 @@
 </blockquote>
 <p>磁盘读写的最小单位是<strong>扇区</strong>，扇区的大小只有 <code>512B</code> 大小，操作系统一次会读写多个扇区，所以<strong>操作系统的最小读写单位是块（Block）。Linux 中的块大小为 <code>4KB</code><strong>，也就是一次磁盘  I&#x2F;O 操作会直接读写 8 个扇区。同样的，MySQL保存的记录是以「行」为单位的，但是数据库的读取并不以「行」为单位，否则一次读取（也就是一次 I&#x2F;O 操作）只能处理一行数据，效率会非常低。</strong>InnoDB 的数据是按「数据页」为单位来读写的</strong>，也就是说，当需要读一条记录的时候，并不是将这个记录本身从磁盘读出来，而是以页为单位，将其整体读入内存。</p>
 <p><code>InnoDB</code>保存的数据文件是后缀为<code>.ibd</code>的文件，其含义是<code>InnoDB data</code>文件，又叫<code>表空间</code>。虽然在数据表里，它们看起来是挨在一起的。但实际上在<code>xx.ibd</code>里他们被分成很多小份的<strong>数据页</strong>，每份默认大小为<code>16kB</code>。类似如下结构：</p>
-<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223121145.png" style="zoom:60%">
+<img src="https://images.ysfun.cn/mac-img/image-20220517223121145.png" style="zoom:60%">
 
 <p>数据库<code>I/O</code>操作的最小单位是<strong>页</strong>，<strong>InnoDB 数据页的默认大小是 16KB</strong>，意味着数据库每次读写都是以 16KB 为单位的，一次最少从磁盘中读取 16K 的内容到内存中，一次最少把内存中的 16K 内容刷新到磁盘中。</p>
 <p>数据页主要包括七个部分，<strong>数据页结构图</strong><a id="2"></a>如下：</p>
-<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221149949.png" style="zoom:40%">
+<img src="https://images.ysfun.cn/mac-img/image-20220517221149949.png" style="zoom:40%">
 
 <p>各部分的作用：</p>
-<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221347217.png" style="zoom:50%">
+<img src="https://images.ysfun.cn/mac-img/image-20220517221347217.png" style="zoom:50%">
 
 <p>在 File Header 中有两个指针，分别指向上一个数据页和下一个数据页，连接起来的页相当于一个双向的链表，如下图所示：</p>
-<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517221521045.png" style="zoom:60%">
+<img src="https://images.ysfun.cn/mac-img/image-20220517221521045.png" style="zoom:60%">
 
 <blockquote>
 <p>采用链表的结构是让数据页之间不需要是物理上的连续的，而是逻辑上的连续。</p>
@@ -1323,7 +1323,7 @@
 <p>因此，数据页中有一个<strong>页目录</strong>，起到记录的索引作用，就像我们书那样，针对书中内容的每个章节设立了一个目录，想看某个章节的时候，可以查看目录，快速找到对应的章节的页数，而数据页中的页目录就是为了能快速找到记录。通过<strong>页目录</strong>可以使数据页内查询记录的时间复杂度从<code>o(n)</code>变为<code>o(log n)</code>，提升页内查询效率。</p>
 <h2 id="3-B-树是如何进行查询的？"><a href="#3-B-树是如何进行查询的？" class="headerlink" title="3. B+树是如何进行查询的？"></a>3. <code>B+</code>树是如何进行查询的？</h2><p>在<code>InnoDB</code>中一个<strong>数据页</strong>默认的大小为<code>16 kB</code>，当面对大数据量时，需要多个数据页共同存放数据，如何建立合适的索引，才能快速的定位到记录所在的页。因此，<code>MySQL</code>采用<code>B+</code>树作为索引。</p>
 <p>InnoDB 里的 B+ 树中的<strong>每个节点都是一个数据页</strong>，结构示意图如下：</p>
-<img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517223718982.png" style="zoom:80%">
+<img src="https://images.ysfun.cn/mac-img/image-20220517223718982.png" style="zoom:80%">
 
 <p>通过上图，我们看出  B+ 树的特点：</p>
 <ul>
@@ -1355,7 +1355,7 @@
 </blockquote>
 <h2 id="5-一颗B-树可以存放多少行数据？"><a href="#5-一颗B-树可以存放多少行数据？" class="headerlink" title="5. 一颗B+树可以存放多少行数据？"></a>5. 一颗<code>B+</code>树可以存放多少行数据？</h2><p>前面提到，<code>B+</code>树的每个节点是一个<strong>数据页</strong>，默认大小<code>16kB</code>。前面<a href="#2"> 数据页结构图</a>已经介绍了每个数据页的结构，除去页头页尾及其它描述信息，真正存放用户记录的<code>User Records</code>部分还不足<code>16kB</code>。</p>
 <h3 id="1-叶子节点和非叶子节点分别存放多少数据？"><a href="#1-叶子节点和非叶子节点分别存放多少数据？" class="headerlink" title="1. 叶子节点和非叶子节点分别存放多少数据？"></a>1. 叶子节点和非叶子节点分别存放多少数据？</h3><p>B+树的<strong>最末级叶子结点</strong>里放了record数据。而<strong>非叶子结点</strong>里则放了用来加速查询的索引数据。</p>
-<p><img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517235249221.png" alt="三层B+树"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220517235249221.png" alt="三层B+树"></p>
 <p>同样一个16kB的页，非叶子节点里每一条数据都指向一个新的页，而新的页有两种可能。</p>
 <ul>
 <li>如果是末级叶子节点的话，那么里面放的就是一行行record数据。</li>
@@ -1369,7 +1369,7 @@
 </ul>
 <p>那这棵B+树放的<strong>行数据总量</strong>等于 <code>(x ^ (z-1)) * y</code>。</p>
 <p><strong><code>x</code>怎么算？</strong></p>
-<p><img src="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/image-20220517235825563.png" alt="数据页的结构"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220517235825563.png" alt="数据页的结构"></p>
 <p>非叶子节点里主要放索引查询相关的数据，放的是主键和指向页号。</p>
 <p>主键假设是<code>bigint（8Byte）</code>，而页号在源码里叫<code>FIL_PAGE_OFFSET（4Byte）</code>，那么非叶子节点里的一条数据是<code>12Byte</code>左右。</p>
 <p>整个数据页<code>16k</code>， 页头页尾那部分数据全加起来大概<code>128Byte</code>，加上页目录毛估占<code>1k</code>吧。那剩下的<code>15kB</code>除以<code>12Byte</code>，等于<code>1280</code>，也就是可以指向<strong>x&#x3D;1280页</strong>。</p>
@@ -1470,7 +1470,7 @@
 <p>注意：并不是检查所有key，而是随机抽取一定数量的key</p>
 </blockquote>
 <p>具体步骤如下：</p>
-<img src="/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/image-20220511000559696.png" style="zoom:70%">
+<img src="https://images.ysfun.cn/mac-img/image-20220511000559696.png" style="zoom:70%">
 
 <p>该过程通过<code>activeExpireCycle</code>函数实现，源码路径：<code>src/expire.c</code></p>
 <ul>
@@ -1544,40 +1544,40 @@
 </ol>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;a&quot;</span> + <span class="string">&quot;b&quot;</span> + <span class="string">&quot;c&quot;</span>;</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511003922966.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220511003922966.png"></p>
 <p>字节码信息如下：</p>
-<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511005110697.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220511005110697.png"></p>
 <p>直接对比是否指向同一个对象：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;a&quot;</span> + <span class="string">&quot;b&quot;</span> + <span class="string">&quot;c&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">t</span> <span class="operator">=</span> <span class="string">&quot;abc&quot;</span>;</span><br><span class="line">System.out.println(s == t);</span><br></pre></td></tr></table></figure>
 
 <p>结果：</p>
-<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511010602524.png" alt="image-20220511010602524"> </p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220511010602524.png"> </p>
 <ol start="2">
 <li>再来对比，没有进行<strong>常量折叠</strong></li>
 </ol>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> <span class="string">&quot;ab&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> s1 + <span class="string">&quot;c&quot;</span>;</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511004222616.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220511004222616.png"></p>
 <p>字节码信息如下：</p>
-<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511004929034.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220511004929034.png"></p>
 <p>是否指向常量池中的常量：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> <span class="string">&quot;ab&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> s1 + <span class="string">&quot;c&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">t</span> <span class="operator">=</span> <span class="string">&quot;abc&quot;</span>;</span><br><span class="line">System.out.println(s == t);</span><br></pre></td></tr></table></figure>
 
 <p>结果：</p>
-<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511010725943.png"> </p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220511010725943.png"> </p>
 <ol start="3">
 <li>在观察如下语句，与2唯一的区别就是给<code>s1</code>添加了<code>final</code>修饰，可以发现又发生了<strong>常量折叠</strong></li>
 </ol>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> <span class="string">&quot;ab&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> s1 + <span class="string">&quot;c&quot;</span>;</span><br></pre></td></tr></table></figure>
 
-<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511005336059.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220511005336059.png"></p>
 <p>字节码信息如下：</p>
-<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511005447668.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220511005447668.png"></p>
 <p>是否指向同一个对象：</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> <span class="string">&quot;ab&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> s1 + <span class="string">&quot;c&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">t</span> <span class="operator">=</span> <span class="string">&quot;abc&quot;</span>;</span><br><span class="line">System.out.println(s == t);</span><br></pre></td></tr></table></figure>
 
 <p>结果：</p>
-<p><img src="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/image-20220511010924324.png"> </p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220511010924324.png"> </p>
 <blockquote>
 <p>发生<code>常量折叠</code>必须是编译器常量：</p>
 <ul>
@@ -1642,7 +1642,7 @@
   <entry>
     <title>Java异常：Exception与Error，checkedException与unCheckedException</title>
     <url>/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/</url>
-    <content><![CDATA[<h3 id="1-Java异常类层级结构图"><a href="#1-Java异常类层级结构图" class="headerlink" title="1. Java异常类层级结构图"></a>1. Java异常类层级结构图</h3><p><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512152121807.png"></p>
+    <content><![CDATA[<h3 id="1-Java异常类层级结构图"><a href="#1-Java异常类层级结构图" class="headerlink" title="1. Java异常类层级结构图"></a>1. Java异常类层级结构图</h3><p><img src="https://images.ysfun.cn/mac-img/image-20220512152121807.png"></p>
 <p><code>java.lang.Throwable</code>是Java异常的顶级接口，<code>Exception</code>和<code>Error</code>均继承自<code>Throwable</code>。</p>
 <span id="more"></span>
 
@@ -1657,15 +1657,13 @@
 <li><code>CheckedException</code>即受检查异常：Java代码在编译过程中，如果受检查异常没有被<code>catch</code>或者<code>throws</code>关键字处理的话，就没法通过编译。除了<code>RuntimeException</code>及其子类，其他的<code>Exception</code>类及其子类都是受检查异常，常见的有：<code>IoException</code>、<code>ClassNotFoundException</code>、<code>SQLException</code>等。</li>
 <li><code>unCheckedException</code>即非受检查异常：Java代码在编译过程中，即使我们不对其进行处理，编译也可以通过。<code>RuntimeException</code>及其子类都是非受检查异常，常见的有：<code>NullPointException</code>、<code>IllegalArgumentException</code>、<code>NumberFormatException</code>等。</li>
 </ul>
-<p><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512152237987.png"></p>
-<h3 id="4-Throwable有哪些常用方法？"><a href="#4-Throwable有哪些常用方法？" class="headerlink" title="4. Throwable有哪些常用方法？"></a>4. <code>Throwable</code>有哪些常用方法？</h3><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512152739565.png" style="zoom:40%" align="center">
-
-
+<p><img src="https://images.ysfun.cn/mac-img/image-20220512152237987.png"></p>
+<h3 id="4-Throwable有哪些常用方法？"><a href="#4-Throwable有哪些常用方法？" class="headerlink" title="4. Throwable有哪些常用方法？"></a>4. <code>Throwable</code>有哪些常用方法？</h3><img src="https://images.ysfun.cn/mac-img/image-20220512152739565.png" style="zoom:40%" align="center">
 
 <ul>
 <li><code>String getMessage()</code>：返回异常描述信息</li>
 </ul>
-<p><img src="/2022/05/12/Java%E5%BC%82%E5%B8%B8%EF%BC%9AException%E4%B8%8EError%EF%BC%8CcheckedException%E4%B8%8EunCheckedException/image-20220512153002731.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220512153002731.png"></p>
 <ul>
 <li><code>void printStackTrace()</code>：在控制台打印<code>Throwable</code>对象封装的异常信息</li>
 </ul>
@@ -1699,13 +1697,13 @@
   <entry>
     <title>源码剖析：HashMap中插入节点put(k, v)和扩容resize()</title>
     <url>/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/</url>
-    <content><![CDATA[<img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/337690-20200704174405569-752263172-20220608125854874.png" style="zoom:80%">
+    <content><![CDATA[<img src="https://images.ysfun.cn/mac-img/337690-20200704174405569-752263172-20220608125854874.png" style="zoom:80%">
 
 <p><code>HashMap</code>在不同JDK版本的实现方式和源码有所区别，本文针对<code>jdk1.8</code>展开分析，从源码出发深入探讨<code>HashMap</code>插入元素及其中涉及的扩容的过程。</p>
 <span id="more"></span>
 
 <h2 id="HashMap数据结构"><a href="#HashMap数据结构" class="headerlink" title="HashMap数据结构"></a>HashMap数据结构</h2><p><code>HashMap</code>本质由数组+链表&#x2F;红黑树，其源码中定义了一个核心属性<code>table</code>（一个<code>Node</code>数组），<code>Node</code>可以理解为存储哈希表中<strong>键值对</strong>的容器。</p>
-<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/image-20220608130154836.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220608130154836.png"></p>
 <p><code>HashMap</code>会根据<code>key</code>的<code>哈希值</code>找到当前键值对存放在<code>table</code>中的下标<code>index</code>，当多个<code>key</code>位于同一个下标时（称之为哈希冲突），会采用链表的方式，将当前<code>Node</code>插入到链表尾端；当链表的长度超过<code>TREEIFY_THRESHOLD</code>时，会将链表转换为二叉查找树进行存储（HashMap采用的是红黑树）；当发现<code>key</code>相同时只替换<code>value</code>值即可。</p>
 <p>上面提到发现”<code>key</code>相同“，进行<code>key</code>比较的时候会按照如下顺序进行比对：</p>
 <ol>
@@ -1718,9 +1716,9 @@
 <p>当我们需要使用到散列结构（HashMap, HashSet等）时，如果只重写equals方法而没有重写hashCode方法，在比较key是否相同时会先进行hashCode比较，没有重写hashCode方法会导致两个equals相等的对象的hashCode不同，因此在put操作时会当做两个不同的key来处理。</p>
 </blockquote>
 <h2 id="HashMap插入节点和扩容"><a href="#HashMap插入节点和扩容" class="headerlink" title="HashMap插入节点和扩容"></a>HashMap插入节点和扩容</h2><p><code>put</code>方法源码注释：</p>
-<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/image-20220608131355501.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220608131355501.png"></p>
 <p>我们可以发现<code>put</code>方法实际是调用了<code>putVal(int hash, K key, V value, boolean onlyIfAbsent, boolean evict)</code>方法，我们先来看计算哈希值的过程：</p>
-<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/image-20220608131606962.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220608131606962.png"></p>
 <p>从源码我们可以发现，计算哈希值的时候，当<code>key</code>为<code>null</code>时指定了哈希值为0，说明<code>HashMap</code>是允许<code>key</code>为<code>null</code>的，并且只能有一个<code>key</code>为<code>null</code>。这里和其他的哈希表不同（如<code>HashTable</code>,<code>ConcurrentHashMap</code>），其他哈希结构都是不允许<code>key</code>为<code>null</code>的。</p>
 <h3 id="putVal-插入节点"><a href="#putVal-插入节点" class="headerlink" title="putVal()插入节点"></a>putVal()插入节点</h3><p>插入节点的步骤：</p>
 <ol>
@@ -1739,7 +1737,7 @@
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment">     * Implements Map.put and related methods.</span></span><br><span class="line"><span class="comment">     *</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> hash hash for key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> key the key</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> value the value to put</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> onlyIfAbsent if true, don&#x27;t change existing value</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> evict if false, the table is in creation mode.</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@return</span> previous value, or null if none</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line"><span class="keyword">final</span> V <span class="title function_">putVal</span><span class="params">(<span class="type">int</span> hash, K key, V value, <span class="type">boolean</span> onlyIfAbsent,</span></span><br><span class="line"><span class="params">               <span class="type">boolean</span> evict)</span> &#123;</span><br><span class="line">  Node&lt;K,V&gt;[] tab; Node&lt;K,V&gt; p; <span class="type">int</span> n, i;</span><br><span class="line">  <span class="keyword">if</span> ((tab = table) == <span class="literal">null</span> || (n = tab.length) == <span class="number">0</span>)</span><br><span class="line">    <span class="comment">// table为空时，初始化table</span></span><br><span class="line">    n = (tab = resize()).length;</span><br><span class="line">  <span class="keyword">if</span> ((p = tab[i = (n - <span class="number">1</span>) &amp; hash]) == <span class="literal">null</span>)</span><br><span class="line">    <span class="comment">// 哈希桶当前位置为空，则直接把新的Node放到table数组的当前位置即可</span></span><br><span class="line">    tab[i] = newNode(hash, key, value, <span class="literal">null</span>);</span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">// 发生哈希冲突</span></span><br><span class="line">    Node&lt;K,V&gt; e; K k;</span><br><span class="line">    <span class="comment">// p.hash == hash &amp;&amp; ((k = p.key) == key || (key != null &amp;&amp; key.equals(k)))就是上面提到的「比较key」的源码</span></span><br><span class="line">    <span class="keyword">if</span> (p.hash == hash &amp;&amp;</span><br><span class="line">        ((k = p.key) == key || (key != <span class="literal">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">      <span class="comment">// 发现key相同，把当前Node赋给e，后面进行value替换操作</span></span><br><span class="line">      e = p;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (p <span class="keyword">instanceof</span> TreeNode)</span><br><span class="line">      <span class="comment">// 发现哈希桶当前位置已经是一颗树，进行红黑树插入节点操作，此处不进行详细阐述</span></span><br><span class="line">      e = ((TreeNode&lt;K,V&gt;)p).putTreeVal(<span class="built_in">this</span>, tab, hash, key, value);</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="comment">// table当前位置为链表，遍历链表，寻找是否有相同的key</span></span><br><span class="line">      <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">binCount</span> <span class="operator">=</span> <span class="number">0</span>; ; ++binCount) &#123;</span><br><span class="line">        <span class="keyword">if</span> ((e = p.next) == <span class="literal">null</span>) &#123;</span><br><span class="line">          <span class="comment">// 遍历到链表尾部，仍未发现相同的key，创建新Node，并插入到链表尾部</span></span><br><span class="line">          p.next = newNode(hash, key, value, <span class="literal">null</span>);</span><br><span class="line">          <span class="keyword">if</span> (binCount &gt;= TREEIFY_THRESHOLD - <span class="number">1</span>) <span class="comment">// -1 for 1st</span></span><br><span class="line">            <span class="comment">// 发现当前链表的长度达到了TREEIFY_THRESHOLD，链表变红黑树，提升查询效率</span></span><br><span class="line">            treeifyBin(tab, hash);</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// 此处同样是「比较key」的过程</span></span><br><span class="line">        <span class="keyword">if</span> (e.hash == hash &amp;&amp;</span><br><span class="line">            ((k = e.key) == key || (key != <span class="literal">null</span> &amp;&amp; key.equals(k))))</span><br><span class="line">          <span class="keyword">break</span>;</span><br><span class="line">        <span class="comment">// 发现有相同的key，把当前Node赋给e，后面进行value替换操作</span></span><br><span class="line">        p = e;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (e != <span class="literal">null</span>) &#123; <span class="comment">// existing mapping for key</span></span><br><span class="line">      <span class="comment">// 发现key相同，进行value替换操作</span></span><br><span class="line">      <span class="type">V</span> <span class="variable">oldValue</span> <span class="operator">=</span> e.value;</span><br><span class="line">      <span class="keyword">if</span> (!onlyIfAbsent || oldValue == <span class="literal">null</span>)</span><br><span class="line">        e.value = value;</span><br><span class="line">      afterNodeAccess(e);</span><br><span class="line">      <span class="keyword">return</span> oldValue;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  ++modCount;</span><br><span class="line">  <span class="keyword">if</span> (++size &gt; threshold)</span><br><span class="line">    <span class="comment">// 当前HashMap的节点数超过了门槛值，进行扩容</span></span><br><span class="line">    resize();  <span class="comment">// 扩容操作</span></span><br><span class="line">  afterNodeInsertion(evict);</span><br><span class="line">  <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <h3 id="resize-扩容"><a href="#resize-扩容" class="headerlink" title="resize()扩容"></a>resize()扩容</h3><p>源码注释：</p>
-<p><img src="/2022/06/08/%E6%BA%90%E7%A0%81%E5%89%96%E6%9E%90%EF%BC%9AHashMap%E7%9A%84put-k-v-%E5%92%8Cresize/image-20220608134431428.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220608134431428.png"></p>
 <p>从上面注释我们可以知道，当初始化或者哈希桶大小翻倍时会执行<code>resize()</code>方法。</p>
 <p><code>resize()</code>方法分为两个部分：</p>
 <ol>
@@ -1809,7 +1807,7 @@
   <entry>
     <title>JVM：GC垃圾回收</title>
     <url>/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/</url>
-    <content><![CDATA[<img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/image-20220614213725670.png" style="zoom:80%">
+    <content><![CDATA[<img src="https://images.ysfun.cn/mac-img/image-20220614213725670.png" style="zoom:80%">
 
 <p>在Java 中，JVM 会对内存进行自动分配与回收，其中 GC (Garbage Collection) 的主要作用就是<strong>清除不再使用的对象，自动释放内存</strong>。</p>
 <span id="more"></span>
@@ -1821,7 +1819,7 @@
 <li>常见的垃圾回收器及其工作原理</li>
 </ol>
 <h2 id="1-哪些内存需要被回收？"><a href="#1-哪些内存需要被回收？" class="headerlink" title="1. 哪些内存需要被回收？"></a>1. 哪些内存需要被回收？</h2><h3 id="1-1-GC的目标区域"><a href="#1-1-GC的目标区域" class="headerlink" title="1.1 GC的目标区域"></a>1.1 GC的目标区域</h3><p>JVM的内存结构包括五大区域：程序计数器、虚拟机栈、本地方法栈、方法区、堆。根据是否线程私有可以分为两类：</p>
-<img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/image-20220613134151848.png" style="zoom:50%">
+<img src="https://images.ysfun.cn/mac-img/image-20220613134151848.png" style="zoom:50%">
 
 <p>其中程序计数器、虚拟机栈、本地方法栈是随线程创建而生、线程销毁而亡，因此这几个区域的内存分配和回收都具备确定性，因为方法结束或者线程终止，内存自然就跟着回收了。</p>
 <p><strong>而方法区和堆的内存分配和回收是动态的，正是垃圾回收器需要关注的区域。</strong></p>
@@ -1837,7 +1835,7 @@
 </ol>
 <p>在对象头维护了一个<code>counter</code>计数器，对象被引用一次，计数器+1；若删除该引用或引用失效，计数器-1。当计数器为0时，则认为该对象是可以被回收的。</p>
 <p><strong>弊端：</strong>无法解决循环引用的问题，发生循环应用的引用计数器永远不会为0，则意味着这些对象永远不会被回收，就会导致<code>内存泄漏</code>问题。因此主流的Java虚拟机都没有采用引用计数算法来判断对象是否存活。</p>
-<p><img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/%E5%BE%AA%E7%8E%AF%E5%BC%95%E7%94%A8.jpg" alt="循环引用"></p>
+<p><img src="https://images.ysfun.cn/mac-img/%E5%BE%AA%E7%8E%AF%E5%BC%95%E7%94%A8.jpg" alt="循环引用"></p>
 <ol start="2">
 <li><strong>可达性分析算法</strong></li>
 </ol>
@@ -1850,10 +1848,10 @@
 <li><strong>本地方法栈中引用的对象</strong>（native方法）</li>
 <li><strong>Java虚拟机内部的引用</strong></li>
 </ul>
-<img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/image-20220614171629710.png" style="zoom:60%">
+<img src="https://images.ysfun.cn/mac-img/image-20220614171629710.png" style="zoom:60%">
 
 <h3 id="1-3-Java中的引用"><a href="#1-3-Java中的引用" class="headerlink" title="1.3 Java中的引用"></a>1.3 Java中的引用</h3><p>无论是通过引用计数算法判断对象的引用数量，还是通过可达性分析算法判断对象的引用链是否可达，判定对象是否存活都与“引用”相关。在Java中，引用又分为强引用（Strong Reference）、软引用（Soft Reference）、弱引用（Weak Reference）、虚引用（Phantom Reference），这四种引用强度依次逐渐减小。</p>
-<p><img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8.png" alt="四种引用"></p>
+<p><img src="https://images.ysfun.cn/mac-img/%E5%9B%9B%E7%A7%8D%E5%BC%95%E7%94%A8.png" alt="四种引用"></p>
 <ol>
 <li><strong>强引用（Strong Reference）</strong></li>
 </ol>
@@ -1896,13 +1894,13 @@
 <ol>
 <li><strong>标记</strong></li>
 </ol>
-<img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/image-20220614185146705.png" style="zoom:50%">
+<img src="https://images.ysfun.cn/mac-img/image-20220614185146705.png" style="zoom:50%">
 
 <p>上图中灰色对象是不可达对象，标记为需要被回收的对象。</p>
 <ol start="2">
 <li><strong>清除</strong></li>
 </ol>
-<img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/image-20220614185357855.png" style="zoom:50%">
+<img src="https://images.ysfun.cn/mac-img/image-20220614185357855.png" style="zoom:50%">
 
 <p>将标记为灰色的部分进行清除。</p>
 <blockquote>
@@ -1917,7 +1915,7 @@
 <p>内存碎片带来的问题：空间碎片太多可能会导致以后在程序运行过程中需要分配较大对象时，无法找到足够的连续内存而不得不提前触发另一次垃圾收集动作。</p>
 </blockquote>
 <h3 id="2-2-标记-整理（Mark-Compact）算法"><a href="#2-2-标记-整理（Mark-Compact）算法" class="headerlink" title="2.2 标记-整理（Mark-Compact）算法"></a>2.2 标记-整理（Mark-Compact）算法</h3><p>与标记-清除算法不同，标记-整理算法是移动式的，它会让所有存活的对象都向空间一端移动，然后清除到边界以外的内存。</p>
-<img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/image-20220614193929369.png" style="zoom:50%">
+<img src="https://images.ysfun.cn/mac-img/image-20220614193929369.png" style="zoom:50%">
 
 <p>标记-整理算法的优缺点：</p>
 <ul>
@@ -1925,7 +1923,7 @@
 <li>缺点：标记-整理算法是在标记-清除算法的基础上增加了对象的移动，在整理阶段，由于移动了可用对象，需要去更新引用，从而导致效率较低。</li>
 </ul>
 <h3 id="2-3-复制算法"><a href="#2-3-复制算法" class="headerlink" title="2.3 复制算法"></a>2.3 复制算法</h3><p>将内存空间分为大小相等的两个内存块，在垃圾回收时将正在使用内存块中存活的对象复制到另一个未被使用的内存块，然后清除正在使用内存块的所有对象。然后交换两个内存块的角色，完成垃圾回收过程。</p>
-<img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/image-20220614195237263.png" style="zoom:50%">
+<img src="https://images.ysfun.cn/mac-img/image-20220614195237263.png" style="zoom:50%">
 
 <p>复制算法的优缺点：</p>
 <ul>
@@ -1946,7 +1944,7 @@
 <li><strong>Full GC</strong>：指目标是整个堆和方法区的垃圾收集。</li>
 </ul>
 <p>创建对象时GC触发的流程：</p>
-<img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/image-20220614214059862.png" style="zoom:50%">
+<img src="https://images.ysfun.cn/mac-img/image-20220614214059862.png" style="zoom:50%">
 
 <p><strong>Full GC</strong>是对整个堆进行整理，包括Young、Tenured和Perm。Full GC因为需要对整个堆进行回收，所以执行时间会较长，因此应该尽可能减少Full GC的次数。在对JVM调优的过程中，很大一部分工作就是对于Full GC的调节。</p>
 <p><strong>触发Full GC的条件：</strong></p>
@@ -1955,17 +1953,17 @@
 <p>c) System.gc()被显式调用；</p>
 <p>d) 上一次GC之后Heap的各域分配策略动态变化；</p>
 <h2 id="3-常见的垃圾收集器"><a href="#3-常见的垃圾收集器" class="headerlink" title="3. 常见的垃圾收集器"></a>3. 常见的垃圾收集器</h2><p>Jdk1.8版本<code>HotSpot</code>虚拟机所包含的垃圾收集器：</p>
-<img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/1326194-20181017145352803-1499680295.png" style="zoom:150%">
+<img src="https://images.ysfun.cn/mac-img/1326194-20181017145352803-1499680295.png" style="zoom:150%">
 
 <h3 id="3-1-串行收集器（Serial-Serial-Old）"><a href="#3-1-串行收集器（Serial-Serial-Old）" class="headerlink" title="3.1 串行收集器（Serial, Serial Old）"></a>3.1 串行收集器（Serial, Serial Old）</h3><p><strong>Serial</strong> 翻译过来可以理解成单线程。单线程收集器有Serial 和 Serial Old 两种，它们的唯一区别就是：<strong>Serial 工作在新生代，使用“复制”算法；Serial Old 工作在老年代，使用“标志-整理”算法</strong>。</p>
 <p>串行收集器收集器是最经典、最基础，也是最好理解的。它们的特点就是单线程运行及独占式运行，因此会带来很不好的用户体验。虽然它的收集方式对程序的运行并不友好，但由于它的单线程执行特性，应用于单个CPU硬件平台的性能可以超过其他的并行或并发处理器。</p>
 <p>“单线程”的意义<strong>并不仅仅是说明它只会使用一个处理器或一条收集线程去完成垃圾收集工作，更重要的是强调在它进行垃圾收集时，必须暂停其他所有工作线程，直到它收集结束（STW [Stop The World] 阶段）</strong>。</p>
-<img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/image-20220614215350657.png" style="zoom:50%">
+<img src="https://images.ysfun.cn/mac-img/image-20220614215350657.png" style="zoom:50%">
 
 <p>STW 会带给用户恶劣的体验，所以从JDK 1.3开始，一直到现在最新的JDK 13，HotSpot虚拟机开发团队为消除或者降低用户线程因垃圾收集而导致停顿的努力一直持续进行着，从Serial收集器到Parallel收集器，再到Concurrent Mark Sweep（CMS）和Garbage First（G1）收集器，最终至现在垃圾收集器的最前沿成果Shenandoah和ZGC等。</p>
 <p>虽然新的收集器很多，但是串行收集器仍有其适合的场景。迄今为止，它依然是HotSpot虚拟机运行在客户端模式下的默认新生代收集器，有着优于其他收集器的地方，那就是简单而高效。对于内存资源受限的环境，它是所有收集器里额外内存消耗最小的，单线程没有线程交互开销。（这里实际上也是一个时间换空间的概念）</p>
 <h3 id="3-2-并行收集器（ParNew-Parallel-Scavenge-Parallel-Old）"><a href="#3-2-并行收集器（ParNew-Parallel-Scavenge-Parallel-Old）" class="headerlink" title="3.2 并行收集器（ParNew, Parallel Scavenge, Parallel Old）"></a>3.2 并行收集器（ParNew, Parallel Scavenge, Parallel Old）</h3><p>并行收集器是多线程的收集器，在多核CPU下能够很好的提高收集性能。</p>
-<img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/image-20220614215805141.png" style="zoom:50%">
+<img src="https://images.ysfun.cn/mac-img/image-20220614215805141.png" style="zoom:50%">
 
 <p>并行收集器包含：</p>
 <ul>
@@ -1976,7 +1974,7 @@
 <h3 id="3-3-Concurrent-Mark-and-Sweep（CMS）收集器"><a href="#3-3-Concurrent-Mark-and-Sweep（CMS）收集器" class="headerlink" title="3.3 Concurrent Mark and Sweep（CMS）收集器"></a>3.3 Concurrent Mark and Sweep（CMS）收集器</h3><p><strong>CMS(Concurrent Mark Sweep，并发标记清除) 收集器</strong>是以获取<strong>最短回收停顿时间</strong>为目标的收集器，它在垃圾收集时使得用户线程和 GC 线程<strong>并发</strong>执行，因此在垃圾收集过程中用户也不会感到明显的卡顿。</p>
 <p><strong>特点：</strong>基于标记-清除算法实现。并发收集、低停顿。</p>
 <p>从名字就可以知道，CMS是基于“<strong>标记-清除</strong>”算法实现的。它的工作流程如下：</p>
-<img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/image-20220614221100575.png" style="zoom:50%">
+<img src="https://images.ysfun.cn/mac-img/image-20220614221100575.png" style="zoom:50%">
 
 <p>整个过程可以分为四步：</p>
 <ol>
@@ -2002,7 +2000,9 @@
 <p>鉴于 CMS 的一些不足之外，比如: 老年代内存碎片化，STW 时间虽然已经改善了很多，但是仍然有提升空间。G1 就横空出世了，它对于堆区的内存划思路很新颖，有点算法中分治法“分而治之”的味道。下面我们来讨论G1收集器的工作原理！</p>
 <p>G1 将连续的Java堆划分为<strong>多个大小相等的独立区域（Region）</strong>，每一个Region都可以根据需要，扮演<strong>新生代的Eden空间、Survivor空间，或者老年代空间</strong>。每个Region的大小可以通过参数<code>-XX：G1HeapRegionSize</code>设定，取值范围为<strong>1MB～32MB，且应为2的N次幂</strong>。</p>
 <p>Region中还有一类特殊的<strong>Humongous</strong>区域，专门用来<strong>存储大对象</strong>。<strong>G1认为只要大小超过了一个Region容量一半的对象即可判定为大对象。对于那些超过了整个Region容量的超级大对象，将会被存放在N个连续的Humongous Region之中</strong>。Humongous，简称 H 区，是专用于存放超大对象的区域，通常 &gt;&#x3D; 1&#x2F;2 Region Size，G1的大多数行为都把Humongous Region作为老年代的一部分来进行看待。</p>
-<img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/image-20220614224058407.png" style="zoom:67%;">
+<img src="https://images.ysfun.cn/mac-img/image-20220614224058407.png" style="zoom:67%;">
+
+
 
 <p>在G1收集器中，所有的垃圾回收，都是基于 region 的。G1根据各个Region回收所获得的空间大小以及回收所需时间等指标在后台维护一个优先列表，每次根据允许的收集时间，优先回收<strong>价值最大（垃圾）</strong>的Region，从而可以<strong>有计划地避免在整个Java堆中进行全区域的垃圾收集</strong>。这也是 “Garbage First” 得名的由来。</p>
 <p>G1<strong>从整体来看是基于“标记-整理”算法实现的收集器</strong>，但<strong>从局部（两个Region之间）上看又是基于“标记-复制”算法实现</strong>，无论如何，这两种算法都意味着<strong>G1运作期间不会产生内存空间碎片</strong>，垃圾收集完成之后能提供规整的可用内存。这种特性有利于程序长时间运行，在程序为大对象分配内存时不容易因无法找到连续内存空间而提前触发下一次GC。</p>
@@ -2013,7 +2013,9 @@
 <p>答案是<strong>不需要</strong>，每个 Region 都有一个 <strong>Remembered Set （记忆集）</strong>，<strong>用于记录本区域中所有对象引用的对象所在的区域，进行可达性分析时，只要在 GC Roots 中再加上 Remembered Set 即可防止对整个堆内存进行遍历</strong>。</p>
 <p>再提一个概念，<strong>Collection Set</strong> ：简称 CSet，<strong>记录了等待回收的 Region 集合，GC 时这些 Region 中的对象会被回收（copied or moved）</strong>。</p>
 <p><span style="color:red"><strong>G1工作流程：</strong></span></p>
-<img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/image-20220614225133854.png" style="zoom:67%;">
+<img src="https://images.ysfun.cn/mac-img/image-20220614225133854.png" style="zoom:67%;">
+
+
 
 <p>如果不计算维护 Remembered Set 的操作，G1 收集器的工作过程分为以下几个步骤：</p>
 <ul>
@@ -2025,12 +2027,12 @@
 <p>从上述阶段的描述可以看出，G1收集器除了并发标记外，其余阶段也是要完全暂停用户线程的，换言之，它并非纯粹地追求低延迟，官方给它设定的目标是在<strong>延迟可控的情况下获得尽可能高的吞吐量</strong></p>
 <p><span style="color:red"><strong>G1 的 Minor GC&#x2F;Young GC</strong></span></p>
 <p>在分配一般对象时，当所有eden region使用达到最大阈值并且无法申请足够内存时，会触发一次YGC。每次YGC会回收所有Eden以及Survivor区，并且将存活对象复制到Old区以及另一部分的Survivor区。</p>
-<img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/image-20220614225418814.png" style="zoom:67%;">
+<img src="https://images.ysfun.cn/mac-img/image-20220614225418814.png" style="zoom:67%;">
 
 <p><span style="color:red"><strong>G1 的 Mixed GC</strong></span></p>
 <p>当越来越多的对象晋升到老年代Old Region 时，为了避免堆内存被耗尽，虚拟机会触发一个混合的垃圾收集器，即Mixed GC，是收集整个新生代以及部分老年代的垃圾收集。除了回收整个Young Region，还会回收一部分的Old Region ，这里需要注意：<strong>是一部分老年代，而不是全部老年代</strong>，可以选择哪些Old Region 进行收集，从而可以对垃圾回收的耗时时间进行控制。</p>
 <p>Mixed GC的整个子任务和YGC完全一样，只是回收的范围不一样。</p>
-<img src="/2022/06/13/JVM-%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6/image-20220614225700283.png" style="zoom:67%;">
+<img src="https://images.ysfun.cn/mac-img/image-20220614225700283.png" style="zoom:67%;">
 
 <blockquote>
 <p>注：G1 一般来说是没有FGC的概念的。因为它本身不提供FGC的功能。</p>
@@ -2072,7 +2074,7 @@
 
 <h3 id="题解【差分数组思想、TreeMap】"><a href="#题解【差分数组思想、TreeMap】" class="headerlink" title="题解【差分数组思想、TreeMap】"></a>题解【差分数组思想、TreeMap】<a id="t2"></a></h3><p>边界计数，边界开始时计数加一<code>delta[start]++</code>，边界计数时计数减一<code>delta[end]--</code>，按照排序从小到达统计<code>count</code>之和，一旦<code>count==3</code>则表明当前区间有三次重叠。考虑到需要排序结构，delta使用TreeMap。</p>
 <p><strong>图解：</strong></p>
-<p><img src="/2022/06/06/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ATreeMap%E5%BA%94%E7%94%A8%E7%A4%BA%E4%BE%8B-LeetCode-%E6%88%91%E7%9A%84%E6%97%A5%E7%A8%8B%E5%AE%89%E6%8E%92%E8%A1%A8/image-20220606120852444.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220606120852444.png"></p>
 <p>注意：当<code>count==3</code>时应撤销添加日程</p>
 <figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">MyCalendarTwo</span> &#123;</span><br><span class="line">    TreeMap&lt;Integer, Integer&gt; treeMap;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">MyCalendarTwo</span><span class="params">()</span> &#123;</span><br><span class="line">        treeMap = <span class="keyword">new</span> <span class="title class_">TreeMap</span>&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">book</span><span class="params">(<span class="type">int</span> start, <span class="type">int</span> end)</span> &#123;</span><br><span class="line">        treeMap.put(start, treeMap.getOrDefault(start, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">        treeMap.put(end, treeMap.getOrDefault(end, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">        <span class="type">int</span> <span class="variable">sum</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> count : treeMap.values()) &#123;</span><br><span class="line">            sum += count;</span><br><span class="line">            <span class="keyword">if</span> (sum &gt;= <span class="number">3</span>) &#123;</span><br><span class="line">                <span class="comment">// 出现三重预定，取消将该日程添加到日历</span></span><br><span class="line">                treeMap.put(start, treeMap.getOrDefault(start, <span class="number">0</span>)-<span class="number">1</span>);</span><br><span class="line">                treeMap.put(end, treeMap.getOrDefault(end, <span class="number">0</span>)+<span class="number">1</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -2105,7 +2107,26 @@
   <entry>
     <title>服务器Docker安装Halo博客</title>
     <url>/2022/06/17/%E6%9C%8D%E5%8A%A1%E5%99%A8Docker%E5%AE%89%E8%A3%85halo%E5%8D%9A%E5%AE%A2%E5%8F%8Anginx%E9%85%8D%E7%BD%AE/</url>
-    <content><![CDATA[<h2 id="1-安装Docker"><a href="#1-安装Docker" class="headerlink" title="1. 安装Docker"></a>1. 安装Docker</h2><p>在新主机上首次安装 Docker Engine-Community 之前，需要设置 Docker 仓库。之后，您可以从仓库安装和更新 Docker。</p>
+    <content><![CDATA[<h3 id="Halo相关链接"><a href="#Halo相关链接" class="headerlink" title="Halo相关链接"></a>Halo相关链接</h3><p>官网：<a href="https://halo.run/">https://halo.run</a><br>文档：<a href="https://docs.halo.run/">https://docs.halo.run</a><br>社区：<a href="https://bbs.halo.run/">https://bbs.halo.run</a><br>主题仓库：<a href="https://halo.run/themes.html">https://halo.run/themes.html</a><br>开源地址：<a href="https://github.com/halo-dev/halo">https://github.com/halo-dev/halo</a></p>
+<span id="more"></span>
+
+<p>之前都是使用Hexo博客系统的，聊聊为什么改用Halo博客系统了。</p>
+<p>Halo相比于Hexo博客的优缺点：</p>
+<p><strong>优点：</strong></p>
+<ul>
+<li>Halo有后端，可以在线修改，可以在不同设备上进行修改发布；而Hexo则不行，它必须修改源文件，再重新编译发布</li>
+<li>Halo配置更简单，有后台配置中心，而Hexo则全部依赖于自己修改配置文件。如果需要修改主题的话Halo几乎都不需要变动，而Hexo可能设计较大变动，因此对于喜欢经常更换主题的同学推荐Halo。</li>
+<li>Halo是基于Java开发，而我本人也主要搞Java开发，碰到问题了更好解决。</li>
+</ul>
+<p><strong>缺点：</strong></p>
+<ul>
+<li>Halo是需要后台服务的，因此更依赖于硬件资源，我购买的服务器是1GB内存的，好几次都把服务器搞挂了，内存撑爆了。</li>
+<li>页面加载速度Halo也比Hexo慢很多，因为Hexo是纯静态网站。</li>
+</ul>
+<h3 id="我现在的方案："><a href="#我现在的方案：" class="headerlink" title="我现在的方案："></a>我现在的方案：</h3><p><a href="https://ysfun.github.io域名用来部署hexo博客/">https://ysfun.github.io域名用来部署Hexo博客</a></p>
+<p><a href="https://www.ysfun.cn域名用来部署halo博客/">https://www.ysfun.cn域名用来部署Halo博客</a></p>
+<p>两个博客系统同步更新！！！</p>
+<h2 id="1-安装Docker"><a href="#1-安装Docker" class="headerlink" title="1. 安装Docker"></a>1. 安装Docker</h2><p>在新主机上首次安装 Docker Engine-Community 之前，需要设置 Docker 仓库。之后，您可以从仓库安装和更新 Docker。</p>
 <h3 id="1-设置仓库"><a href="#1-设置仓库" class="headerlink" title="1. 设置仓库"></a>1. 设置仓库</h3><p>安装所需的软件包。yum-utils 提供了 yum-config-manager ，并且 device mapper 存储驱动程序需要 device-mapper-persistent-data 和 lvm2。</p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo yum install -y yum-utils device-mapper-persistent-data lvm2</span><br></pre></td></tr></table></figure>
 

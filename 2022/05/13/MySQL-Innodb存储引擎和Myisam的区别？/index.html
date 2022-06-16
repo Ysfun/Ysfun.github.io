@@ -28,10 +28,10 @@
 <meta property="og:description" content="本文从事务，外键，索引， 存储文件，日志，count行数，锁，主键八个方面系统地对比了在MySQL中InnoDB存储引擎和MyISAM存储引擎的区别。">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://www.ysfun.cn/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/mysql-logo-800-400.jpg">
-<meta property="og:image" content="https://www.ysfun.cn/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png">
-<meta property="og:image" content="https://www.ysfun.cn/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130322302.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220513130213185.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220513130322302.png">
 <meta property="article:published_time" content="2022-05-13T04:30:50.000Z">
-<meta property="article:modified_time" content="2022-06-06T03:16:01.498Z">
+<meta property="article:modified_time" content="2022-06-16T20:06:43.646Z">
 <meta property="article:author" content="Ysfun">
 <meta property="article:tag" content="MySQL">
 <meta name="twitter:card" content="summary">
@@ -259,7 +259,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-06-06 11:16:01" itemprop="dateModified" datetime="2022-06-06T11:16:01+08:00">2022-06-06</time>
+      <time title="修改时间：2022-06-17 04:06:43" itemprop="dateModified" datetime="2022-06-17T04:06:43+08:00">2022-06-17</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -345,8 +345,8 @@
 <blockquote>
 <p>InnoDB的B+树主键索引的叶子节点就是数据文件，辅助索引的叶子节点是主键的值；而MyISAM的B+树主键索引和辅助索引的叶子节点都是数据文件的地址指针。</p>
 </blockquote>
-<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130213185.png"></p>
-<p><img src="/2022/05/13/MySQL-Innodb%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8CMyisam%E7%9A%84%E5%8C%BA%E5%88%AB%EF%BC%9F/image-20220513130322302.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220513130213185.png"></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220513130322302.png"></p>
 <h3 id="4-存储文件"><a href="#4-存储文件" class="headerlink" title="4. 存储文件"></a>4. 存储文件</h3><ul>
 <li><code>InnoDB</code>：存储文件有<strong>frm、ibd</strong>，<strong>frm</strong>是表定义文件，<strong>ibd</strong>是数据文件。</li>
 <li><code>MyISAM</code>：存储文件有<strong>frm、myd、myi</strong>，<strong>frm</strong>是表定义文件，<strong>myd</strong>是数据文件，<strong>myi</strong>是索引文件。</li>
@@ -474,7 +474,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">76k</span>
+    <span title="站点总字数">77k</span>
   </span>
 </div>
 <div class="busuanzi-count">

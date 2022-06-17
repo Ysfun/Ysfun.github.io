@@ -2105,7 +2105,7 @@
       </tags>
   </entry>
   <entry>
-    <title>服务器Docker安装Halo博客</title>
+    <title>Docker安装Halo博客&amp;配置swap虚拟内存</title>
     <url>/2022/06/17/%E6%9C%8D%E5%8A%A1%E5%99%A8Docker%E5%AE%89%E8%A3%85halo%E5%8D%9A%E5%AE%A2%E5%8F%8Anginx%E9%85%8D%E7%BD%AE/</url>
     <content><![CDATA[<h3 id="Halo相关链接"><a href="#Halo相关链接" class="headerlink" title="Halo相关链接"></a>Halo相关链接</h3><p>官网：<a href="https://halo.run/">https://halo.run</a><br>文档：<a href="https://docs.halo.run/">https://docs.halo.run</a><br>社区：<a href="https://bbs.halo.run/">https://bbs.halo.run</a><br>主题仓库：<a href="https://halo.run/themes.html">https://halo.run/themes.html</a><br>开源地址：<a href="https://github.com/halo-dev/halo">https://github.com/halo-dev/halo</a></p>
 <span id="more"></span>
@@ -2123,8 +2123,8 @@
 <li>Halo是需要后台服务的，因此更依赖于硬件资源，我购买的服务器是1GB内存的，好几次都把服务器搞挂了，内存撑爆了。</li>
 <li>页面加载速度Halo也比Hexo慢很多，因为Hexo是纯静态网站。</li>
 </ul>
-<h3 id="我现在的方案："><a href="#我现在的方案：" class="headerlink" title="我现在的方案："></a>我现在的方案：</h3><p><a href="https://ysfun.github.io域名用来部署hexo博客/">https://ysfun.github.io域名用来部署Hexo博客</a></p>
-<p><a href="https://www.ysfun.cn域名用来部署halo博客/">https://www.ysfun.cn域名用来部署Halo博客</a></p>
+<h3 id="我现在的方案："><a href="#我现在的方案：" class="headerlink" title="我现在的方案："></a>我现在的方案：</h3><p><a href="https://ysfun.github.io/">https://ysfun.github.io</a>		域名用来部署Hexo博客</p>
+<p><a href="https://www.ysfun.cn/">https://www.ysfun.cn</a>		域名用来部署Halo博客</p>
 <p>两个博客系统同步更新！！！</p>
 <h2 id="1-安装Docker"><a href="#1-安装Docker" class="headerlink" title="1. 安装Docker"></a>1. 安装Docker</h2><p>在新主机上首次安装 Docker Engine-Community 之前，需要设置 Docker 仓库。之后，您可以从仓库安装和更新 Docker。</p>
 <h3 id="1-设置仓库"><a href="#1-设置仓库" class="headerlink" title="1. 设置仓库"></a>1. 设置仓库</h3><p>安装所需的软件包。yum-utils 提供了 yum-config-manager ，并且 device mapper 存储驱动程序需要 device-mapper-persistent-data 和 lvm2。</p>
@@ -2164,6 +2164,15 @@
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">yum remove docker-ce</span><br></pre></td></tr></table></figure>
 
 <h2 id="2-使用Docker安装Halo"><a href="#2-使用Docker安装Halo" class="headerlink" title="2. 使用Docker安装Halo"></a>2. 使用Docker安装Halo</h2><p>参考官方文档：<a href="https://docs.halo.run/getting-started/install/docker">使用 Docker 部署 Halo</a></p>
+<p><strong>创建容器，启动halo</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker run -it -d --name halo -p 8090:8090 -v ~/.halo:/root/.halo --restart=unless-stopped halohub/halo:1.5.3</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>INFO<br>注意：此命令默认使用自带的 H2 Database 数据库。如需使用 MySQL，请参考：使用 Docker 部署 Halo 和 MySQL</p>
+</blockquote>
+<p>-it： 开启输入功能并连接伪终端<br>-d： 后台运行容器<br>–name： 为容器指定一个名称<br>-p： 端口映射，格式为 主机(宿主)端口:容器端口 ，可在 application.yaml 配置。<br>-v： 工作目录映射。形式为：-v 宿主机路径:&#x2F;root&#x2F;.halo，后者不能修改。<br>–restart： 建议设置为 unless-stopped，在 Docker 启动的时候自动启动 Halo 容器。<br>打开 <a href="http://ip:端口号">http://ip:端口号</a> 即可看到安装引导界面。</p>
+<blockquote>
+<p>TIP<br>如果需要配置域名访问，建议先配置好反向代理以及域名解析再进行初始化。如果通过 <a href="http://ip:端口号">http://ip:端口号</a> 的形式无法访问，请到服务器厂商后台将运行的端口号添加到安全组，如果服务器使用了 Linux 面板，请检查此 Linux 面板是否有还有安全组配置，需要同样将端口号添加到安全组。</p>
+</blockquote>
 <h2 id="3-增加虚拟内存（Swap）"><a href="#3-增加虚拟内存（Swap）" class="headerlink" title="3. 增加虚拟内存（Swap）"></a>3. 增加虚拟内存（Swap）</h2><p>如果服务器内存不够，可使用swap增加虚拟内存</p>
 <p>1、使用 “ swapon -s “ 命令可以检查系统是否已经配置过swap，如果该命令没有返回出结果，则代表该系统尚未配置过swap。</p>
 <p>或者用 “ free ”命令查看，如果看到如下</p>
@@ -2197,6 +2206,35 @@
 
 <p>操作完毕后可使用<code>free</code>命令查看</p>
 <p><img src="https://images.ysfun.cn/mac-img/image-20220617034309669.png"></p>
+<p>注意到上面Swap内存used为0，说明并没有使用swap内存，因此还需配置swapness参数。</p>
+<blockquote>
+<p>设置swap不是说全部swap就可以用了，还是要设置参数才可以提供swap使用率的。 <a href="https://blog.csdn.net/weixin_43279032/article/details/111469024?spm=5176.smartservice_service_robot-chat.0.0.653c3cdaaGSkRM">https://blog.csdn.net/weixin_43279032&#x2F;article&#x2F;details&#x2F;111469024</a> swappiness的值的大小对如何使用swap分区是有着很大的联系的。swappiness&#x3D;0的时候表示最大限度使用物理内存，然后才是 swap空间，swappiness＝100的时候表示积极的使用swap分区，并且把内存上的数据及时的搬运到swap空间里面。linux的基本默认设置为60，具体如下： cat &#x2F;proc&#x2F;sys&#x2F;vm&#x2F;swappiness 也就是说，您的内存在使用到100-60&#x3D;40%的时候，就开始出现有交换分区的使用。 操作系统层面，要尽可能使用内存，对该参数进行调整。 临时调整的方法如下，调成10： sysctl vm.swappiness&#x3D;10 要想永久调整的话，需要将在&#x2F;etc&#x2F;sysctl.conf修改，加上： cat &#x2F;etc&#x2F;sysctl.conf vm.swappiness&#x3D;10</p>
+</blockquote>
+<ol>
+<li>查看swappiness的值</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cat /proc/sys/vm/swappiness</span><br><span class="line">或</span><br><span class="line">sysctl vm.swappiness</span><br><span class="line"></span><br><span class="line">0 # 说明不会使用swap空间</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>修改<code>/etc/sysctl.conf</code>文件中的<code>vm.swappiness</code>的值</li>
+</ol>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">vm.swappiness = 60</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>手动使配置的参数生效，执行以下命令</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sysctl -p</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>再次查看swappiness的值</li>
+</ol>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220617183409078.png"></p>
+<p>可以看到swappiness参数配置成功</p>
+<ol start="5">
+<li>查看swap内存使用情况</li>
+</ol>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220617183515053.png"></p>
+<p>可以发现已经在使用swap内存了！</p>
 ]]></content>
       <categories>
         <category>教程</category>

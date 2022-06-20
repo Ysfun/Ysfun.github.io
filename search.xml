@@ -2308,7 +2308,7 @@
 <p><img src="https://images.ysfun.cn/mac-img/%E5%AF%B9%E8%B1%A1%E5%86%85%E5%AD%98%E4%B8%89%E5%A4%A7%E5%8C%BA%E5%9F%9F-1.jpg"></p>
 <h3 id="3-1-对象头"><a href="#3-1-对象头" class="headerlink" title="3.1 对象头"></a>3.1 对象头</h3><p>在对象头的Mark Word中存储了对象自身的运行时数据，如<strong>哈希码、GC分代年龄、锁状态、线程持有的锁、偏向线程ID及偏向时间戳</strong>等。同时，Mark Word也记录的对象和锁有关的信息。</p>
 <p>当对象被<code>synchronized</code>当成同步锁时，和锁相关的一系列操作都与Mark Word有关。由于JDK1.6版本中对<code>synchronized</code>进行了锁优化，引入了偏向锁和轻量级锁（关于锁优化后面详细讨论）。<strong>Mark Word</strong>在不同锁状态下存储的内容有所不同，我们以32位虚拟机中对象头的存储内容为例：</p>
-<p><a id="p1"><img src="https://images.ysfun.cn/mac-img/image-20220620170042988.png"></p>
+<p><a id="p1"></a><img src="https://images.ysfun.cn/mac-img/image-20220620170042988.png"></p>
 <p>从图中我们可以清除地看到，Mark Word中有2bit的数据来标记锁的状态信息。无锁和偏向锁标记状态为01，轻量级锁为00，重量级锁为10。</p>
 <ul>
 <li>当状态为偏向锁时，Mark Word存储了偏向锁的线程ID。</li>
@@ -2338,7 +2338,7 @@
 <blockquote>
 <p>了解了对象头和Monitor，那么synchronized是如何利用Monitor进行工作的？</p>
 </blockquote>
-<h2 id="4-synchronized同步原理"><a href="#4-synchronized同步原理" class="headerlink" title="4. synchronized同步原理"></a>4. synchronized同步原理<a id="ch4"></h2><p>从上面<strong>synchronized</strong>放置的位置不同可以得出，<strong>synchronized</strong>用来修饰方法时，是通过<strong>ACC_SYNCHRONIZED</strong>标识符来保持线程同步的。而用来修饰代码块时，是通过<strong>monitorenter</strong>和<strong>monitorexit</strong>指令来完成。</p>
+<h2 id="4-synchronized同步原理"><a href="#4-synchronized同步原理" class="headerlink" title="4. synchronized同步原理"></a>4. synchronized同步原理<a id="ch4"></a></h2><p>从上面<strong>synchronized</strong>放置的位置不同可以得出，<strong>synchronized</strong>用来修饰方法时，是通过<strong>ACC_SYNCHRONIZED</strong>标识符来保持线程同步的。而用来修饰代码块时，是通过<strong>monitorenter</strong>和<strong>monitorexit</strong>指令来完成。</p>
 <ul>
 <li><strong>monitorenter</strong>：每个对象都是一个监视器锁（monitor）。当monitor被占用时就会处于锁定状态，线程执行monitorenter指令时尝试获取monitor的所有权，过程如下：</li>
 </ul>

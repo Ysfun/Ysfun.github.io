@@ -2653,4 +2653,95 @@
         <tag>算法题</tag>
       </tags>
   </entry>
+  <entry>
+    <title>七牛云图床&amp;Typora+PicGo图片上传</title>
+    <url>/2022/06/29/Typora-PicGo%E5%9B%BE%E7%89%87%E4%B8%8A%E4%BC%A0-%E4%B8%83%E7%89%9B%E4%BA%91%E5%9B%BE%E5%BA%8A/</url>
+    <content><![CDATA[<p><img src="https://images.ysfun.cn/mac-img/image-20220630153346076.png"></p>
+<p>使用<code>Markdown</code>做记录很长一段时间了，一直都是使用<code>typora</code>来写文件的，对于<code>.md</code>文件中的图片都是采用<code>url</code>链接进行路由访问的。之前都是在<code>typora</code>中设置在导入图片时创建一个文件同名的文件夹来保存图片，然后利用相对路径路由到图片。采用这种方式有个致命的缺点就是一旦需要将这个<code>.md</code>文件分享或者上传，都必须把这个图片文件夹一并上床，这就很麻烦。因此开始有了尝试用图床保存图片的想法。</p>
+<span id="more"></span>
+
+<h2 id="1-七牛云图床"><a href="#1-七牛云图床" class="headerlink" title="1. 七牛云图床"></a>1. 七牛云图床</h2><h3 id="1-1-七牛云配置对象存储"><a href="#1-1-七牛云配置对象存储" class="headerlink" title="1.1  七牛云配置对象存储"></a>1.1  七牛云配置对象存储</h3><ol>
+<li>注册七牛云账号并实名认证</li>
+</ol>
+<p>进入<a href="https://portal.qiniu.com/">七牛云首页</a>注册账号，并实名认证，完成实名认证后会赠送10GB的免费存储空间。</p>
+<ol start="2">
+<li>进入「对象存储」，点击左侧「空间管理」-&gt;「新建空间」</li>
+</ol>
+<img src="https://images.ysfun.cn/mac-img/image-20220629224608546.png" style="zoom:50%;" />
+
+<p>七牛云的存储对象地区对应表(PicGo配置地区存储区域会用到)：<a id="t1"></p>
+<table>
+<thead>
+<tr>
+<th>存储区域</th>
+<th>地域简称</th>
+<th>上传域名</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>华东</td>
+<td>z0</td>
+<td>服务器端：http(s):&#x2F;&#x2F;up.qiniup.com 客户端： http(s):&#x2F;&#x2F;upload.qiniup.com</td>
+</tr>
+<tr>
+<td>华北</td>
+<td>z1</td>
+<td>服务器端：http(s):&#x2F;&#x2F;up-z1.qiniup.com 客户端：http(s):&#x2F;&#x2F;upload-z1.qiniup.com</td>
+</tr>
+<tr>
+<td>华南</td>
+<td>z2</td>
+<td>服务器端：http(s):&#x2F;&#x2F;up-z2.qiniup.com 客户端：http(s):&#x2F;&#x2F;upload-z2.qiniup.com</td>
+</tr>
+<tr>
+<td>北美</td>
+<td>na0</td>
+<td>服务器端：http(s):&#x2F;&#x2F;up-na0.qiniup.com 客户端：http(s):&#x2F;&#x2F;upload-na0.qiniup.com</td>
+</tr>
+<tr>
+<td>东南亚</td>
+<td>as0</td>
+<td>服务器端：http(s):&#x2F;&#x2F;up-as0.qiniup.com 客户端：http(s):&#x2F;&#x2F;upload-as0.qiniup.com</td>
+</tr>
+</tbody></table>
+<ol start="3">
+<li>配置自定义域名</li>
+</ol>
+<p>这里我用的是子域名，在域名前面加了<code>images</code>前缀，解析<code>cname</code>即可。</p>
+<h2 id="2-Typora-PicGo安装-amp-配置"><a href="#2-Typora-PicGo安装-amp-配置" class="headerlink" title="2. Typora+PicGo安装&amp;配置"></a>2. Typora+PicGo安装&amp;配置</h2><ol>
+<li>去<a href="https://typoraio.cn/">Typora中文官网</a>下载并安装最新版Typora</li>
+</ol>
+<blockquote>
+<p>最新版Typora开始不免费提供了，并且使用老版本会提示强制更新，有能力者推荐支持正版Typora。</p>
+<p>这里提供一个Mac最新破解版Typora：<a href="https://www.macwk.com/soft/typora">macwk-typora</a>		</p>
+</blockquote>
+<ol start="2">
+<li>前往<a href="https://github.com/Molunerfinn/PicGo/releases/">PicGo-releases</a>下载安装PicGo，建议下载非beta版</li>
+</ol>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220630150012999.png"></p>
+<ol start="3">
+<li>配置PicGo</li>
+</ol>
+<p>安装完成后，Mac版上方会有以下应用图标显示，右键打开详细窗口 -&gt; 图床设置 -&gt; 七牛云图床</p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220630150107030.png"></p>
+<p>参考以下配置：</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220630151259192.png" style="zoom:50%;" />
+
+<p><code> AccessKey, SecretKey</code>在七牛云 -&gt; 个人中心 -&gt; 秘钥管理中的<code>AK和SK</code></p>
+<p>存储空间名即为刚刚创建的存储空间名，访问地址<code>http:</code>或<code>https:</code>加上域名，注意使用<code>https</code>需要在七牛云额外支付CDN流量；存储区域见<a href="#t1">存储对象地区对应表</a>；存储路径可自行设置。</p>
+<ol start="4">
+<li>Typora设置</li>
+</ol>
+<p>打开Typora偏好设置 -&gt; 图像</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220630152220581.png" style="zoom:50%;" />
+
+<p>点击<code>验证图片上传选项</code>出现以下结果则表示配置成功</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220630152320399.png" style="zoom:50%;" />
+
+<ol start="5">
+<li>登录七牛云查看图片文件</li>
+</ol>
+<p>上面一步操作就全部完成了，要想查看图片存放位置可以进入七牛云空间管理 -&gt; 进入空间 -&gt; 文件管理，即可查看图床上的所有图片。</p>
+]]></content>
+  </entry>
 </search>

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#3d85c6"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/avatar.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/avatar.png">
+  <link rel="mask-icon" href="/avatar.png" color="#3d85c6">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=roboto:300,300italic,400,400italic,700,700italic%7Csans-serif:300,300italic,400,400italic,700,700italic%7CNoto+Serif+SC:300,300italic,400,400italic,700,700italic%7CLato:300,300italic,400,400italic,700,700italic%7CZhi+Mang+Xing:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.ysfun.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":null,"post_header":null,"post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":null}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="对于同一台设备上的进程通信，有很多种方式，比如管道、消息队列、共享内存、信号等方式，而对于不同设备上的进程通信，就需要网络通信，而设备是多样的，所以要兼容多种多样的设备，就需要协商出一套通用的网路协议。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="计算机网络模型概述【OSI七层模型&amp;常见协议】">
+<meta property="og:url" content="https://www.ysfun.cn/2022/07/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B0%E3%80%90OSI%E4%B8%83%E5%B1%82%E6%A8%A1%E5%9E%8B-TCP-IP%E5%8D%8F%E8%AE%AE%E7%B0%87%E3%80%91/index.html">
+<meta property="og:site_name" content="阳素凡的个人博客">
+<meta property="og:description" content="对于同一台设备上的进程通信，有很多种方式，比如管道、消息队列、共享内存、信号等方式，而对于不同设备上的进程通信，就需要网络通信，而设备是多样的，所以要兼容多种多样的设备，就需要协商出一套通用的网路协议。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/163d9775a0270f99~tplv-t2oaga2asx-zoom-crop-mark:3024:3024:3024:1702.awebp">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/1061765-20161125200042800-2141541665.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B.jpg">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220719171558617.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/%E5%B8%A7.jpg">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220718163630824.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220718164132232.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220718165514353.png">
+<meta property="article:published_time" content="2022-07-09T05:24:15.000Z">
+<meta property="article:modified_time" content="2022-07-19T09:16:21.728Z">
+<meta property="article:author" content="Ysfun">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images.ysfun.cn/mac-img/163d9775a0270f99~tplv-t2oaga2asx-zoom-crop-mark:3024:3024:3024:1702.awebp">
+
+
+<link rel="canonical" href="https://www.ysfun.cn/2022/07/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B0%E3%80%90OSI%E4%B8%83%E5%B1%82%E6%A8%A1%E5%9E%8B-TCP-IP%E5%8D%8F%E8%AE%AE%E7%B0%87%E3%80%91/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.ysfun.cn/2022/07/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B0%E3%80%90OSI%E4%B8%83%E5%B1%82%E6%A8%A1%E5%9E%8B-TCP-IP%E5%8D%8F%E8%AE%AE%E7%B0%87%E3%80%91/","path":"2022/07/09/计算机网络模型概述【OSI七层模型-TCP-IP协议簇】/","title":"计算机网络模型概述【OSI七层模型&常见协议】"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>计算机网络模型概述【OSI七层模型&常见协议】 | 阳素凡的个人博客</title>
+  
+
+
+
+
+<link rel="dns-prefetch" href="waline-server-repo-six.vercel.app">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">阳素凡的个人博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">理想三旬浓烟下，奔赴山海与荒野。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">19</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">37</span></a></li><li class="menu-item menu-item-留言板"><a href="/chats/" rel="section"><i class="fa fa-comments fa-fw"></i>留言板</a></li><li class="menu-item menu-item-推荐阅读"><a href="/recommend/" rel="section"><i class="fa fa-star fa-fw"></i>推荐阅读</a></li><li class="menu-item menu-item-链接分享"><a href="/links/" rel="section"><i class="fa fa-external-link-square fa-fw"></i>链接分享</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-OSI%E4%B8%83%E5%B1%82%E5%8F%82%E8%80%83%E6%A8%A1%E5%9E%8B"><span class="nav-text">1. OSI七层参考模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E7%89%A9%E7%90%86%E5%B1%82"><span class="nav-text">1. 物理层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E6%95%B0%E6%8D%AE%E9%93%BE%E8%B7%AF%E5%B1%82"><span class="nav-text">2. 数据链路层</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#2-1-MAC%E5%9C%B0%E5%9D%80"><span class="nav-text">2.1 MAC地址</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-2-%E5%B9%BF%E6%92%AD"><span class="nav-text">2.2 广播</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-%E7%BD%91%E7%BB%9C%E5%B1%82"><span class="nav-text">3. 网络层</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#3-1-IP%E5%8D%8F%E8%AE%AE"><span class="nav-text">3.1 IP协议</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-2-%E5%AD%90%E7%BD%91%E6%8E%A9%E7%A0%81"><span class="nav-text">3.2 子网掩码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-3-ARP%E5%8D%8F%E8%AE%AE"><span class="nav-text">3.3 ARP协议</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#3-4-ICMP%E5%8D%8F%E8%AE%AE"><span class="nav-text">3.4 ICMP协议</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-%E4%BC%A0%E8%BE%93%E5%B1%82"><span class="nav-text">4. 传输层</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-1-UDP%E5%8D%8F%E8%AE%AE"><span class="nav-text">4.1 UDP协议</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#4-2-TCP%E5%8D%8F%E8%AE%AE"><span class="nav-text">4.2 TCP协议</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#5-%E4%BC%9A%E8%AF%9D%E5%B1%82"><span class="nav-text">5. 会话层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#6-%E8%A1%A8%E7%A4%BA%E5%B1%82"><span class="nav-text">6. 表示层</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-%E5%BA%94%E7%94%A8%E5%B1%82"><span class="nav-text">7. 应用层</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#7-1-DNS%E5%8D%8F%E8%AE%AE"><span class="nav-text">7.1 DNS协议</span></a></li></ol></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Ysfun"
+      src="/avatar.png">
+  <p class="site-author-name" itemprop="name">Ysfun</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">19</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:s_hyunmin@163.com" title="E-Mail → mailto:s_hyunmin@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/qq.jpg" title="QQ → &#x2F;qq.jpg"><i class="fab fa-qq fa-fw"></i>QQ</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/ysfun" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.ysfun.cn/2022/07/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B0%E3%80%90OSI%E4%B8%83%E5%B1%82%E6%A8%A1%E5%9E%8B-TCP-IP%E5%8D%8F%E8%AE%AE%E7%B0%87%E3%80%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="Ysfun">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阳素凡的个人博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="计算机网络模型概述【OSI七层模型&常见协议】 | 阳素凡的个人博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          计算机网络模型概述【OSI七层模型&常见协议】
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-07-09 13:24:15" itemprop="dateCreated datePublished" datetime="2022-07-09T13:24:15+08:00">2022-07-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-07-19 17:16:21" itemprop="dateModified" datetime="2022-07-19T17:16:21+08:00">2022-07-19</time>
+    </span>
+
+  
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+    <span class="post-meta-item-icon">
+      <i class="far fa-comment"></i>
+    </span>
+    <span class="post-meta-item-text">评论数：</span>
+  
+    <a title="waline" href="/2022/07/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B0%E3%80%90OSI%E4%B8%83%E5%B1%82%E6%A8%A1%E5%9E%8B-TCP-IP%E5%8D%8F%E8%AE%AE%E7%B0%87%E3%80%91/#waline" itemprop="discussionUrl">
+      <span class="post-comments-count waline-comment-count" data-path="/2022/07/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B0%E3%80%90OSI%E4%B8%83%E5%B1%82%E6%A8%A1%E5%9E%8B-TCP-IP%E5%8D%8F%E8%AE%AE%E7%B0%87%E3%80%91/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>5.4k</span>
+    </span>
+
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><img src="https://images.ysfun.cn/mac-img/163d9775a0270f99~tplv-t2oaga2asx-zoom-crop-mark:3024:3024:3024:1702.awebp"></p>
+<p>对于同一台设备上的进程通信，有很多种方式，比如管道、消息队列、共享内存、信号等方式，而对于不同设备上的进程通信，就需要网络通信，而设备是多样的，所以要兼容多种多样的设备，就需要协商出一套通用的<strong>网路协议</strong>。</p>
+<span id="more"></span>
+
+<p>要完成网络间的通信是比较复杂的，为了确保功能很好地实现，会对所有的<strong>网络协议</strong>进行分层，本文针对<strong>OSI七层参考模型</strong>展开讨论。</p>
+<h2 id="1-OSI七层参考模型"><a href="#1-OSI七层参考模型" class="headerlink" title="1. OSI七层参考模型"></a>1. OSI七层参考模型</h2><p>OSI（Open System Interconnection）七层网络模型是由国际标准化组织ISO提出的一个网络系统互连模型，是网络通信在逻辑上的定义，也可以理解为定义了通用的网络通信规范。数据在网络中传输的过程，实际上是通过下图的封装和解封装的过程，对数据进行一层层的封装，发送方把数据转换成比特流的形式在网络媒介中进行传输，接收方将比特流进行解封装处理，还原数据。</p>
+<p><img src="https://images.ysfun.cn/mac-img/1061765-20161125200042800-2141541665.png"></p>
+<p>在<strong>OSI七层参考模型</strong>的基础上，还派生出了<strong>五层模型</strong>和<strong>TCP&#x2F;IP四层模型</strong>，这三种分层方式的区别如下：</p>
+<p><img src="https://images.ysfun.cn/mac-img/%E5%88%86%E5%B1%82%E6%A8%A1%E5%9E%8B.jpg"></p>
+<blockquote>
+<p>为什么要对网络进行分层？</p>
+<p>与软件架构设计相似，要使系统具备高内聚、低耦合、可复用、可扩展等特性。如果没有对网络进行分层，当一个业务或协议需要进行修改时，就可能需要对整个系统进行修改。而对网路进行分层后，就可以很方便地把具有不同功能的模块分离开来，某个模块出现问题只需要修改对应模块即可，其他层还可以继续复用，只要确保各层满足相应的协议即可。</p>
+</blockquote>
+<p>OSI七层模型中各层功能概览：</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220719171558617.png" style="zoom: 50%;" />
+
+<p>下面分别对OSI七层模型中的各层功能展开介绍。</p>
+<h3 id="1-物理层"><a href="#1-物理层" class="headerlink" title="1. 物理层"></a>1. 物理层</h3><p>要进行网络通信，首先要解决的问题就是如何在两台主机设备上进行数据（有线&#x2F;无线）传输，否则通信无从谈起。物理层的作用是<strong>在主机之间搭建一条物理链路传输二进制流，为设备之间的数据通信提供传输媒介和互连设备</strong>。</p>
+<blockquote>
+<p><strong>典型的物理层标准和设备：</strong></p>
+<p>物理层介质：双绞线、同轴电缆、光纤、无线电信号等。</p>
+<p>局域网物理层：</p>
+<blockquote>
+<p>常见标准：10Base-T、100Base-TX&#x2F;FX、1000Base-T、1000Base-SX&#x2F;LX</p>
+<p>常见设备：中继器、集线器</p>
+</blockquote>
+<p>广域网物理层：</p>
+<blockquote>
+<p>常见标准：RS-232、V.24、V.35</p>
+<p>常见设备：Modem</p>
+</blockquote>
+</blockquote>
+<p>物理层规定了如何为网络通信实现最底层的物理连接，以及物理设备的机械、电气、功能和过程特性。需要注意的是，网络通信过程中所用的物理媒介（网线、电缆等）并不属于物理层，因为物理层实际上是一种规定，规定这些物理媒介设备在连接网络时的各种参数、规格以及工作方式。但是同时，双绞线、电缆等物理媒介又是物理层的实现。</p>
+<h3 id="2-数据链路层"><a href="#2-数据链路层" class="headerlink" title="2. 数据链路层"></a>2. 数据链路层</h3><p>物理链路连通后的主机之间具备数据传输的基本能力，但物理层是无协议的，传输的是二进制流。而二进制流没有起始和终止标识符，接收主机无法判断何时开始或终止数据的解析；于是<strong>在数据链路层对二进制流进行封装成帧（frame）</strong>，这样主机在接收二进制流时就知道什么时候开始、什么时候结束了。</p>
+<p><strong>数据链路层协议有SLIP协议、CSLIP协议、PPP协议等</strong>。交换机对帧解码并根据帧中包含的信息把数据发送到正确的接收方，所以交换机是工作在数据链路层的。</p>
+<p>每个<strong>帧</strong>由包头（head）和数据（data）两部分组成：</p>
+<p><img src="https://images.ysfun.cn/mac-img/%E5%B8%A7.jpg"></p>
+<p>其中head包含数据的说明信息，包括<strong>发送者、接收者、数据类型</strong>；</p>
+<ul>
+<li>发送者&#x2F;源地址：6字节</li>
+<li>接收者&#x2F;目标地址：6字节</li>
+<li>数据类型：6字节</li>
+</ul>
+<p>Data部分的长度，最长为1500字节，最短为46字节。因此，整个<strong>帧</strong>最短字节为64字节，最长为1518字节。如果数据过大，则需要分割成多个帧进行传输。</p>
+<p>有了数据包的定义，那么计算机是如何标识谁是谁的？如何知道对方的地址的？这就设计到MAC地址和广播。</p>
+<h4 id="2-1-MAC地址"><a href="#2-1-MAC地址" class="headerlink" title="2.1 MAC地址"></a>2.1 MAC地址</h4><p>以太网规定，连入网络的所有设备都必须具备网卡。数据包的发送地址和接收地址指的就是网卡地址，也就是MAC地址。</p>
+<p><strong>MAC地址作为网络中计算机设备的唯一标识，从计算机在厂商中生产出来就被十六进制的数标识为MAC地址，MAC地址理论上是独一无二的。</strong>这也是为什么很多软件设备校验设备唯一性时，会用到MAC地址。</p>
+<p>MAC地址长度为48位二进制，<strong>通常由12位十六进制树表示，前六位是厂商编号，后六位是流水号。</strong></p>
+<img src="https://images.ysfun.cn/mac-img/image-20220718163630824.png" style="zoom: 33%;" />
+
+<blockquote>
+<p>查看MAC地址命令：</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ifconfig</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://images.ysfun.cn/mac-img/image-20220718164132232.png"></p>
+<p>有了MAC地址，那么两台机器之间是怎么找到对方进行通信的呢？</p>
+<h4 id="2-2-广播"><a href="#2-2-广播" class="headerlink" title="2.2 广播"></a>2.2 广播</h4><p>在包含四个主机的一个子网中，主机1要向主机4发送一个数据包，数据包中包含接收方的MAC地址。计算机1会向子网中所有计算机都发送数据包（广播的方式），这时子网中的每台计算机（包括主机2和主机3）都会收到这个数据包，然后每台计算机都会把数据包中接收方的MAC地址取出来，与自身的MAC地址进行对比，如果二者相同则接收这个数据包，否则丢弃这个数据包。</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220718165514353.png" style="zoom:50%;" />
+
+<h3 id="3-网络层"><a href="#3-网络层" class="headerlink" title="3. 网络层"></a>3. <strong>网络层</strong></h3><p>前面介绍了，通过广播机制可以实现在同一个子网内两台主机之间的寻址、通信；我们所处的网络由无数个子网构成，如果现实中的网络通信都通过广播这种原始的方式来实现，那么一台主机发送的数据包将会被全世界所有的主机收到，那将导致整个网络崩溃。为此，解决办法是<strong>如果在同一个子网内，就采用广播的方式发送数据包；如果不在同一个子网内，那就通过网关和路由向不同「广播域」&#x2F;「子网」分发数据包。</strong>那就有了网络层，提供网络路由寻址功能。</p>
+<p><strong>网络层的作用是规定了通过哪些节点、什么样的网络路径来将数据（数据包）从发送方发送到接收方，向传输层提供最基本的主机到主机的数据传送服务。</strong>在网络层中，确定了从节点A发送数据到节点B的网络路径，经过哪些网络节点。网络层既可以建立LAN通信系统，更主要的是可以在WAN网络系统中建立通信，这是因为它有自己的路由地址结构，通过路由协议（或者可路由协议）进行网络通信的路由工作。网络层的协议包括：IP、ICMP和IGMP等协议。</p>
+<blockquote>
+<p>可路由协议（routed protocol）：定义数据包内各个字段的格式和用途，对数据进行网络层封装；</p>
+<p>路由协议（routing protocol）：在路由器之间传递信息，计算路由并形成路由表，为可路由协议选择路径；</p>
+</blockquote>
+<p>网络层引入了一套新的协议来区分不同的广播域&#x2F;子网，于是就有了IP协议。</p>
+<h4 id="3-1-IP协议"><a href="#3-1-IP协议" class="headerlink" title="3.1 IP协议"></a>3.1 IP协议</h4><p><strong>IP协议即互联网协议（Internet Protocol）</strong>。相对于上面提到的MAC地址，<strong>IP地址可以理解为逻辑地址，而MAC地址为物理地址；IP地址是动态分配的、不固定的，MAC地址是固定的。</strong>目前广泛采用的IPv4地址，同时IPv6地址正不断发展壮大。</p>
+<p>IP发送的数据叫IP数据包，其也包含包头和数据两个部分：</p>
+<ul>
+<li>包头：版本，长度，IP地址等信息</li>
+<li>数据：IP数据包的具体数据</li>
+</ul>
+<p>IP数据包的包头长度为20~60字节，整个数据包的最大长度为65535字节。</p>
+<p>IP数据包的”包头”部分的长度为20到60字节，整个数据包的总长度最大为65535字节。</p>
+<p><strong>IPv4地址是由32位的二进制数组成，一般把它分成4段的十进制表示</strong>，地址范围为0.0.0.0~255.255.255.255。</p>
+<p>IP地址分成两部分：<strong>网络部分（标识子网）和主机部分（标识主机）</strong>。网络部分和主机部分所占用的二进制位数是不固定的。</p>
+<p>IP地址段只是标识了IP地址的种类，从网络部分或主机部分都无法辨识一个IP所处的子网。如果两个IP的网络部分相同，则说明它们处于同一个子网中。例如192.168.33.1和192.168.33.2，如果它们的网络部分为24位，主机部分为8位，网络部分都为 192.168.33，处于同一个子网中。但如果像192.16.10.1与192.16.10.2，并不知道网络部分和主机部分各几位，就不能确定是否处于同一子网。于是就有了子网掩码。</p>
+<h4 id="3-2-子网掩码"><a href="#3-2-子网掩码" class="headerlink" title="3.2 子网掩码"></a>3.2 子网掩码</h4><p>子网掩码是用来标识同一局域网中的IP地址信息的，它由32位二进制组成，前一部分都是1，后一部分都是0，例如：<code>11111111.11111111.11111111.00000000</code>，该子网掩码一共有24个1，也可以表示为<code>/24</code>。子网掩码的网络部分全部为1，主机部分全部为0。</p>
+<p>比如IP地址为<code>192.16.10.1/24</code>，其中<code>/24</code>表示子网掩码有24个1，且子网掩码中的1均在前面，故该子网掩码为<code>11111111.11111111.11111111.00000000</code>，写成十进制为<code>255.255.255.0</code>；那么该IP地址的网络号为<code>192.16.10</code>，主机号为<code>1</code>。</p>
+<h4 id="3-3-ARP协议"><a href="#3-3-ARP协议" class="headerlink" title="3.3 ARP协议"></a>3.3 ARP协议</h4><blockquote>
+<p>需要注意的是，在OSI参考模型的分层划分中，ARP协议是位于数据链路层的，而对于TCP&#x2F;IP协议分层方式中ARP协议位于网络层层，此处为保证内容的连贯性，将ARP协议放在此处介绍。</p>
+</blockquote>
+<p>有了IP协议，就可以判断计算机属于哪个子网了；但在数据链路层是通过MAC地址进行通信的，现在只有目标IP地址，那么如何获取目标MAC地址呢？这就需要用到ARP协议。</p>
+<p>ARP 协议是 <code>地址解析协议</code>，即 <code>Address Resolution Protocol</code>，它能够根据 IP 地址获取物理地址（MAC地址）。主机发送信息时会将包含目标 IP 的 ARP 请求广播到局域网络上的所有主机，并接受返回消息，以此来确定物理地址。收到消息后的物理地址和 IP 地址会在 ARP 中缓存一段时间，下次查询的时候直接从 ARP 中查询即可。</p>
+<h4 id="3-4-ICMP协议"><a href="#3-4-ICMP协议" class="headerlink" title="3.4 ICMP协议"></a>3.4 ICMP协议</h4><p>我们知道IP协议并不能提供可靠传输，即如果发生丢包，IP协议并不能通知传输层是否丢包及丢包的原因，于是就有了ICMP协议。</p>
+<p>ICMP协议（<code>Internet Control Message Protocol</code>）主要用于在IP主机和路由器之间传递控制消息。当遇到IP无法访问目标或IP路由器无法按照当前速率转发数据包时，会自动发送ICMP消息，从这个角度看，ICMP协议可以看做是<strong>错误侦测和回报机制</strong>，帮助我们检查网络状况、确保连线的准确性。</p>
+<p>ICMP协议的主要功能：</p>
+<ul>
+<li>确认IP包是否成功抵达目标地址</li>
+<li>通知在发送过程中IP包被丢失的原因</li>
+</ul>
+<blockquote>
+<p>需要注意的是:</p>
+<ol>
+<li>ICMP是基于IP协议工作的，但是它并不是传输层的功能，因此仍然把它归结为网络层协议；</li>
+<li>ICMP只能搭配IPv4使用，如果是IPv6的情况下, 需要是用ICMPv6。</li>
+</ol>
+<p>我们平时使用的<code>ping</code>命令其实就是使用到了ICMP协议。</p>
+</blockquote>
+<h3 id="4-传输层"><a href="#4-传输层" class="headerlink" title="4. 传输层"></a>4. 传输层</h3><p>经过数据链路层和网络层的支持，我们已经可以正常进行两台计算机之间的通信了，但是计算机上会同时运行多个程序，比如同时开着QQ和WX，那怎么区分消息是QQ还是WX的呢？这就需要依靠传输层来实现。</p>
+<p>通常我们的计算机上运行的不同程序都会分配不同的<strong>端口</strong>，而<strong>传输层的功能就是建立端口到端口的通信，是数据能够传送到不同的应用程序。</strong>端口是每个使用网卡程序的编号，每个端口号标识一个可执行程序；端口号是0<del>65535之间的一个整数，正好是16个二进制位，0</del>1023为系统占用端口，其他应用程序只能占用端口号大于1023的端口。</p>
+<p>至此，通过IP+端口号的方式就可以唯一确定互联网中的一个应用程序，进而实现网络间的通信。</p>
+<p>传输层主要包含两大协议：</p>
+<ul>
+<li>TCP协议</li>
+<li>UDP协议</li>
+</ul>
+<h4 id="4-1-UDP协议"><a href="#4-1-UDP协议" class="headerlink" title="4.1 UDP协议"></a>4.1 UDP协议</h4><p>UDP协议（User Datagram Protocol，用户数据报协议）就是在数据前面加上端口号。<strong>包头</strong>部分定义了发送方端口号和接收方端口号，共8个字节；<strong>数据</strong>部分就是具体内容，总长度不超过65535个字节，正好可以放进一个IP数据包中。</p>
+<p>UDP协议提供一种不可靠的数据交付，即UDP协议不保证数据是否到达目标节点；UDP协议是一种无连接的协议，传输之前源端和终端是不需要建立连接的，不对数据报进行检查与修改，无需等待对方应答。</p>
+<ul>
+<li>缺点：不保证数据传输的可靠性，会出现分组丢失、重复、乱序等现象</li>
+<li>优点：实现简单，具有较好的实时性，传输效率高</li>
+</ul>
+<h4 id="4-2-TCP协议"><a href="#4-2-TCP协议" class="headerlink" title="4.2 TCP协议"></a>4.2 TCP协议</h4><p><strong>TCP协议（Transmission Control Protocol，传输控制协议）是一种面向连接的、可靠的、基于字节流的传输协议，TCP协议通过序列号、确认应答、重发控制、连接管理以及窗口控制等机制实现可靠传输，同时还具备流量控制、拥塞控制等特点。</strong></p>
+<ul>
+<li>缺点：实现复杂，消耗更多资源</li>
+<li>优点：保证数据可靠传输，具备拥塞控制功能</li>
+</ul>
+<p>TCP数据包没有长度限制，理论上是可以无限大的，但是为了保证网络传输的效率，通常TCP数据包的长度不会超过IP数据包的长度，即一般不超过65536字节。TCP协议是非常复杂的，本文不展开介绍。</p>
+<h3 id="5-会话层"><a href="#5-会话层" class="headerlink" title="5. 会话层"></a>5. 会话层</h3><p>会话层建立在传输层之上，<strong>利用传输层提供的服务建立和维持会话，负责在网络中的两个节点之间建立、维持和终止通信。</strong>会话层利用检验点可使通信会话在通信失效时从检验点继续恢复通信，即对信息的交互实现控制，这种能力对于大文件的传输极为重要。</p>
+<h3 id="6-表示层"><a href="#6-表示层" class="headerlink" title="6. 表示层"></a>6. 表示层</h3><p>表示层向上对应用进程服务，向下接收会话层提供的服务，其主要作用<strong>将设备固有数据格式转换为网络标准传输格式</strong>。除此之外，表示层还可以对数据进行加密和解密。</p>
+<h3 id="7-应用层"><a href="#7-应用层" class="headerlink" title="7. 应用层"></a>7. 应用层</h3><p>应用层是 OSI 标准模型的最顶层，是直接为应用进程提供服务的。其作用是<strong>在实现多个系统应用进程相互通信的同时，完成一系列业务处理所需的服务</strong>，包括文件传输、电子邮件、远程登录、远程端口调用等。应用层协议包括<code>http</code>、<code>ftp</code>、<code>smtp</code>、<code>DNS</code>等协议。</p>
+<h4 id="7-1-DNS协议"><a href="#7-1-DNS协议" class="headerlink" title="7.1 DNS协议"></a>7.1 DNS协议</h4><p>DNS协议（Domain Name System，域名系统协议）是一个将域名和IP相互映射的分布式数据库系统，DNS缓存能够加快网络资源的访问。</p>
+<blockquote>
+<p>DNS 不仅适用于 IPv4，还适用于 IPv6。</p>
+</blockquote>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Ysfun
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.ysfun.cn/2022/07/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B0%E3%80%90OSI%E4%B8%83%E5%B1%82%E6%A8%A1%E5%9E%8B-TCP-IP%E5%8D%8F%E8%AE%AE%E7%B0%87%E3%80%91/" title="计算机网络模型概述【OSI七层模型&amp;常见协议】">https://www.ysfun.cn/2022/07/09/计算机网络模型概述【OSI七层模型-TCP-IP协议簇】/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/07/07/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode648-%E5%8D%95%E8%AF%8D%E6%9B%BF%E6%8D%A2%E3%80%90%E5%AD%97%E5%85%B8%E6%A0%91%E3%80%91/" rel="prev" title="刷题分享：LeetCode648.单词替换【字典树】">
+                  <i class="fa fa-chevron-left"></i> 刷题分享：LeetCode648.单词替换【字典树】
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="waline"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">赣ICP备2022004917号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ysfun</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">105k</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-cn","enable":true,"serverURL":"waline-server-repo-six.vercel.app","cssUrl":"https://unpkg.com/@waline/client@v2/dist/waline.css","commentCount":false,"pageview":false,"copyright":true,"allowUploadImage":true,"locale":{"placeholder":"本站支持免登陆评论(*￣︶￣)，请大家文明讨论~\n与文章无关的留言请前往本站留言板，谢谢配合"},"avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"requiredMeta":["nick"],"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","el":"#waline","comment":true,"path":"/2022/07/09/%E8%AE%A1%E7%AE%97%E6%9C%BA%E7%BD%91%E7%BB%9C%E6%A8%A1%E5%9E%8B%E6%A6%82%E8%BF%B0%E3%80%90OSI%E4%B8%83%E5%B1%82%E6%A8%A1%E5%9E%8B-TCP-IP%E5%8D%8F%E8%AE%AE%E7%B0%87%E3%80%91/","dark":"auto"}</script>
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css">
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.waline.allowUploadImage) {
+    CONFIG.waline.imageUploader = false;
+  }
+  else if (CONFIG.waline.qiniuDomain && CONFIG.waline.qiniuTokenUrl) {
+    CONFIG.waline.imageUploader = qiniuUploadImage;
+  } else {
+   CONFIG.waline.imageUploader = true;
+  }
+  NexT.utils.loadComments(CONFIG.waline.el).then(() =>
+    NexT.utils.getScript(CONFIG.waline.libUrl, { condition: window.Waline })
+  ).then(() => 
+    Waline.init(Object.assign({}, CONFIG.waline,{ el: document.querySelector(CONFIG.waline.el) }))
+  );
+});
+</script>
+
+</body>
+</html>

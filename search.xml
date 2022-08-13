@@ -3096,6 +3096,8 @@
     <url>/2022/08/13/%E5%BD%BB%E5%BA%95%E6%8D%8B%E6%B8%85%E6%A5%9A%E5%90%8C%E6%AD%A5-%E5%BC%82%E6%AD%A5-%E9%98%BB%E5%A1%9E-%E9%9D%9E%E9%98%BB%E5%A1%9E/</url>
     <content><![CDATA[<p><img src="https://images.ysfun.cn/mac-img/image-20220813214015989.png"></p>
 <p>在谈论到网络I&#x2F;O时，经常会碰到几个非常容易混淆的概念：同步、异步、阻塞、非阻塞。我们来通过这篇文章彻底搞清楚这些概念！</p>
+<span id="more"></span>
+
 <h2 id="1-同步-amp-异步"><a href="#1-同步-amp-异步" class="headerlink" title="1. 同步&amp;异步"></a>1. 同步&amp;异步</h2><p><strong>同步和异步</strong>关注的是<strong>消息通信机制</strong>（<code>synchronous communication / asynchronous communication</code>），描述的是调用者，要不要主动等待调用结果，<strong>当前线程是否需要等待方法调用执行完毕</strong>。</p>
 <ul>
 <li>同步：就是在发出一个“调用”时，在没有得到结果之前，该“调用”就不返回。换句话说，<strong>就是调用者主动等待调用结果</strong>。</li>

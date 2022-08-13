@@ -242,7 +242,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2022-08-13 20:02:43 / 修改时间：21:45:36" itemprop="dateCreated datePublished" datetime="2022-08-13T20:02:43+08:00">2022-08-13</time>
+      <time title="创建时间：2022-08-13 20:02:43 / 修改时间：21:46:31" itemprop="dateCreated datePublished" datetime="2022-08-13T20:02:43+08:00">2022-08-13</time>
     </span>
 
   
@@ -269,48 +269,14 @@
     <div class="post-body" itemprop="articleBody">
           <p><img src="https://images.ysfun.cn/mac-img/image-20220813214015989.png"></p>
 <p>在谈论到网络I&#x2F;O时，经常会碰到几个非常容易混淆的概念：同步、异步、阻塞、非阻塞。我们来通过这篇文章彻底搞清楚这些概念！</p>
-<h2 id="1-同步-amp-异步"><a href="#1-同步-amp-异步" class="headerlink" title="1. 同步&amp;异步"></a>1. 同步&amp;异步</h2><p><strong>同步和异步</strong>关注的是<strong>消息通信机制</strong>（<code>synchronous communication / asynchronous communication</code>），描述的是调用者，要不要主动等待调用结果，<strong>当前线程是否需要等待方法调用执行完毕</strong>。</p>
-<ul>
-<li>同步：就是在发出一个“调用”时，在没有得到结果之前，该“调用”就不返回。换句话说，<strong>就是调用者主动等待调用结果</strong>。</li>
-</ul>
-<p>这就是同步：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="type">int</span> <span class="variable">result</span> <span class="operator">=</span> doSomeThing();</span><br><span class="line">  doAnotherThing();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>主线程调用<code>doSomeThing()</code>方法，会一直等待方法执行完毕并返回结果后再继续执行其他任务。</p>
-<ul>
-<li>异步：当一个异步过程调用发出之后，调用者不会立刻得到结果，而是<strong>在调用执行完成后被调用者通过回调或者消息机制通知调用者。</strong></li>
-</ul>
-<p>这就是异步：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">result</span> <span class="operator">=</span> doSomeThing();  <span class="comment">// doSomeThing()通过回调方法将结果通知到调用者</span></span><br><span class="line">  &#125;);</span><br><span class="line">  doAnotherThing();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>主线程创建一个新的线程来执行<code>doSomeThing()</code>方法，方法调用后立即返回（无需等待方法执行完毕），主线程继续执行其他任务，等<code>doSomeThing()</code>方法执行完毕后通过回调机制将结果通知给主线程。</p>
-<p>关于同步和异步，举一个通俗的例子：</p>
-<p>考虑一个情境，你打电话问书店老板有没有《分布式系统》这本书。</p>
-<p>如果是同步机制，书店老板会说：“你稍等，我去查一下”，然后书店老板就查啊查，你也一直在等待书店老板告诉你结果。</p>
-<p>而如果是异步机制，书店老板会说：“我去查一下，查好了我再给你回电话”，于是就挂断电话，等查好了书店老板主动打电话告诉你结果（老板这种主动电话告诉结果的方式就是“回调”）。</p>
-<h2 id="2-阻塞-amp-非阻塞"><a href="#2-阻塞-amp-非阻塞" class="headerlink" title="2. 阻塞&amp;非阻塞"></a>2. 阻塞&amp;非阻塞</h2><p><strong>阻塞和非阻塞</strong>描述的是函数本身，在等待某一事件的结果时，是将线程挂起，还是立即返回一个未就绪的信息。换句话说，当接口数据未就绪时，线程是否会被挂起。</p>
-<p>阻塞和非阻塞一般都是描述IO操作，比如一个读取磁盘数据的函数。</p>
-<p>阻塞：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">(<span class="type">byte</span>[] buffer)</span> &#123;</span><br><span class="line">  <span class="keyword">while</span> (磁盘未就绪) &#123;</span><br><span class="line">    <span class="comment">// 将当前线程挂起，并让出CPU;</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 此时磁盘已就绪</span></span><br><span class="line">  doRead()  <span class="comment">// 真正读取数据到buffer中</span></span><br><span class="line">  <span class="keyword">return</span> len;  <span class="comment">// 返回读到的字节数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>当磁盘未就绪时，会将当前线程挂起，并让出CPU，直到磁盘准备就绪，进行数据读取操作并返回。</p>
-<p>非阻塞：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">(<span class="type">byte</span>[] buffer)</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (磁盘未就绪) &#123;</span><br><span class="line">    <span class="comment">// 立即返回</span></span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 此时磁盘已就绪</span></span><br><span class="line">  doRead()  <span class="comment">//真正读取数据到buffer中</span></span><br><span class="line">  <span class="keyword">return</span> len;  <span class="comment">// 返回读到的字节数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>当磁盘未就绪时，直接返回当前磁盘未就绪状态。</p>
-<p>至于这个函数调用者采用同步还是异步的方式调用，都不影响这个函数本身是阻塞还是非阻塞的性质。</p>
-<p><strong>阻塞IO</strong>：应用进程请求数据，内核进程会一直阻塞直到数据准备完成后，并完成数据复制工作，最后返回结果给应用进程。</p>
-<img src="https://images.ysfun.cn/mac-img/image-20220813212549968.png" style="zoom:33%;" />
-
-<p><strong>非阻塞IO</strong>：应用进程请求数据，当内核进程发现数据未准备就绪，会立即返回未就绪信息；如果内核进程发现数据已准备就绪，完成数据复制操作并返回成功结果。</p>
-<img src="https://images.ysfun.cn/mac-img/image-20220813212617803.png" style="zoom:33%;" />
-
-<p>关于阻塞和非阻塞，我们仍以前面打电话向书店老板询问是否有《分布式系统》这本书为例。</p>
-<p>根据定义，我们知道阻塞和非阻塞是针对“打电话询问书籍”的这个“函数”而言，对于阻塞情况，如果老板暂时不知道有没有这本书的时候，老板会不立即回复你，而是老板自己去查，查啊查，直到找到这本书时再回复你有这本书，然后再挂断电话；而对于非阻塞，如果老板暂时不知道有没有这本书，老板也会立刻回复你“我暂时也不清楚有没有这本书”，随即挂断电话，而不会像前面那种情况一直阻塞在打电话的状态。</p>
-<blockquote>
-<p>关于同步&amp;异步 阻塞&amp;非阻塞的解释，网上有很多说法，甚至很多解释都是错误了，这篇文章是我查看了许多资料并结合自己的理解写出来的，不敢保证完全是正确的，但至少在我看来是非常合理的，如果大家有什么更好的见解欢迎大家留言探讨。</p>
-</blockquote>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/08/13/%E5%BD%BB%E5%BA%95%E6%8D%8B%E6%B8%85%E6%A5%9A%E5%90%8C%E6%AD%A5-%E5%BC%82%E6%AD%A5-%E9%98%BB%E5%A1%9E-%E9%9D%9E%E9%98%BB%E5%A1%9E/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

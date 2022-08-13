@@ -20,38 +20,31 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"www.ysfun.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":null,"post_header":null,"post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":null}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="常量折叠技术：在编译期间，编译器会将编译器常的加减乘除运算过程在编译过程中折叠。编译器通过语法分析，将常量表达式计算求值，并用求出来的值替换表达式，而不必等到运行期间再进行运算处理，从而在运行期间节省处理器资源。  下面来对比三种不同写法，观察那些情况下会发生常量折叠">
+    <meta name="description" content="在谈论到网络I&#x2F;O时，经常会碰到几个非常容易混淆的概念：同步、异步、阻塞、非阻塞。我们来通过这篇文章彻底搞清楚这些概念！ 1. 同步&amp;异步同步和异步关注的是消息通信机制（synchronous communication &#x2F; asynchronous communication），描述的是调用者，要不要主动等待调用结果，当前线程是否需要等待方法调用执行完毕。  同步：就是在发出">
 <meta property="og:type" content="article">
-<meta property="og:title" content="String s&#x3D;&quot;a&quot;+&quot;b&quot;+&quot;c&quot;到底创建了几个对象？">
-<meta property="og:url" content="https://www.ysfun.cn/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/index.html">
+<meta property="og:title" content="彻底搞清楚「同步&amp;异步 阻塞&amp;非阻塞」">
+<meta property="og:url" content="https://www.ysfun.cn/2022/08/13/%E5%BD%BB%E5%BA%95%E6%8D%8B%E6%B8%85%E6%A5%9A%E5%90%8C%E6%AD%A5-%E5%BC%82%E6%AD%A5-%E9%98%BB%E5%A1%9E-%E9%9D%9E%E9%98%BB%E5%A1%9E/index.html">
 <meta property="og:site_name" content="阳素凡的个人博客">
-<meta property="og:description" content="常量折叠技术：在编译期间，编译器会将编译器常的加减乘除运算过程在编译过程中折叠。编译器通过语法分析，将常量表达式计算求值，并用求出来的值替换表达式，而不必等到运行期间再进行运算处理，从而在运行期间节省处理器资源。  下面来对比三种不同写法，观察那些情况下会发生常量折叠">
+<meta property="og:description" content="在谈论到网络I&#x2F;O时，经常会碰到几个非常容易混淆的概念：同步、异步、阻塞、非阻塞。我们来通过这篇文章彻底搞清楚这些概念！ 1. 同步&amp;异步同步和异步关注的是消息通信机制（synchronous communication &#x2F; asynchronous communication），描述的是调用者，要不要主动等待调用结果，当前线程是否需要等待方法调用执行完毕。  同步：就是在发出">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220511003922966.png">
-<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220511005110697.png">
-<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220511010602524.png">
-<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220511004222616.png">
-<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220511004929034.png">
-<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220511010725943.png">
-<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220511005336059.png">
-<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220511005447668.png">
-<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220511010924324.png">
-<meta property="article:published_time" content="2022-05-10T16:25:47.000Z">
-<meta property="article:modified_time" content="2022-06-16T20:01:15.371Z">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220813214015989.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220813212549968.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220813212617803.png">
+<meta property="article:published_time" content="2022-08-13T12:02:43.000Z">
+<meta property="article:modified_time" content="2022-08-13T13:45:36.334Z">
 <meta property="article:author" content="Ysfun">
-<meta property="article:tag" content="Java">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://images.ysfun.cn/mac-img/image-20220511003922966.png">
+<meta name="twitter:image" content="https://images.ysfun.cn/mac-img/image-20220813214015989.png">
 
 
-<link rel="canonical" href="https://www.ysfun.cn/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/">
+<link rel="canonical" href="https://www.ysfun.cn/2022/08/13/%E5%BD%BB%E5%BA%95%E6%8D%8B%E6%B8%85%E6%A5%9A%E5%90%8C%E6%AD%A5-%E5%BC%82%E6%AD%A5-%E9%98%BB%E5%A1%9E-%E9%9D%9E%E9%98%BB%E5%A1%9E/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.ysfun.cn/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/","path":"2022/05/11/String-s-a-b-c到底创建了几个对象？/","title":"String s=\"a\"+\"b\"+\"c\"到底创建了几个对象？"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.ysfun.cn/2022/08/13/%E5%BD%BB%E5%BA%95%E6%8D%8B%E6%B8%85%E6%A5%9A%E5%90%8C%E6%AD%A5-%E5%BC%82%E6%AD%A5-%E9%98%BB%E5%A1%9E-%E9%9D%9E%E9%98%BB%E5%A1%9E/","path":"2022/08/13/彻底捋清楚同步-异步-阻塞-非阻塞/","title":"彻底搞清楚「同步&异步 阻塞&非阻塞」"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>String s="a"+"b"+"c"到底创建了几个对象？ | 阳素凡的个人博客</title>
+<title>彻底搞清楚「同步&异步 阻塞&非阻塞」 | 阳素凡的个人博客</title>
   
 
 
@@ -141,7 +134,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -154,6 +147,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%90%8C%E6%AD%A5-amp-%E5%BC%82%E6%AD%A5"><span class="nav-text">1. 同步&amp;异步</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E9%98%BB%E5%A1%9E-amp-%E9%9D%9E%E9%98%BB%E5%A1%9E"><span class="nav-text">2. 阻塞&amp;非阻塞</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -228,7 +222,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.ysfun.cn/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/">
+    <link itemprop="mainEntityOfPage" href="https://www.ysfun.cn/2022/08/13/%E5%BD%BB%E5%BA%95%E6%8D%8B%E6%B8%85%E6%A5%9A%E5%90%8C%E6%AD%A5-%E5%BC%82%E6%AD%A5-%E9%98%BB%E5%A1%9E-%E9%9D%9E%E9%98%BB%E5%A1%9E/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/avatar.png">
@@ -241,12 +235,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="String s="a"+"b"+"c"到底创建了几个对象？ | 阳素凡的个人博客">
+      <meta itemprop="name" content="彻底搞清楚「同步&异步 阻塞&非阻塞」 | 阳素凡的个人博客">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          String s="a"+"b"+"c"到底创建了几个对象？
+          彻底搞清楚「同步&异步 阻塞&非阻塞」
         </h1>
 
         <div class="post-meta-container">
@@ -256,30 +250,12 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2022-05-11 00:25:47" itemprop="dateCreated datePublished" datetime="2022-05-11T00:25:47+08:00">2022-05-11</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-06-17 04:01:15" itemprop="dateModified" datetime="2022-06-17T04:01:15+08:00">2022-06-17</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%8A%80%E6%9C%AF/" itemprop="url" rel="index"><span itemprop="name">技术</span></a>
-        </span>
+      <time title="创建时间：2022-08-13 20:02:43 / 修改时间：21:45:36" itemprop="dateCreated datePublished" datetime="2022-08-13T20:02:43+08:00">2022-08-13</time>
     </span>
 
   
-    <span class="post-meta-item">
-        <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
-    </span>
 
   
     <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
@@ -297,8 +273,8 @@
     </span>
     <span class="post-meta-item-text">评论数：</span>
   
-    <a title="waline" href="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/#waline" itemprop="discussionUrl">
-      <span class="post-comments-count waline-comment-count" data-path="/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/" itemprop="commentCount"></span>
+    <a title="waline" href="/2022/08/13/%E5%BD%BB%E5%BA%95%E6%8D%8B%E6%B8%85%E6%A5%9A%E5%90%8C%E6%AD%A5-%E5%BC%82%E6%AD%A5-%E9%98%BB%E5%A1%9E-%E9%9D%9E%E9%98%BB%E5%A1%9E/#waline" itemprop="discussionUrl">
+      <span class="post-comments-count waline-comment-count" data-path="/2022/08/13/%E5%BD%BB%E5%BA%95%E6%8D%8B%E6%B8%85%E6%A5%9A%E5%90%8C%E6%AD%A5-%E5%BC%82%E6%AD%A5-%E9%98%BB%E5%A1%9E-%E9%9D%9E%E9%98%BB%E5%A1%9E/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -308,7 +284,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>863</span>
+      <span>1.9k</span>
     </span>
 
 </div>
@@ -320,62 +296,48 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <p><strong>常量折叠技术</strong>：在编译期间，编译器会将<strong>编译器常</strong>的加减乘除运算过程在编译过程中折叠。编译器通过语法分析，将常量表达式计算求值，并用求出来的值替换表达式，而不必等到运行期间再进行运算处理，从而在运行期间节省处理器资源。</p>
+        <p><img src="https://images.ysfun.cn/mac-img/image-20220813214015989.png"></p>
+<p>在谈论到网络I&#x2F;O时，经常会碰到几个非常容易混淆的概念：同步、异步、阻塞、非阻塞。我们来通过这篇文章彻底搞清楚这些概念！</p>
+<h2 id="1-同步-amp-异步"><a href="#1-同步-amp-异步" class="headerlink" title="1. 同步&amp;异步"></a>1. 同步&amp;异步</h2><p><strong>同步和异步</strong>关注的是<strong>消息通信机制</strong>（<code>synchronous communication / asynchronous communication</code>），描述的是调用者，要不要主动等待调用结果，<strong>当前线程是否需要等待方法调用执行完毕</strong>。</p>
 <ul>
-<li>下面来对比三种不同写法，观察那些情况下会发生<strong>常量折叠</strong></li>
+<li>同步：就是在发出一个“调用”时，在没有得到结果之前，该“调用”就不返回。换句话说，<strong>就是调用者主动等待调用结果</strong>。</li>
 </ul>
-<span id="more"></span>
+<p>这就是同步：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="type">int</span> <span class="variable">result</span> <span class="operator">=</span> doSomeThing();</span><br><span class="line">  doAnotherThing();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<blockquote>
-<p>  我们对比反编译后的字节码文件以及使用<code>jclasslib bytecode viewer</code>查看字节码信息</p>
-</blockquote>
-<ol>
-<li>我们来分析一下语句，查看反编译后的字节码文件，进行了<strong>常量折叠</strong></li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;a&quot;</span> + <span class="string">&quot;b&quot;</span> + <span class="string">&quot;c&quot;</span>;</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://images.ysfun.cn/mac-img/image-20220511003922966.png"></p>
-<p>字节码信息如下：</p>
-<p><img src="https://images.ysfun.cn/mac-img/image-20220511005110697.png"></p>
-<p>直接对比是否指向同一个对象：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> <span class="string">&quot;a&quot;</span> + <span class="string">&quot;b&quot;</span> + <span class="string">&quot;c&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">t</span> <span class="operator">=</span> <span class="string">&quot;abc&quot;</span>;</span><br><span class="line">System.out.println(s == t);</span><br></pre></td></tr></table></figure>
-
-<p>结果：</p>
-<p><img src="https://images.ysfun.cn/mac-img/image-20220511010602524.png"> </p>
-<ol start="2">
-<li>再来对比，没有进行<strong>常量折叠</strong></li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> <span class="string">&quot;ab&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> s1 + <span class="string">&quot;c&quot;</span>;</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://images.ysfun.cn/mac-img/image-20220511004222616.png"></p>
-<p>字节码信息如下：</p>
-<p><img src="https://images.ysfun.cn/mac-img/image-20220511004929034.png"></p>
-<p>是否指向常量池中的常量：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> <span class="string">&quot;ab&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> s1 + <span class="string">&quot;c&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">t</span> <span class="operator">=</span> <span class="string">&quot;abc&quot;</span>;</span><br><span class="line">System.out.println(s == t);</span><br></pre></td></tr></table></figure>
-
-<p>结果：</p>
-<p><img src="https://images.ysfun.cn/mac-img/image-20220511010725943.png"> </p>
-<ol start="3">
-<li>在观察如下语句，与2唯一的区别就是给<code>s1</code>添加了<code>final</code>修饰，可以发现又发生了<strong>常量折叠</strong></li>
-</ol>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> <span class="string">&quot;ab&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> s1 + <span class="string">&quot;c&quot;</span>;</span><br></pre></td></tr></table></figure>
-
-<p><img src="https://images.ysfun.cn/mac-img/image-20220511005336059.png"></p>
-<p>字节码信息如下：</p>
-<p><img src="https://images.ysfun.cn/mac-img/image-20220511005447668.png"></p>
-<p>是否指向同一个对象：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">final</span> <span class="type">String</span> <span class="variable">s1</span> <span class="operator">=</span> <span class="string">&quot;ab&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">s</span> <span class="operator">=</span> s1 + <span class="string">&quot;c&quot;</span>;</span><br><span class="line"><span class="type">String</span> <span class="variable">t</span> <span class="operator">=</span> <span class="string">&quot;abc&quot;</span>;</span><br><span class="line">System.out.println(s == t);</span><br></pre></td></tr></table></figure>
-
-<p>结果：</p>
-<p><img src="https://images.ysfun.cn/mac-img/image-20220511010924324.png"> </p>
-<blockquote>
-<p>发生<code>常量折叠</code>必须是编译器常量：</p>
+<p>主线程调用<code>doSomeThing()</code>方法，会一直等待方法执行完毕并返回结果后再继续执行其他任务。</p>
 <ul>
-<li>被声明为final</li>
-<li>基本数据类型或者字符串类型</li>
-<li>声明时就已经初始化了</li>
-<li>使用常量表达式进行初始化</li>
+<li>异步：当一个异步过程调用发出之后，调用者不会立刻得到结果，而是<strong>在调用执行完成后被调用者通过回调或者消息机制通知调用者。</strong></li>
 </ul>
+<p>这就是异步：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">()</span> &#123;</span><br><span class="line">  <span class="keyword">new</span> <span class="title class_">Thread</span>(() -&gt; &#123;</span><br><span class="line">    <span class="type">int</span> <span class="variable">result</span> <span class="operator">=</span> doSomeThing();  <span class="comment">// doSomeThing()通过回调方法将结果通知到调用者</span></span><br><span class="line">  &#125;);</span><br><span class="line">  doAnotherThing();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>主线程创建一个新的线程来执行<code>doSomeThing()</code>方法，方法调用后立即返回（无需等待方法执行完毕），主线程继续执行其他任务，等<code>doSomeThing()</code>方法执行完毕后通过回调机制将结果通知给主线程。</p>
+<p>关于同步和异步，举一个通俗的例子：</p>
+<p>考虑一个情境，你打电话问书店老板有没有《分布式系统》这本书。</p>
+<p>如果是同步机制，书店老板会说：“你稍等，我去查一下”，然后书店老板就查啊查，你也一直在等待书店老板告诉你结果。</p>
+<p>而如果是异步机制，书店老板会说：“我去查一下，查好了我再给你回电话”，于是就挂断电话，等查好了书店老板主动打电话告诉你结果（老板这种主动电话告诉结果的方式就是“回调”）。</p>
+<h2 id="2-阻塞-amp-非阻塞"><a href="#2-阻塞-amp-非阻塞" class="headerlink" title="2. 阻塞&amp;非阻塞"></a>2. 阻塞&amp;非阻塞</h2><p><strong>阻塞和非阻塞</strong>描述的是函数本身，在等待某一事件的结果时，是将线程挂起，还是立即返回一个未就绪的信息。换句话说，当接口数据未就绪时，线程是否会被挂起。</p>
+<p>阻塞和非阻塞一般都是描述IO操作，比如一个读取磁盘数据的函数。</p>
+<p>阻塞：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">(<span class="type">byte</span>[] buffer)</span> &#123;</span><br><span class="line">  <span class="keyword">while</span> (磁盘未就绪) &#123;</span><br><span class="line">    <span class="comment">// 将当前线程挂起，并让出CPU;</span></span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 此时磁盘已就绪</span></span><br><span class="line">  doRead()  <span class="comment">// 真正读取数据到buffer中</span></span><br><span class="line">  <span class="keyword">return</span> len;  <span class="comment">// 返回读到的字节数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当磁盘未就绪时，会将当前线程挂起，并让出CPU，直到磁盘准备就绪，进行数据读取操作并返回。</p>
+<p>非阻塞：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="type">int</span> <span class="title function_">read</span><span class="params">(<span class="type">byte</span>[] buffer)</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> (磁盘未就绪) &#123;</span><br><span class="line">    <span class="comment">// 立即返回</span></span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="comment">// 此时磁盘已就绪</span></span><br><span class="line">  doRead()  <span class="comment">//真正读取数据到buffer中</span></span><br><span class="line">  <span class="keyword">return</span> len;  <span class="comment">// 返回读到的字节数</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当磁盘未就绪时，直接返回当前磁盘未就绪状态。</p>
+<p>至于这个函数调用者采用同步还是异步的方式调用，都不影响这个函数本身是阻塞还是非阻塞的性质。</p>
+<p><strong>阻塞IO</strong>：应用进程请求数据，内核进程会一直阻塞直到数据准备完成后，并完成数据复制工作，最后返回结果给应用进程。</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220813212549968.png" style="zoom:33%;" />
+
+<p><strong>非阻塞IO</strong>：应用进程请求数据，当内核进程发现数据未准备就绪，会立即返回未就绪信息；如果内核进程发现数据已准备就绪，完成数据复制操作并返回成功结果。</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220813212617803.png" style="zoom:33%;" />
+
+<p>关于阻塞和非阻塞，我们仍以前面打电话向书店老板询问是否有《分布式系统》这本书为例。</p>
+<p>根据定义，我们知道阻塞和非阻塞是针对“打电话询问书籍”的这个“函数”而言，对于阻塞情况，如果老板暂时不知道有没有这本书的时候，老板会不立即回复你，而是老板自己去查，查啊查，直到找到这本书时再回复你有这本书，然后再挂断电话；而对于非阻塞，如果老板暂时不知道有没有这本书，老板也会立刻回复你“我暂时也不清楚有没有这本书”，随即挂断电话，而不会像前面那种情况一直阻塞在打电话的状态。</p>
+<blockquote>
+<p>关于同步&amp;异步 阻塞&amp;非阻塞的解释，网上有很多说法，甚至很多解释都是错误了，这篇文章是我查看了许多资料并结合自己的理解写出来的，不敢保证完全是正确的，但至少在我看来是非常合理的，如果大家有什么更好的见解欢迎大家留言探讨。</p>
 </blockquote>
 
     </div>
@@ -396,7 +358,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://www.ysfun.cn/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/" title="String s&#x3D;&quot;a&quot;+&quot;b&quot;+&quot;c&quot;到底创建了几个对象？">https://www.ysfun.cn/2022/05/11/String-s-a-b-c到底创建了几个对象？/</a>
+      <a href="https://www.ysfun.cn/2022/08/13/%E5%BD%BB%E5%BA%95%E6%8D%8B%E6%B8%85%E6%A5%9A%E5%90%8C%E6%AD%A5-%E5%BC%82%E6%AD%A5-%E9%98%BB%E5%A1%9E-%E9%9D%9E%E9%98%BB%E5%A1%9E/" title="彻底搞清楚「同步&amp;异步 阻塞&amp;非阻塞」">https://www.ysfun.cn/2022/08/13/彻底捋清楚同步-异步-阻塞-非阻塞/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -404,22 +366,16 @@
 </ul>
 </div>
 
-          <div class="post-tags">
-              <a href="/tags/Java/" rel="tag"><i class="fa fa-tag"></i> Java</a>
-          </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2022/05/10/Redis%E8%BF%87%E6%9C%9Fkey%E6%98%AF%E5%90%A6%E7%AB%8B%E9%A9%AC%E8%A2%AB%E5%88%A0%E9%99%A4%EF%BC%9F/" rel="prev" title="Redis过期key是否立马被删除？">
-                  <i class="fa fa-chevron-left"></i> Redis过期key是否立马被删除？
+                <a href="/2022/08/01/%E6%93%8D%E4%BD%9C%E7%B3%BB%E7%BB%9F%EF%BC%9A%E7%94%A8%E6%88%B7%E6%80%81%E5%92%8C%E5%86%85%E6%A0%B8%E6%80%81-%E4%B8%AD%E6%96%AD/" rel="prev" title="操作系统：用户态和内核态&中断">
+                  <i class="fa fa-chevron-left"></i> 操作系统：用户态和内核态&中断
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2022/05/11/Java%E5%B0%8F%E7%9F%A5%E8%AF%86/" rel="next" title="Java小知识">
-                  Java小知识 <i class="fa fa-chevron-right"></i>
-                </a>
             </div>
           </div>
     </footer>
@@ -503,7 +459,7 @@
 
 
 
-<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-cn","enable":true,"serverURL":"waline-server-repo-six.vercel.app","cssUrl":"https://unpkg.com/@waline/client@v2/dist/waline.css","commentCount":false,"pageview":false,"copyright":true,"allowUploadImage":true,"locale":{"placeholder":"本站支持免登陆评论(*￣︶￣)，请大家文明讨论~\n与文章无关的留言请前往本站留言板，谢谢配合"},"avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"requiredMeta":["nick"],"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","el":"#waline","comment":true,"path":"/2022/05/11/String-s-a-b-c%E5%88%B0%E5%BA%95%E5%88%9B%E5%BB%BA%E4%BA%86%E5%87%A0%E4%B8%AA%E5%AF%B9%E8%B1%A1%EF%BC%9F/","dark":"auto"}</script>
+<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-cn","enable":true,"serverURL":"waline-server-repo-six.vercel.app","cssUrl":"https://unpkg.com/@waline/client@v2/dist/waline.css","commentCount":false,"pageview":false,"copyright":true,"allowUploadImage":true,"locale":{"placeholder":"本站支持免登陆评论(*￣︶￣)，请大家文明讨论~\n与文章无关的留言请前往本站留言板，谢谢配合"},"avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"requiredMeta":["nick"],"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","el":"#waline","comment":true,"path":"/2022/08/13/%E5%BD%BB%E5%BA%95%E6%8D%8B%E6%B8%85%E6%A5%9A%E5%90%8C%E6%AD%A5-%E5%BC%82%E6%AD%A5-%E9%98%BB%E5%A1%9E-%E9%9D%9E%E9%98%BB%E5%A1%9E/","dark":"auto"}</script>
 <link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css">
 <script>
 document.addEventListener('page:loaded', () => {

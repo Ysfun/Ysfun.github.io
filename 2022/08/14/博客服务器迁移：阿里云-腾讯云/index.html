@@ -20,28 +20,32 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"www.ysfun.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":null,"post_header":null,"post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":null}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="1. Markdown怎么实现页内跳转？1. 利用Markdown语法格式：[描述文字] (#标题名称)">
+    <meta name="description" content="前言：我的博客之前一直是部署在阿里云轻量级服务器上的，作为学生党，考虑到经济原因（在轻量级服务器这一块，腾讯云服务器更便宜一些），因此决定将博客服务器改为腾讯云轻量级服务器。 1. 博客迁移 购买服务器  访问腾讯云，购买轻量级服务器，选择CentOS7.6-Docker20镜像  复制「原服务器」中~&#x2F;.halo目录到「新服务器」~&#x2F;文件夹下  12cd ~scp .halo root@ip:~">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Markdown如何实现页内跳转？">
-<meta property="og:url" content="https://www.ysfun.cn/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/index.html">
+<meta property="og:title" content="博客服务器迁移">
+<meta property="og:url" content="https://www.ysfun.cn/2022/08/14/%E5%8D%9A%E5%AE%A2%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%81%E7%A7%BB%EF%BC%9A%E9%98%BF%E9%87%8C%E4%BA%91-%E8%85%BE%E8%AE%AF%E4%BA%91/index.html">
 <meta property="og:site_name" content="阳素凡的个人博客">
-<meta property="og:description" content="1. Markdown怎么实现页内跳转？1. 利用Markdown语法格式：[描述文字] (#标题名称)">
+<meta property="og:description" content="前言：我的博客之前一直是部署在阿里云轻量级服务器上的，作为学生党，考虑到经济原因（在轻量级服务器这一块，腾讯云服务器更便宜一些），因此决定将博客服务器改为腾讯云轻量级服务器。 1. 博客迁移 购买服务器  访问腾讯云，购买轻量级服务器，选择CentOS7.6-Docker20镜像  复制「原服务器」中~&#x2F;.halo目录到「新服务器」~&#x2F;文件夹下  12cd ~scp .halo root@ip:~">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2022-05-17T16:22:46.000Z">
-<meta property="article:modified_time" content="2022-05-27T08:21:20.311Z">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220814155723735.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220814160055859.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220814160710232.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220814162601791.png">
+<meta property="article:published_time" content="2022-08-14T07:50:10.000Z">
+<meta property="article:modified_time" content="2022-08-21T20:11:34.246Z">
 <meta property="article:author" content="Ysfun">
-<meta property="article:tag" content="Markdown">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images.ysfun.cn/mac-img/image-20220814155723735.png">
 
 
-<link rel="canonical" href="https://www.ysfun.cn/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/">
+<link rel="canonical" href="https://www.ysfun.cn/2022/08/14/%E5%8D%9A%E5%AE%A2%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%81%E7%A7%BB%EF%BC%9A%E9%98%BF%E9%87%8C%E4%BA%91-%E8%85%BE%E8%AE%AF%E4%BA%91/">
 
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.ysfun.cn/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/","path":"2022/05/18/Typora怎么实现页内跳转？Markdown如何实现页内跳转？/","title":"Markdown如何实现页内跳转？"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.ysfun.cn/2022/08/14/%E5%8D%9A%E5%AE%A2%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%81%E7%A7%BB%EF%BC%9A%E9%98%BF%E9%87%8C%E4%BA%91-%E8%85%BE%E8%AE%AF%E4%BA%91/","path":"2022/08/14/博客服务器迁移：阿里云-腾讯云/","title":"博客服务器迁移"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Markdown如何实现页内跳转？ | 阳素凡的个人博客</title>
+<title>博客服务器迁移 | 阳素凡的个人博客</title>
   
 
 
@@ -144,7 +148,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-Markdown%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F"><span class="nav-text">1. Markdown怎么实现页内跳转？</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-%E5%88%A9%E7%94%A8Markdown%E8%AF%AD%E6%B3%95"><span class="nav-text">1. 利用Markdown语法</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#1-%E6%88%91%E6%98%AF%E9%A1%B6%E9%83%A8%EF%BC%88%E7%A9%BA%E6%A0%BC%E7%94%A8-%E4%BB%A3%E6%9B%BF%EF%BC%8C%E8%BD%AC%E6%8D%A2%E4%B8%BAhtml%E6%97%B6%E4%BC%9A%E8%B7%B3%E8%BD%AC%E5%A4%B1%E8%B4%A5%EF%BC%89"><span class="nav-text">1. 我是顶部（空格用-代替，转换为html时会跳转失败）</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E6%88%91%E6%98%AF%E4%B8%AD%E9%83%A8"><span class="nav-text">我是中部</span></a></li></ol></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-%E4%BD%BF%E7%94%A8html%E6%A0%87%E7%AD%BE"><span class="nav-text">2. 使用html标签</span></a></li></ol></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%8D%9A%E5%AE%A2%E8%BF%81%E7%A7%BB"><span class="nav-text">1. 博客迁移</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%9F%9F%E5%90%8D%E8%BD%AC%E7%A7%BB"><span class="nav-text">2. 域名转移</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E9%85%8D%E7%BD%AEnginx"><span class="nav-text">3. 配置nginx</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -219,7 +223,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://www.ysfun.cn/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/">
+    <link itemprop="mainEntityOfPage" href="https://www.ysfun.cn/2022/08/14/%E5%8D%9A%E5%AE%A2%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%81%E7%A7%BB%EF%BC%9A%E9%98%BF%E9%87%8C%E4%BA%91-%E8%85%BE%E8%AE%AF%E4%BA%91/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/avatar.png">
@@ -232,12 +236,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Markdown如何实现页内跳转？ | 阳素凡的个人博客">
+      <meta itemprop="name" content="博客服务器迁移 | 阳素凡的个人博客">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Markdown如何实现页内跳转？
+          博客服务器迁移
         </h1>
 
         <div class="post-meta-container">
@@ -248,29 +252,17 @@
       </span>
       <span class="post-meta-item-text">发表于</span>
 
-      <time title="创建时间：2022-05-18 00:22:46" itemprop="dateCreated datePublished" datetime="2022-05-18T00:22:46+08:00">2022-05-18</time>
+      <time title="创建时间：2022-08-14 15:50:10" itemprop="dateCreated datePublished" datetime="2022-08-14T15:50:10+08:00">2022-08-14</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2022-05-27 16:21:20" itemprop="dateModified" datetime="2022-05-27T16:21:20+08:00">2022-05-27</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/%E6%95%99%E7%A8%8B/" itemprop="url" rel="index"><span itemprop="name">教程</span></a>
-        </span>
+      <time title="修改时间：2022-08-22 04:11:34" itemprop="dateModified" datetime="2022-08-22T04:11:34+08:00">2022-08-22</time>
     </span>
 
   
-    <span class="post-meta-item">
-        <a href="/tags/Markdown/" rel="tag"><i class="fa fa-tag"></i> Markdown</a>
-    </span>
 
   
     <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
@@ -288,8 +280,8 @@
     </span>
     <span class="post-meta-item-text">评论数：</span>
   
-    <a title="waline" href="/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/#waline" itemprop="discussionUrl">
-      <span class="post-comments-count waline-comment-count" data-path="/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/" itemprop="commentCount"></span>
+    <a title="waline" href="/2022/08/14/%E5%8D%9A%E5%AE%A2%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%81%E7%A7%BB%EF%BC%9A%E9%98%BF%E9%87%8C%E4%BA%91-%E8%85%BE%E8%AE%AF%E4%BA%91/#waline" itemprop="discussionUrl">
+      <span class="post-comments-count waline-comment-count" data-path="/2022/08/14/%E5%8D%9A%E5%AE%A2%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%81%E7%A7%BB%EF%BC%9A%E9%98%BF%E9%87%8C%E4%BA%91-%E8%85%BE%E8%AE%AF%E4%BA%91/" itemprop="commentCount"></span>
     </a>
   </span>
   
@@ -299,7 +291,7 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>601</span>
+      <span>1.9k</span>
     </span>
 
 </div>
@@ -311,39 +303,72 @@
     
     
     <div class="post-body" itemprop="articleBody">
-        <h2 id="1-Markdown怎么实现页内跳转？"><a href="#1-Markdown怎么实现页内跳转？" class="headerlink" title="1. Markdown怎么实现页内跳转？"></a>1. Markdown怎么实现页内跳转？</h2><h3 id="1-利用Markdown语法"><a href="#1-利用Markdown语法" class="headerlink" title="1. 利用Markdown语法"></a>1. 利用Markdown语法</h3><p>格式：[描述文字] (#标题名称)</p>
-<span id="more"></span>
+        <p>前言：我的博客之前一直是部署在阿里云轻量级服务器上的，作为学生党，考虑到经济原因（在轻量级服务器这一块，腾讯云服务器更便宜一些），因此决定将博客服务器改为腾讯云轻量级服务器。</p>
+<h2 id="1-博客迁移"><a href="#1-博客迁移" class="headerlink" title="1. 博客迁移"></a>1. 博客迁移</h2><ol>
+<li>购买服务器</li>
+</ol>
+<p>访问<a target="_blank" rel="noopener" href="https://cloud.tencent.com/act">腾讯云</a>，购买轻量级服务器，选择<code>CentOS7.6-Docker20</code>镜像</p>
+<ol start="2">
+<li>复制「原服务器」中<code>~/.halo</code>目录到「新服务器」<code>~/</code>文件夹下</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cd ~</span><br><span class="line">scp .halo root@ip:~/</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">实践：</span><br><span class="line"></span><br><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line"></span><br><span class="line">[点我去顶部](#1.-我是顶部（空格用`-`代替，转换为html时会跳转失败）)</span><br><span class="line"></span><br><span class="line">[点我去中部](#我是中部)</span><br><span class="line"></span><br><span class="line">##### 1. 我是顶部（空格用`-`代替，转换为html时会跳转失败）</span><br><span class="line"></span><br><span class="line">##### 我是中部</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>部署博客</li>
+</ol>
+<p>可参考<a href="https://www.ysfun.cn/archives/fu-wu-qi-docker-an-zhuang-halo-bo-ke">Docker安装Halo博客&amp;配置swap虚拟内存</a></p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装docker 我们购买的镜像自带docker，因此无需安装</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">拉取halo镜像</span></span><br><span class="line">docker pull halohub/halo:1.5.3  </span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">运行halo</span></span><br><span class="line">docker run -it -d --name halo -p 8090:8090 -v ~/.halo:/root/.halo --restart=unless-stopped halohub/halo:1.5.3</span><br></pre></td></tr></table></figure>
 
-<p><strong>效果展示：</strong></p>
-<hr>
-<p><a href="#1.-%E6%88%91%E6%98%AF%E9%A1%B6%E9%83%A8%EF%BC%88%E7%A9%BA%E6%A0%BC%E7%94%A8%60-%60%E4%BB%A3%E6%9B%BF%EF%BC%8C%E8%BD%AC%E6%8D%A2%E4%B8%BAhtml%E6%97%B6%E4%BC%9A%E8%B7%B3%E8%BD%AC%E5%A4%B1%E8%B4%A5%EF%BC%89">点我去顶部</a></p>
-<p><a href="#%E6%88%91%E6%98%AF%E4%B8%AD%E9%83%A8">点我去中部</a></p>
-<h5 id="1-我是顶部（空格用-代替，转换为html时会跳转失败）"><a href="#1-我是顶部（空格用-代替，转换为html时会跳转失败）" class="headerlink" title="1. 我是顶部（空格用-代替，转换为html时会跳转失败）"></a>1. 我是顶部（空格用<code>-</code>代替，转换为html时会跳转失败）</h5><h5 id="我是中部"><a href="#我是中部" class="headerlink" title="我是中部"></a>我是中部</h5><hr>
+<ol start="4">
+<li>访问</li>
+</ol>
+<p>至此，就可以使用公网ip进行访问了，没配置<code>nginx</code>的话记得开放<code>8090</code>端口防火墙</p>
+<ol start="5">
+<li>配置nginx+域名访问</li>
+</ol>
+<p>要进行这一步，先得将阿里云服务器备案的域名转移到腾讯云</p>
+<h2 id="2-域名转移"><a href="#2-域名转移" class="headerlink" title="2. 域名转移"></a>2. 域名转移</h2><p>将在阿里云备案的域名转移到腾讯云。<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq1369153265/article/details/124318623">手把手教你域名转移</a></p>
+<ol>
+<li>获取域名转移码</li>
+</ol>
+<p> 进入阿里云控制台-&gt;对应域名管理页面-&gt;点击下图「索取域名转移码」</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220814155723735.png" style="zoom:67%;" />
+
+<p>邮箱会收到域名转出密码：</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220814160055859.png" style="zoom: 50%;" />
+
+<ol start="2">
+<li>进入腾讯云控制台-&gt;域名注册-&gt;域名转入</li>
+</ol>
+<p>填写「转移码」</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220814160710232.png" style="zoom:50%;" />
+
+<p>支付完成后，等待结果即可</p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220814162601791.png"></p>
 <blockquote>
-<p>注意事项：标题名称要完全一样，标题中的空格要用 <code>-</code>代替，这种跳转方式只能局限于跳转到<code>#</code>目录</p>
+<p>域名转移后注意图床域名解析</p>
 </blockquote>
-<h3 id="2-使用html标签"><a href="#2-使用html标签" class="headerlink" title="2. 使用html标签"></a>2. 使用html标签</h3><p>格式：</p>
-<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">在需要被跳转到地方添加标签：&lt;a id=&quot;xxx&quot;&gt;&lt;/a&gt;</span><br><span class="line">在跳转的位置添加标签：[跳转名称](#xxx)</span><br></pre></td></tr></table></figure>
+<h2 id="3-配置nginx"><a href="#3-配置nginx" class="headerlink" title="3. 配置nginx"></a>3. 配置nginx</h2><ol>
+<li>安装nginx</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y nginx</span><br></pre></td></tr></table></figure>
 
-<p>实践：</p>
-<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">把这段话复制到typora，按住ctrl并点击实现跳转效果</span><br><span class="line">[跳转到位置1](#a1)</span><br><span class="line"></span><br><span class="line">[跳转到地方2](#p2)</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;br&gt;</span><br><span class="line"></span><br><span class="line">&lt;a id=&quot;a1&quot;&gt;位置1&lt;/a&gt;</span><br><span class="line"></span><br><span class="line">地方2&lt;a id=&quot;p2&quot;&gt;&lt;/a&gt;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>将ssl证书拷贝至服务器</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scp nginx-ssl/* root@ip:/usr/local/nginx/conf/cert/ </span><br></pre></td></tr></table></figure>
 
-<p><strong>效果展示：</strong></p>
-<hr>
-<p><a href="#a1">跳转到位置1</a></p>
-<p><a href="#p2">跳转到地方2</a></p>
-<br>
+<ol start="3">
+<li>修改nginx配置文件<code>/etc/nginx/nginx.conf</code></li>
+</ol>
+<p>可参考<a href="https://www.ysfun.cn/archives/jiang-hexo-bo-ke-bu-shu-dao-ge-ren-fu-wu-qi#4.-%E6%9C%AC%E5%9C%B0%E4%BF%AE%E6%94%B9hexo%E9%85%8D%E7%BD%AE">启用SSL并部署</a>和<a target="_blank" rel="noopener" href="https://cloud.tencent.com/document/product/400/35244">腾讯云nginx ssl配置文档</a></p>
+<figure class="highlight txt"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">upstream halo &#123;</span><br><span class="line">        server 127.0.0.1:8090;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        listen 80;</span><br><span class="line">        server_name www.ysfun.cn;</span><br><span class="line">        rewrite ^(.*)$ https://$host:443$1 permanent;</span><br><span class="line">    &#125;</span><br><span class="line">server &#123;</span><br><span class="line">        listen       443 ssl http2 default_server;</span><br><span class="line">        listen       [::]:443 ssl http2 default_server;</span><br><span class="line">        server_name  www.ysfun.cn;</span><br><span class="line">        #root         /home/blog;</span><br><span class="line"></span><br><span class="line">        ssl_certificate /usr/local/nginx/conf/cert/www.ysfun.cn_bundle.crt;</span><br><span class="line">        ssl_certificate_key /usr/local/nginx/conf/cert/www.ysfun.cn.key;</span><br><span class="line">        ssl_session_cache shared:SSL:1m;</span><br><span class="line">        ssl_session_timeout  10m;</span><br><span class="line">        ssl_protocols TLSv1.2 TLSv1.3;</span><br><span class="line">        ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;</span><br><span class="line">        ssl_prefer_server_ciphers on;</span><br><span class="line"></span><br><span class="line">        # Load configuration files for the default server block.</span><br><span class="line">        include /etc/nginx/default.d/*.conf;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_pass http://halo;</span><br><span class="line">            proxy_set_header HOST $host;</span><br><span class="line">            proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">            proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">        &#125;</span><br><span class="line">        error_page 404 /404.html;</span><br><span class="line">            location = /40x.html &#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        error_page 500 502 503 504 /50x.html;</span><br><span class="line">            location = /50x.html &#123;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 
-<br>
+<ol start="4">
+<li>启动nginx</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">nginx -t</span><br><span class="line">systemctl start nginx.service</span><br></pre></td></tr></table></figure>
 
-<p><a id="a1">位置1</a></p>
-<p>地方2<a id="p2"></a></p>
-<hr>
-<blockquote>
-<p>采用这种方式在转换为html时仍然生效，且可控制性高，推荐这种方式。</p>
-</blockquote>
 
     </div>
 
@@ -351,6 +376,17 @@
     
     
       
+  <div class="popular-posts-header">相关文章</div>
+  <ul class="popular-posts">
+    <li class="popular-posts-item">
+        <div class="popular-posts-date">2022-05-18</div>
+      <div class="popular-posts-title"><a href="/2022/05/18/将hexo博客部署到个人服务器/" rel="bookmark">将hexo博客部署到个人服务器</a></div>
+    </li>
+    <li class="popular-posts-item">
+        <div class="popular-posts-date">2021-11-22</div>
+      <div class="popular-posts-title"><a href="/2021/11/22/mac上安装halo/" rel="bookmark">mac上安装halo</a></div>
+    </li>
+  </ul>
 
 
     <footer class="post-footer">
@@ -363,7 +399,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://www.ysfun.cn/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/" title="Markdown如何实现页内跳转？">https://www.ysfun.cn/2022/05/18/Typora怎么实现页内跳转？Markdown如何实现页内跳转？/</a>
+      <a href="https://www.ysfun.cn/2022/08/14/%E5%8D%9A%E5%AE%A2%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%81%E7%A7%BB%EF%BC%9A%E9%98%BF%E9%87%8C%E4%BA%91-%E8%85%BE%E8%AE%AF%E4%BA%91/" title="博客服务器迁移">https://www.ysfun.cn/2022/08/14/博客服务器迁移：阿里云-腾讯云/</a>
   </li>
   <li class="post-copyright-license">
     <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -371,21 +407,18 @@
 </ul>
 </div>
 
-          <div class="post-tags">
-              <a href="/tags/Markdown/" rel="tag"><i class="fa fa-tag"></i> Markdown</a>
-          </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2022/05/17/MySQL-%E6%80%BB%E7%AE%97%E6%8A%8AB-%E6%A0%91%E6%90%9E%E6%98%8E%E7%99%BD%E4%BA%86/" rel="prev" title="MySQL:总算把B+树搞明白了">
-                  <i class="fa fa-chevron-left"></i> MySQL:总算把B+树搞明白了
+                <a href="/2022/08/13/%E5%BD%BB%E5%BA%95%E6%8D%8B%E6%B8%85%E6%A5%9A%E5%90%8C%E6%AD%A5-%E5%BC%82%E6%AD%A5-%E9%98%BB%E5%A1%9E-%E9%9D%9E%E9%98%BB%E5%A1%9E/" rel="prev" title="彻底搞清楚「同步&异步 阻塞&非阻塞」">
+                  <i class="fa fa-chevron-left"></i> 彻底搞清楚「同步&异步 阻塞&非阻塞」
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2022/05/18/%E5%B0%86hexo%E5%8D%9A%E5%AE%A2%E9%83%A8%E7%BD%B2%E5%88%B0%E4%B8%AA%E4%BA%BA%E6%9C%8D%E5%8A%A1%E5%99%A8/" rel="next" title="将hexo博客部署到个人服务器">
-                  将hexo博客部署到个人服务器 <i class="fa fa-chevron-right"></i>
+                <a href="/2022/08/18/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode239-%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E6%9C%80%E5%A4%A7%E5%80%BC%E3%80%90%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97-%E5%8D%95%E8%B0%83%E9%98%9F%E5%88%97%E3%80%91/" rel="next" title="刷题分享：LeetCode239.滑动窗口最大值【优先队列&单调队列】">
+                  刷题分享：LeetCode239.滑动窗口最大值【优先队列&单调队列】 <i class="fa fa-chevron-right"></i>
                 </a>
             </div>
           </div>
@@ -470,7 +503,7 @@
 
 
 
-<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-cn","enable":true,"serverURL":"waline-server-repo-six.vercel.app","cssUrl":"https://unpkg.com/@waline/client@v2/dist/waline.css","commentCount":false,"pageview":false,"copyright":true,"allowUploadImage":true,"locale":{"placeholder":"本站支持免登陆评论(*￣︶￣)，请大家文明讨论~\n与文章无关的留言请前往本站留言板，谢谢配合"},"avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"requiredMeta":["nick"],"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","el":"#waline","comment":true,"path":"/2022/05/18/Typora%E6%80%8E%E4%B9%88%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9FMarkdown%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0%E9%A1%B5%E5%86%85%E8%B7%B3%E8%BD%AC%EF%BC%9F/","dark":"auto"}</script>
+<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-cn","enable":true,"serverURL":"waline-server-repo-six.vercel.app","cssUrl":"https://unpkg.com/@waline/client@v2/dist/waline.css","commentCount":false,"pageview":false,"copyright":true,"allowUploadImage":true,"locale":{"placeholder":"本站支持免登陆评论(*￣︶￣)，请大家文明讨论~\n与文章无关的留言请前往本站留言板，谢谢配合"},"avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"requiredMeta":["nick"],"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","el":"#waline","comment":true,"path":"/2022/08/14/%E5%8D%9A%E5%AE%A2%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%81%E7%A7%BB%EF%BC%9A%E9%98%BF%E9%87%8C%E4%BA%91-%E8%85%BE%E8%AE%AF%E4%BA%91/","dark":"auto"}</script>
 <link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css">
 <script>
 document.addEventListener('page:loaded', () => {

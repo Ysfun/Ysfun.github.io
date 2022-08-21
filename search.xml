@@ -510,9 +510,75 @@
       </tags>
   </entry>
   <entry>
-    <title>vim常用命令</title>
+    <title>Linux &amp; vim常用命令</title>
     <url>/2021/11/28/vim%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<h2 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h2><ol>
+    <content><![CDATA[<h2 id="1-Linux"><a href="#1-Linux" class="headerlink" title="1. Linux"></a>1. Linux</h2><h3 id="1-scp-amp-ssh命令"><a href="#1-scp-amp-ssh命令" class="headerlink" title="1. scp&amp;ssh命令"></a>1. scp&amp;ssh命令</h3><figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">scp [sourceFile] [targetFile]</span></span><br><span class="line">scp test.txt root@ip:/root/ </span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">ssh [用户名]@[ip]</span></span><br><span class="line">ssh root@ip</span><br></pre></td></tr></table></figure>
+
+<h3 id="2-压缩-x2F-解压缩"><a href="#2-压缩-x2F-解压缩" class="headerlink" title="2. 压缩&#x2F;解压缩"></a>2. 压缩&#x2F;解压缩</h3><p>tar命令格式：<code>tar [参数] [打包文件名] [源文件]</code></p>
+<ol>
+<li>打包命令【<code>.tar</code>格式】：<code>tar -cvf [打包文件名.tar] [源文件]</code></li>
+</ol>
+<p>选项：</p>
+<p><code>-c</code>：打包</p>
+<p><code>-v</code>：显示过程</p>
+<p><code>-f</code>：指定打包后的文件名</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">tar -cvf test.tar test  # 将test文件夹打包为test.tar</span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220814171610717.png"></p>
+<ol start="2">
+<li>解打包命令：<code>tar -xvf [打包文件名]</code></li>
+</ol>
+<p>选项：</p>
+<p><code>-x</code>：解打包</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">tar -xvf test.tar</span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220814172043219.png"></p>
+<ol start="3">
+<li>压缩打包【<code>.tar.gz</code>格式】：<code>tar -zcvf [打包文件名.tar.gz] [源文件]</code></li>
+</ol>
+<p>选项：</p>
+<p><code>-z</code>：压缩</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">tar -zcvf test.tar.gz test  # 将文件夹test打包并压缩为test.tar.gz文件</span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220814172539311.png"></p>
+<p>解压缩：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">tar -xvf test.tar.gz</span><br></pre></td></tr></table></figure>
+
+<p>示例：</p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220814172656245.png"></p>
+<h3 id="3-远程免密登录"><a href="#3-远程免密登录" class="headerlink" title="3. 远程免密登录"></a>3. 远程免密登录</h3><ol>
+<li>本地生成ssh秘钥（如已有，可跳过此步）</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t -rsa -C &quot;email&quot;</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>拷贝公钥</li>
+</ol>
+<p>复制ssh公钥（<code>~/.ssh/id_rsa.pub</code>）内容</p>
+<ol start="3">
+<li>登录服务器</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh root@ip</span><br></pre></td></tr></table></figure>
+
+<p>进入<code>/root/.ssh</code>文件夹，创建<code>authorized_keys</code>文件，并将拷贝的公钥内容复制进去</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">vim /root/.ssh/authorized_keys</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">复制公钥并保存</span></span><br></pre></td></tr></table></figure>
+
+<p>至此就可以免密登录服务器啦！！！</p>
+<ol start="4">
+<li>简化登录服务器</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">vim ~/.ssh/config  # 输入以下信息</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">Host [简化名]</span><br><span class="line">    HostName [ip]</span><br><span class="line">    User root</span><br><span class="line">    Port 22</span><br></pre></td></tr></table></figure>
+
+<p>例如：</p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220814181157607.png"></p>
+<p>简化登录：<code>ssh [简化名]</code></p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220814181250793.png"></p>
+<h2 id="2-vim"><a href="#2-vim" class="headerlink" title="2. vim"></a>2. vim</h2><h3 id="基本命令"><a href="#基本命令" class="headerlink" title="基本命令"></a>基本命令</h3><ol>
 <li>查找命令</li>
 </ol>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查找命令</span></span><br><span class="line">/xxx</span><br><span class="line">n  # 下一个</span><br><span class="line">N  # 上一个</span><br><span class="line">:set hls  # 高亮查找</span><br><span class="line">:set nohls  # 关闭高亮查找</span><br></pre></td></tr></table></figure>
@@ -2164,6 +2230,9 @@
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">yum remove docker-ce</span><br></pre></td></tr></table></figure>
 
 <h2 id="2-使用Docker安装Halo"><a href="#2-使用Docker安装Halo" class="headerlink" title="2. 使用Docker安装Halo"></a>2. 使用Docker安装Halo</h2><p>参考官方文档：<a href="https://docs.halo.run/getting-started/install/docker">使用 Docker 部署 Halo</a></p>
+<p><strong>使用docker安装halo</strong></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker pull halohub/halo:1.5.3</span><br></pre></td></tr></table></figure>
+
 <p><strong>创建容器，启动halo</strong></p>
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">docker run -it -d --name halo -p 8090:8090 -v ~/.halo:/root/.halo --restart=unless-stopped halohub/halo:1.5.3</span><br></pre></td></tr></table></figure>
 <blockquote>
@@ -3139,6 +3208,123 @@
 <blockquote>
 <p>关于同步&amp;异步 阻塞&amp;非阻塞的解释，网上有很多说法，甚至很多解释都是错误了，这篇文章是我查看了许多资料并结合自己的理解写出来的，不敢保证完全是正确的，但至少在我看来是非常合理的，如果大家有什么更好的见解欢迎大家留言探讨。</p>
 </blockquote>
+]]></content>
+  </entry>
+  <entry>
+    <title>刷题分享：LeetCode239.滑动窗口最大值【优先队列&amp;单调队列】</title>
+    <url>/2022/08/18/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode239-%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E6%9C%80%E5%A4%A7%E5%80%BC%E3%80%90%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97-%E5%8D%95%E8%B0%83%E9%98%9F%E5%88%97%E3%80%91/</url>
+    <content><![CDATA[<p><img src="https://images.ysfun.cn/mac-img/leetcode-logo.jpg"></p>
+<p>题目对应<code>LeetCode</code><a href="https://leetcode.cn/problems/sliding-window-maximum/">239. 滑动窗口最大值</a></p>
+<h2 id="1-题目描述"><a href="#1-题目描述" class="headerlink" title="1. 题目描述"></a>1. 题目描述</h2><p>给你一个整数数组 nums，有一个大小为 k 的滑动窗口从数组的最左侧移动到数组的最右侧。你只可以看到在滑动窗口内的 k 个数字。滑动窗口每次只向右移动一位。</p>
+<p>返回 滑动窗口中的最大值 。</p>
+<p><strong>示例：</strong></p>
+<blockquote>
+<p>示例 1：</p>
+<p>输入：nums &#x3D; [1,3,-1,-3,5,3,6,7], k &#x3D; 3<br>输出：[3,3,5,5,6,7]</p>
+<p>解释：<br>滑动窗口的位置                最大值</p>
+<p>[1  3  -1] -3  5  3  6  7       3<br> 1 [3  -1  -3] 5  3  6  7       3<br> 1  3 [-1  -3  5] 3  6  7       5<br> 1  3  -1 [-3  5  3] 6  7       5<br> 1  3  -1  -3 [5  3  6] 7       6<br> 1  3  -1  -3  5 [3  6  7]      7</p>
+</blockquote>
+<blockquote>
+<p>示例 2：</p>
+<p>输入：nums &#x3D; [1], k &#x3D; 1<br>输出：[1]</p>
+</blockquote>
+<h2 id="2-题解"><a href="#2-题解" class="headerlink" title="2. 题解"></a>2. 题解</h2><h3 id="2-1-优先队列"><a href="#2-1-优先队列" class="headerlink" title="2.1 优先队列"></a>2.1 优先队列</h3><p><strong>思路</strong></p>
+<p>使用优先队列（堆）保存遍历过得数，以大顶堆保存，每次取出堆顶元素即为遍历过得最大元素，当堆顶元素下边与当前遍历下标值的距离超过窗口大小时，表示该元素不在窗口内，弹出该堆顶元素。</p>
+<p><strong>代码</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[] maxSlidingWindow(<span class="type">int</span>[] nums, <span class="type">int</span> k) &#123;</span><br><span class="line">        <span class="comment">// 存储的是索引，值的大根堆</span></span><br><span class="line">        PriorityQueue&lt;Integer&gt; pq = <span class="keyword">new</span> <span class="title class_">PriorityQueue</span>&lt;&gt;((a, b) -&gt; nums[b]-nums[a]);</span><br><span class="line">        <span class="type">int</span>[] res = <span class="keyword">new</span> <span class="title class_">int</span>[nums.length-k+<span class="number">1</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;nums.length; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (i &lt; k-<span class="number">1</span>) &#123;</span><br><span class="line">                pq.offer(i);</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            pq.offer(i);</span><br><span class="line">            <span class="comment">// 移除超出窗口的索引</span></span><br><span class="line">            <span class="keyword">while</span> (!pq.isEmpty() &amp;&amp; pq.peek() &lt; i-k+<span class="number">1</span>) &#123;</span><br><span class="line">                pq.poll();</span><br><span class="line">            &#125;</span><br><span class="line">            res[i-k+<span class="number">1</span>] = nums[pq.peek()];</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>复杂度分析</strong></p>
+<ul>
+<li><p>时间复杂度：<code>O(nlog(n))</code>。优先队列添加元素的复杂度为<code>O(log(n))</code>。</p>
+</li>
+<li><p>空间复杂度：<code>O(n)</code></p>
+</li>
+</ul>
+<h3 id="2-2-单调队列"><a href="#2-2-单调队列" class="headerlink" title="2.2 单调队列"></a>2.2 单调队列</h3><p><strong>思路</strong></p>
+<p>假设下标<code>i&lt;j</code>，说明<code>i</code>在<code>j</code>左侧，且有<code>nums[i]&lt;=nums[j]</code>，则在窗口向右滑动过程中<code>nums[i]</code>一定不可能是窗口的最大值，因此我们可以将<code>nums[i]</code>移除掉。</p>
+<p>我们使用双端队列来保存遍历到的元素，保证队列内的元素保持单调递减，在窗口向右滑动过程中，将新元素插入到队列尾部，在此之前需要不断取出队尾元素并判断新元素是否大于等于队尾元素，如果是<strong>则弹出队尾元素，直到队列为空或者队尾元素大于新元素</strong>，才能始终保证队列单调递减。由于队列是单调递减的，因此队首元素为遍历元素的最大值，但需要判断队首元素下标是否在窗口内，<strong>如果不在窗口内则需要弹出队首元素</strong>。</p>
+<p><strong>代码</strong></p>
+<figure class="highlight java"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="type">int</span>[] maxSlidingWindow(<span class="type">int</span>[] nums, <span class="type">int</span> k) &#123;</span><br><span class="line">        Deque&lt;Integer&gt; deque = <span class="keyword">new</span> <span class="title class_">ArrayDeque</span>&lt;&gt;();</span><br><span class="line">        <span class="type">int</span> <span class="variable">n</span> <span class="operator">=</span> nums.length;</span><br><span class="line">        <span class="type">int</span>[] res = <span class="keyword">new</span> <span class="title class_">int</span>[n-k+<span class="number">1</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i=<span class="number">0</span>; i&lt;n; i++) &#123;</span><br><span class="line">            <span class="comment">// 保证队列单调递减</span></span><br><span class="line">            <span class="keyword">while</span> (!deque.isEmpty() &amp;&amp; nums[deque.getLast()]&lt;=nums[i]) &#123;</span><br><span class="line">                deque.pollLast();</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// 保证队首元素在窗口内</span></span><br><span class="line">            <span class="keyword">while</span> (!deque.isEmpty() &amp;&amp; deque.getFirst()&lt;i-k+<span class="number">1</span>) &#123;</span><br><span class="line">                deque.pollFirst();</span><br><span class="line">            &#125;</span><br><span class="line">            deque.offerLast(i);</span><br><span class="line">            <span class="comment">// System.out.println(deque);</span></span><br><span class="line">            <span class="keyword">if</span> (i &gt;= k-<span class="number">1</span>) &#123;</span><br><span class="line">                res[i-k+<span class="number">1</span>] = nums[deque.getFirst()];</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>复杂度分析</strong></p>
+<ul>
+<li>时间复杂度：<code>O(n)</code></li>
+<li>空间复杂度：<code>O(n)</code></li>
+</ul>
+]]></content>
+      <tags>
+        <tag>算法</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>博客服务器迁移</title>
+    <url>/2022/08/14/%E5%8D%9A%E5%AE%A2%E6%9C%8D%E5%8A%A1%E5%99%A8%E8%BF%81%E7%A7%BB%EF%BC%9A%E9%98%BF%E9%87%8C%E4%BA%91-%E8%85%BE%E8%AE%AF%E4%BA%91/</url>
+    <content><![CDATA[<p>前言：我的博客之前一直是部署在阿里云轻量级服务器上的，作为学生党，考虑到经济原因（在轻量级服务器这一块，腾讯云服务器更便宜一些），因此决定将博客服务器改为腾讯云轻量级服务器。</p>
+<h2 id="1-博客迁移"><a href="#1-博客迁移" class="headerlink" title="1. 博客迁移"></a>1. 博客迁移</h2><ol>
+<li>购买服务器</li>
+</ol>
+<p>访问<a href="https://cloud.tencent.com/act">腾讯云</a>，购买轻量级服务器，选择<code>CentOS7.6-Docker20</code>镜像</p>
+<ol start="2">
+<li>复制「原服务器」中<code>~/.halo</code>目录到「新服务器」<code>~/</code>文件夹下</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">cd ~</span><br><span class="line">scp .halo root@ip:~/</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>部署博客</li>
+</ol>
+<p>可参考<a href="https://www.ysfun.cn/archives/fu-wu-qi-docker-an-zhuang-halo-bo-ke">Docker安装Halo博客&amp;配置swap虚拟内存</a></p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">安装docker 我们购买的镜像自带docker，因此无需安装</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">拉取halo镜像</span></span><br><span class="line">docker pull halohub/halo:1.5.3  </span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">运行halo</span></span><br><span class="line">docker run -it -d --name halo -p 8090:8090 -v ~/.halo:/root/.halo --restart=unless-stopped halohub/halo:1.5.3</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>访问</li>
+</ol>
+<p>至此，就可以使用公网ip进行访问了，没配置<code>nginx</code>的话记得开放<code>8090</code>端口防火墙</p>
+<ol start="5">
+<li>配置nginx+域名访问</li>
+</ol>
+<p>要进行这一步，先得将阿里云服务器备案的域名转移到腾讯云</p>
+<h2 id="2-域名转移"><a href="#2-域名转移" class="headerlink" title="2. 域名转移"></a>2. 域名转移</h2><p>将在阿里云备案的域名转移到腾讯云。<a href="https://blog.csdn.net/qq1369153265/article/details/124318623">手把手教你域名转移</a></p>
+<ol>
+<li>获取域名转移码</li>
+</ol>
+<p> 进入阿里云控制台-&gt;对应域名管理页面-&gt;点击下图「索取域名转移码」</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220814155723735.png" style="zoom:67%;" />
+
+<p>邮箱会收到域名转出密码：</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220814160055859.png" style="zoom: 50%;" />
+
+<ol start="2">
+<li>进入腾讯云控制台-&gt;域名注册-&gt;域名转入</li>
+</ol>
+<p>填写「转移码」</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220814160710232.png" style="zoom:50%;" />
+
+<p>支付完成后，等待结果即可</p>
+<p><img src="https://images.ysfun.cn/mac-img/image-20220814162601791.png"></p>
+<blockquote>
+<p>域名转移后注意图床域名解析</p>
+</blockquote>
+<h2 id="3-配置nginx"><a href="#3-配置nginx" class="headerlink" title="3. 配置nginx"></a>3. 配置nginx</h2><ol>
+<li>安装nginx</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">yum install -y nginx</span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>将ssl证书拷贝至服务器</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">scp nginx-ssl/* root@ip:/usr/local/nginx/conf/cert/ </span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>修改nginx配置文件<code>/etc/nginx/nginx.conf</code></li>
+</ol>
+<p>可参考<a href="https://www.ysfun.cn/archives/jiang-hexo-bo-ke-bu-shu-dao-ge-ren-fu-wu-qi#4.-%E6%9C%AC%E5%9C%B0%E4%BF%AE%E6%94%B9hexo%E9%85%8D%E7%BD%AE">启用SSL并部署</a>和<a href="https://cloud.tencent.com/document/product/400/35244">腾讯云nginx ssl配置文档</a></p>
+<figure class="highlight txt"><table><tr><td class="code"><pre><span class="line">upstream halo &#123;</span><br><span class="line">        server 127.0.0.1:8090;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        listen 80;</span><br><span class="line">        server_name www.ysfun.cn;</span><br><span class="line">        rewrite ^(.*)$ https://$host:443$1 permanent;</span><br><span class="line">    &#125;</span><br><span class="line">server &#123;</span><br><span class="line">        listen       443 ssl http2 default_server;</span><br><span class="line">        listen       [::]:443 ssl http2 default_server;</span><br><span class="line">        server_name  www.ysfun.cn;</span><br><span class="line">        #root         /home/blog;</span><br><span class="line"></span><br><span class="line">        ssl_certificate /usr/local/nginx/conf/cert/www.ysfun.cn_bundle.crt;</span><br><span class="line">        ssl_certificate_key /usr/local/nginx/conf/cert/www.ysfun.cn.key;</span><br><span class="line">        ssl_session_cache shared:SSL:1m;</span><br><span class="line">        ssl_session_timeout  10m;</span><br><span class="line">        ssl_protocols TLSv1.2 TLSv1.3;</span><br><span class="line">        ssl_ciphers ECDHE-RSA-AES128-GCM-SHA256:HIGH:!aNULL:!MD5:!RC4:!DHE;</span><br><span class="line">        ssl_prefer_server_ciphers on;</span><br><span class="line"></span><br><span class="line">        # Load configuration files for the default server block.</span><br><span class="line">        include /etc/nginx/default.d/*.conf;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">            proxy_pass http://halo;</span><br><span class="line">            proxy_set_header HOST $host;</span><br><span class="line">            proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">            proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br><span class="line">        &#125;</span><br><span class="line">        error_page 404 /404.html;</span><br><span class="line">            location = /40x.html &#123;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        error_page 500 502 503 504 /50x.html;</span><br><span class="line">            location = /50x.html &#123;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+
+<ol start="4">
+<li>启动nginx</li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">nginx -t</span><br><span class="line">systemctl start nginx.service</span><br></pre></td></tr></table></figure>
+
 ]]></content>
   </entry>
 </search>

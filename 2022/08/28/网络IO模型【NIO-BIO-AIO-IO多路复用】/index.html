@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#3d85c6"><meta name="generator" content="Hexo 6.2.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/avatar.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/avatar.png">
+  <link rel="mask-icon" href="/avatar.png" color="#3d85c6">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=roboto:300,300italic,400,400italic,700,700italic%7Csans-serif:300,300italic,400,400italic,700,700italic%7CNoto+Serif+SC:300,300italic,400,400italic,700,700italic%7CLato:300,300italic,400,400italic,700,700italic%7CZhi+Mang+Xing:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" integrity="sha256-DfWjNxDkM94fVBWx1H5BMMp0Zq7luBlV8QRcSES7s+0=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"www.ysfun.cn","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.11.1","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":{"enable":true,"style":"default"},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":true,"transition":{"post_block":null,"post_header":null,"post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":null}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="1. 什么是IOIO即input&#x2F;output，在Linux世界中，一切皆文件，而文件就是一串二进制流，不管是FIFO、Socket、管道还是终端，都可以视为“流”，在信息的交换过程中，对这些流进行数据收发的操作被称为I&#x2F;O操作。IO有内存IO、网络IO、磁盘IO三种，通常我们说的IO是指后面两种。如磁盘IO，从磁盘中读取数据到内存可以理解为一次输入，对应的，将内存中的数据写入磁盘，就">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IO模型【NIO, BIO, AIO, IO多路复用】">
+<meta property="og:url" content="https://www.ysfun.cn/2022/08/28/%E7%BD%91%E7%BB%9CIO%E6%A8%A1%E5%9E%8B%E3%80%90NIO-BIO-AIO-IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E3%80%91/index.html">
+<meta property="og:site_name" content="阳素凡的个人博客">
+<meta property="og:description" content="1. 什么是IOIO即input&#x2F;output，在Linux世界中，一切皆文件，而文件就是一串二进制流，不管是FIFO、Socket、管道还是终端，都可以视为“流”，在信息的交换过程中，对这些流进行数据收发的操作被称为I&#x2F;O操作。IO有内存IO、网络IO、磁盘IO三种，通常我们说的IO是指后面两种。如磁盘IO，从磁盘中读取数据到内存可以理解为一次输入，对应的，将内存中的数据写入磁盘，就">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220813214015989.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220903183321297.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220903183009788.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220903183038830.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220904145508810.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220904150220086.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220904193639769.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220919091104526.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/9b8e5cc6d696bbeffea29b3a8a12b298.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/ea7521f87fbf5a3a58e91bfa92be548f.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/af7f5abe0ca85e808ed3ef8c4ddd4225.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/b00de66658f86488dff8f5769267a888.gif">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/fbf130fd494fc5f3828b61c32a9a7447.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/9419830cb966496df151d55cb654ef5a.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/8242ab3425898732fbfa0f03ac6d78f5.gif">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220919161200590.png">
+<meta property="og:image" content="https://images.ysfun.cn/mac-img/image-20220919161353390.png">
+<meta property="article:published_time" content="2022-08-28T12:04:11.000Z">
+<meta property="article:modified_time" content="2022-09-19T08:28:53.023Z">
+<meta property="article:author" content="Ysfun">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://images.ysfun.cn/mac-img/image-20220813214015989.png">
+
+
+<link rel="canonical" href="https://www.ysfun.cn/2022/08/28/%E7%BD%91%E7%BB%9CIO%E6%A8%A1%E5%9E%8B%E3%80%90NIO-BIO-AIO-IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E3%80%91/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://www.ysfun.cn/2022/08/28/%E7%BD%91%E7%BB%9CIO%E6%A8%A1%E5%9E%8B%E3%80%90NIO-BIO-AIO-IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E3%80%91/","path":"2022/08/28/网络IO模型【NIO-BIO-AIO-IO多路复用】/","title":"IO模型【NIO, BIO, AIO, IO多路复用】"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>IO模型【NIO, BIO, AIO, IO多路复用】 | 阳素凡的个人博客</title>
+  
+
+
+
+
+<link rel="dns-prefetch" href="waline-server-repo-six.vercel.app">
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">阳素凡的个人博客</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">理想三旬浓烟下，奔赴山海与荒野。</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">20</span></a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">5</span></a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">43</span></a></li><li class="menu-item menu-item-留言板"><a href="/chats/" rel="section"><i class="fa fa-comments fa-fw"></i>留言板</a></li><li class="menu-item menu-item-推荐阅读"><a href="/recommend/" rel="section"><i class="fa fa-star fa-fw"></i>推荐阅读</a></li><li class="menu-item menu-item-链接分享"><a href="/links/" rel="section"><i class="fa fa-external-link-square fa-fw"></i>链接分享</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup"><div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off" maxlength="80"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close" role="button">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div class="search-result-container no-result">
+  <div class="search-result-icon">
+    <i class="fa fa-spinner fa-pulse fa-5x"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%BB%80%E4%B9%88%E6%98%AFIO"><span class="nav-text">1. 什么是IO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-IO%E6%A8%A1%E5%9E%8B"><span class="nav-text">2. IO模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#2-1-%E9%98%BB%E5%A1%9EIO%EF%BC%88Blocking-IO-BIO%EF%BC%89"><span class="nav-text">2.1 阻塞IO（Blocking IO, BIO）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-2-%E9%9D%9E%E9%98%BB%E5%A1%9EIO%EF%BC%88Non-Blocking-IO-NIO%EF%BC%89"><span class="nav-text">2.2 非阻塞IO（Non-Blocking IO, NIO）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-3-IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8"><span class="nav-text">2.3 IO多路复用</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#select"><span class="nav-text">select</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#poll"><span class="nav-text">poll</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#epoll"><span class="nav-text">epoll</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#IO-%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8-%E9%9D%9E%E9%98%BB%E5%A1%9E"><span class="nav-text">IO 多路复用+非阻塞</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-4-%E4%BF%A1%E5%8F%B7%E9%A9%B1%E5%8A%A8IO"><span class="nav-text">2.4 信号驱动IO</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-5-%E5%BC%82%E6%AD%A5IO%EF%BC%88Asynchronous-IO-AIO%EF%BC%89"><span class="nav-text">2.5 异步IO（Asynchronous IO, AIO）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%B7%A8%E4%BA%BA%E7%9A%84%E8%82%A9%E8%86%80"><span class="nav-text">3. 巨人的肩膀</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Ysfun"
+      src="/avatar.png">
+  <p class="site-author-name" itemprop="name">Ysfun</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">43</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">20</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author site-overview-item animated">
+      <span class="links-of-author-item">
+        <a href="mailto:s_hyunmin@163.com" title="E-Mail → mailto:s_hyunmin@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/qq.jpg" title="QQ → &#x2F;qq.jpg"><i class="fab fa-qq fa-fw"></i>QQ</a>
+      </span>
+  </div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+  <a href="https://github.com/ysfun" class="github-corner" title="Follow me on GitHub" aria-label="Follow me on GitHub" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://www.ysfun.cn/2022/08/28/%E7%BD%91%E7%BB%9CIO%E6%A8%A1%E5%9E%8B%E3%80%90NIO-BIO-AIO-IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E3%80%91/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/avatar.png">
+      <meta itemprop="name" content="Ysfun">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="阳素凡的个人博客">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="IO模型【NIO, BIO, AIO, IO多路复用】 | 阳素凡的个人博客">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          IO模型【NIO, BIO, AIO, IO多路复用】
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-08-28 20:04:11" itemprop="dateCreated datePublished" datetime="2022-08-28T20:04:11+08:00">2022-08-28</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2022-09-19 16:28:53" itemprop="dateModified" datetime="2022-09-19T16:28:53+08:00">2022-09-19</time>
+    </span>
+
+  
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+  
+  <span class="post-meta-item">
+    
+    <span class="post-meta-item-icon">
+      <i class="far fa-comment"></i>
+    </span>
+    <span class="post-meta-item-text">评论数：</span>
+  
+    <a title="waline" href="/2022/08/28/%E7%BD%91%E7%BB%9CIO%E6%A8%A1%E5%9E%8B%E3%80%90NIO-BIO-AIO-IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E3%80%91/#waline" itemprop="discussionUrl">
+      <span class="post-comments-count waline-comment-count" data-path="/2022/08/28/%E7%BD%91%E7%BB%9CIO%E6%A8%A1%E5%9E%8B%E3%80%90NIO-BIO-AIO-IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E3%80%91/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>9.1k</span>
+    </span>
+
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <p><img src="https://images.ysfun.cn/mac-img/image-20220813214015989.png"></p>
+<h2 id="1-什么是IO"><a href="#1-什么是IO" class="headerlink" title="1. 什么是IO"></a>1. 什么是IO</h2><p>IO即<code>input/output</code>，在Linux世界中，一切皆文件，而文件就是一串二进制流，不管是FIFO、Socket、管道还是终端，都可以视为“流”，<strong>在信息的交换过程中，对这些流进行数据收发的操作被称为I&#x2F;O操作</strong>。IO有内存IO、网络IO、磁盘IO三种，通常我们说的IO是指后面两种。如磁盘IO，从磁盘中读取数据到内存可以理解为一次输入，对应的，将内存中的数据写入磁盘，就算输出。</p>
+<span id="more"></span>
+
+<p><strong>操作系统</strong>负责计算机的资源管理和进程的调度。我们电脑上跑着的应用程序，其实是需要经过<strong>操作系统</strong>，才能做一些特殊操作，如<strong>磁盘文件读写、内存的读写</strong>等等。因为这些都是比较危险的操作，不可以由应用程序乱来，只能交给底层操作系统来。也就是说，你的应用程序要把数据写入磁盘，只能通过调用操作系统开放出来的API来操作。</p>
+<ul>
+<li>从流中读取数据，系统调用<code>read</code>；写入数据，系统调用<code>write</code></li>
+</ul>
+<p>我们的应用程序是运行在用户空间的，它不存在实质的IO过程，真正的IO是由操作系统执行的。即应用程序的IO操作分为两种动作：<strong>IO调用和IO执行</strong>。IO调用由进程（应用程序的运行态）发起，而IO执行是通过操作系统内核来完成的。</p>
+<p>应用程序发起一次IO操作包含两个阶段：</p>
+<ul>
+<li>IO调用：应用程序进程向操作系统内核发起调用（系统调用<code>read</code>和<code>write</code>）</li>
+<li>IO执行：操作系统内核完成IO操作</li>
+</ul>
+<p>操作系统内核完成IO操作还包括两个过程：</p>
+<ul>
+<li>准备数据过程：内核等待IO设备准备好数据</li>
+<li>拷贝数据阶段：将数据从内核缓冲区拷贝到用户进程缓冲区</li>
+</ul>
+<img src="https://images.ysfun.cn/mac-img/image-20220903183321297.png" style="zoom:67%;" />
+
+<p>其实IO就是把进程内部的数据转移到外部设备，或者把外部设备的数据迁移到进程内部。外部设备一般指硬盘、socket通讯的网卡。一个完整的IO过程包括以下几个步骤：</p>
+<ul>
+<li>应用程序向操作系统发起<strong>IO调用</strong>请求</li>
+<li>操作系统准备数据，将IO外部设备的数据加载到<strong>内核缓冲区</strong></li>
+<li>操作系统拷贝数据，即把内核缓冲区的数据拷贝到用户进程的缓冲区</li>
+</ul>
+<p>磁盘IO：</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220903183009788.png" style="zoom:67%;" />
+
+<p>网络IO：</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220903183038830.png" style="zoom:67%;" />
+
+<h2 id="2-IO模型"><a href="#2-IO模型" class="headerlink" title="2. IO模型"></a>2. IO模型</h2><p>IO模型按照<strong>同步和异步</strong>进行区分，可以分为五种IO模型。</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220904145508810.png" style="zoom:67%;" />
+
+<p>关于同步&amp;异步、阻塞&amp;非阻塞的概念在<a href="https://www.ysfun.cn/archives/che-di-lv-qing-chu-tong-bu--yi-bu-zu-sai--fei-zu-sai">彻底搞清楚「同步&amp;异步 阻塞&amp;非阻塞」</a>中介绍过了。IO大体可以分为两大类：同步IO和异步IO。</p>
+<ul>
+<li>同步IO：用户进程发起IO请求后，必须等待IO操作完成，控制权才会返回给用户进程</li>
+<li>异步IO：用户进程发起IO请求后立即返回，可继续执行用户进程，待IO操作完成后操作系统内核通过消息或者回调的方式通知用户进程结果。</li>
+</ul>
+<p>接下来，我们来对五种IO模型分别展开介绍。</p>
+<h3 id="2-1-阻塞IO（Blocking-IO-BIO）"><a href="#2-1-阻塞IO（Blocking-IO-BIO）" class="headerlink" title="2.1 阻塞IO（Blocking IO, BIO）"></a>2.1 阻塞IO（Blocking IO, BIO）</h3><p>阻塞和非阻塞的概念描述的是<strong>用户进程调用内核IO操作的方式</strong>：阻塞式IO是指直到IO操作全部完成后才能返回用户进程；非阻塞式IO则无需等待IO操作全部完成再返回，即便IO操作未完成也可以返回给用户进程一个状态值。默认情况下，像Java IO以及socket都是阻塞式IO模型，一个典型的BIO读数据流程如下图所示</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220904150220086.png" style="zoom:67%;" />
+
+<ol>
+<li>当应用进程调用了recvfrom系统调用后，系统内核就开始了IO的第一个阶段：准备数据</li>
+<li>对于IO（无论是网络IO还是磁盘IO）来说，很多时候数据在一开始还没到达时，系统内核就要等待足够的数据到来。而在用户进程这边，整个进程会被阻塞。</li>
+<li>当系统内核一直等到数据准备好了，它就会将数据从系统内核中拷贝到用户内存中，然后系统内核返回结果，用户进程才解除阻塞的状态，重新运行起来。</li>
+</ol>
+<p>实际上，除非特别指定，几乎所有的 IO 接口都阻塞型的。这给网络编程带来了一个很大的问题，如在调用 send 的同时，线程处于阻塞状态，则在此期间，线程将无法执行任何运算或响应任何网络请求。</p>
+<h3 id="2-2-非阻塞IO（Non-Blocking-IO-NIO）"><a href="#2-2-非阻塞IO（Non-Blocking-IO-NIO）" class="headerlink" title="2.2 非阻塞IO（Non-Blocking IO, NIO）"></a>2.2 非阻塞IO（Non-Blocking IO, NIO）</h3><p>当用户进程发出非阻塞IO操作时，如果内核中的数据还没有准备好，那么它<strong>并不会 block 用户进程</strong>，而是立刻返回一个错误。从用户进程角度讲，它发起IO操作后，并不需要等待，而是马上就得到了一个结果 当用户进程判断结果是一个错误时，它就知道数据还没有准备好，于是它可以再次发送IO操作。一旦内核中的数据准备好了，并且又再次收到了用户进程的系统调用，那么它马上就将数据复制到了用户内存中，然后返回正确的返回值。一个非阻塞socket执行read操作的流程：</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220904193639769.png" style="zoom:67%;" />
+
+<p>非阻塞IO的流程：</p>
+<ol>
+<li>应用进程向操作系统内核发起recvfrom读取数据请求</li>
+<li>操作系统内核数据还没准备好，会立即返回<code>EWOULDBLOK</code>错误码</li>
+<li>应用进程轮询调用，继续向操作系统内核发送recvfrom读取数据请求</li>
+<li>操作系统内核数据准备就绪，从内核缓冲区拷贝数据至用户空间（注意拷贝数据的过程还是阻塞的）</li>
+<li>完成调用，返回应用进程</li>
+</ol>
+<p>非阻塞式IO相比于阻塞式IO的优点在于当内核数据未准备就绪时不会一直阻塞当前线程，而是会立即返回一个错误码；但非阻塞式IO的缺点也很明显，就是需要应用进程不断轮询调用，这会大量消耗CPU资源。</p>
+<h3 id="2-3-IO多路复用"><a href="#2-3-IO多路复用" class="headerlink" title="2.3 IO多路复用"></a>2.3 IO多路复用</h3><p><strong>IO多路复用的核心思想</strong>：操作系统提供一组系统调用（<strong>select&#x2F;poll&#x2F;epoll</strong>），通过该系统调用可以同时监视多个<strong>文件描述符fd</strong>，一旦某个描述符为<strong>就绪（一般指内核缓冲区可读&#x2F;可写）</strong>状态，操作系统内核能够将就绪状态返回给用户进程，随后用户进程发起<strong>recvfrom</strong>系统调用，进行IO操作。</p>
+<p>首先我们先来介绍下文件描述符。</p>
+<p><strong>文件描述符</strong></p>
+<p>文件描述符（File Descriptor，简称fd）在形式上是一个非负整数，实际上它是一个索引值，指向内核为每个进程所维护的该进程打开文件的记录表。当程序打开一个文件或者创建一个新文件时，内核内核向进程返回一个文件描述符。在程序设计中，一些涉及底层的程序编写往往会围绕着文件描述符展开。但是文件描述符这一概念往往只适用于 UNIX、Linux 这样的操作系统。</p>
+<p>在Linux中，内核将所有的外部设备都当做一个文件来进行操作，而对一个文件的读写操作会调用内核提供的系统命令，返回一个fd，对一个socket的读写也会有相应的描述符，称为socketfd（socket描述符），实际上描述符就是一个数字，它指向内核中的一个结构体（文件路径、数据区等一些属性）。如下图所示</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220919091104526.png" alt="image-20220919091104526" style="zoom:67%;" />
+
+<p>通过 open()，socket() 创建文件后，都有一个 fd（文件描述符） 与之对应，对于每一个进程，都有有一个文件描述符列表（File Discriptor Table） 来记录其打开的文件，这个列表的每一项都指向其背后的具体文件，而<strong>每一项对应的数组下标就是 fd</strong>，对于用户而言，可以认为 fd  代表其背后指向的文件。</p>
+<p>fd 的值从 0 开始，其中 0，1，2 是固定的，分别指向标准输入（指向键盘），标准输出&#x2F;标准错误（指向显示器），之后每打开一个文件，fd 都会从 3 开始递增，但需要注意的是 fd 并不一定都是递增的，如果关闭了文件，之前的 fd 是可以被回收利用的。</p>
+<p>IO 多路复用其实也就是用一个进程来监听多个 fd 的数据事件，用户可以把自己感兴趣的 fd 及对应感兴趣的事件（accept，read&#x2F;write）传给内核，然后内核就会检测 fd ，一旦某个 socket 有事件了，内核可以唤醒用户进程来处理。那么怎样才能知道某个 fd 是否有事件呢，一种很容易想到的做法是搞个轮询，每次调用一下 read(fd)，让内核告知是否数据已就绪，但是这样的话如果有 n 个感兴趣的 fd 就会有 n 次 read 系统调用，开销很大，显然不可接受。</p>
+<p>所以使用 IO 多路复用监听 fd 的事件可行，但必须解决以下三个涉及到性能瓶颈的点：</p>
+<ol>
+<li>如何<strong>高效</strong>将用户感兴趣的 fd 和事件传给内核</li>
+<li>某个 socket 数据就绪后，内核如何<strong>高效</strong>通知用户进程进行处理</li>
+<li>用户进程如何高效处理事件</li>
+</ol>
+<p>前面两步的处理目前有 select，poll，epoll 三种 IO 多路事件模型，我们一起来看看，看完你就会知道为啥 epoll 的性能是如此高效了。</p>
+<h4 id="select"><a href="#select" class="headerlink" title="select"></a>select</h4><p>我们先来看下 select 函数的定义：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 返回：若有就绪描述符则为其数目，若超时则为 0，若出错则为-1</span></span><br><span class="line"><span class="type">int</span> <span class="title function_">select</span><span class="params">(<span class="type">int</span> maxfd,         <span class="comment">// 待测试的描述符基数，为待测试的最大描述符加1</span></span></span><br><span class="line"><span class="params">					 fd_set *readset,   <span class="comment">// 读描述符集合</span></span></span><br><span class="line"><span class="params">					 fd_set *writeset,  <span class="comment">// 写描述符集合</span></span></span><br><span class="line"><span class="params">					 fd_set *exceptset, <span class="comment">// 异常描述符集合</span></span></span><br><span class="line"><span class="params">					 <span class="type">const</span> <span class="keyword">struct</span> timeval *timeout)</span>;  <span class="comment">// 阻塞时间</span></span><br></pre></td></tr></table></figure>
+
+<p>这里需要说明一下，为啥 maxfd 为待测试的描述符加 1 呢，主要是因为数组的下标是从 0 开始的，假设进程新建了一个 listenfd，它的 fd 为 3，那么代表它有  4 个 感兴趣的 fd（每个进程有固定的 fd &#x3D; 0,1,2 这三个描述符），由此可知 maxfd &#x3D; 3 + 1 &#x3D; 4</p>
+<p><img src="https://images.ysfun.cn/mac-img/9b8e5cc6d696bbeffea29b3a8a12b298.png"></p>
+<p>接下来我们来看看读，写，异常集合是怎么回事，如何设置针对 fd 的感兴趣事件呢，其实事件集合是采用了一种位结构（bitset）的方式，比如现在假设我们对标准输入（fd &#x3D; 0），listenfd（fd &#x3D; 3）的读事件感兴趣，那么就可以在 readset 对应的位上置 1</p>
+<p><strong>画外音</strong>： 使用 FD_SET 可将相应位置置1，如 FD_SET(listenfd, &amp;readset)</p>
+<p>如下</p>
+<p><img src="https://images.ysfun.cn/mac-img/ea7521f87fbf5a3a58e91bfa92be548f.png"></p>
+<p>即 readset 为 {1, 0,0, 1}，在调用 select 后会将 readset 传给内核，如果内核发现 listenfd 有连接已就绪的事件，则内核也会在将相应位置置 1（其他无就绪事件的 fd 对应的位置为 0）然后会回传给用户线程，此时的 readset 如下，即 {1,0,0,0}</p>
+<p><img src="https://images.ysfun.cn/mac-img/af7f5abe0ca85e808ed3ef8c4ddd4225.png"></p>
+<p>于是进程就可以根据 readset 相应位置是否是 1（用 FD_ISSET(i, &amp;read_set) 来判断）来判断读事件是否就绪了</p>
+<p>需要注意的是由于 accept 的 socket 会越来越多，maxfd 和事件 set 都需要及时调整（比如新 accept 一个已连接的 socket，maxfd 可能会变，另外也需要将其加入到读写描述符集合中以让内核监听其读写事件）</p>
+<p>可以看到 select 将感兴趣的事件集合存在一个数组里，然后一次性将数组拷贝给了内核，<strong>这样 n 次系统调用就转化为了一次</strong>，然后用户进程会阻塞在 select 系统调用上，由内核不断循环遍历，如果遍历后发现某些 socket 有事件（accept 或 read&#x2F;write 准备好了），就会唤醒进程，并且会把数据已就绪的 socket 数量传给用户进程，动图如下</p>
+<p><img src="https://images.ysfun.cn/mac-img/b00de66658f86488dff8f5769267a888.gif"></p>
+<p>select 的伪代码如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> listen_fd,conn_fd; <span class="comment">//监听套接字和已连接套接字的变量</span></span><br><span class="line">listen_fd = socket() <span class="comment">//创建套接字</span></span><br><span class="line">bind(listen_fd)   <span class="comment">//绑定套接字</span></span><br><span class="line">listen(listen_fd) <span class="comment">//在套接字上进行监听，将套接字转为监听套接字</span></span><br><span class="line"></span><br><span class="line">fd_set master_rset;  <span class="comment">//被监听的描述符集合，关注描述符上的读事件</span></span><br><span class="line"> </span><br><span class="line"><span class="type">int</span> max_fd = listen_fd</span><br><span class="line"></span><br><span class="line"><span class="comment">//初始化 master_rset 数组，使用 FD_ZERO 宏设置每个元素为 0 </span></span><br><span class="line">FD_ZERO(&amp;master_rset);</span><br><span class="line"><span class="comment">//使用 FD_SET 宏设置 master_rset 数组中位置为 listen_fd 的文件描述符为 1，表示需要监听该文件描述符</span></span><br><span class="line">FD_SET(listen_fd,&amp;master_rset);</span><br><span class="line"></span><br><span class="line">fd_set working_set;</span><br><span class="line"> </span><br><span class="line"><span class="keyword">while</span>(<span class="number">1</span>) &#123;</span><br><span class="line">   </span><br><span class="line">   <span class="comment">// 每次都要将 master_set copy 给 working_set，因为 select 返回后 working_set 会被内核修改</span></span><br><span class="line">	 working_set = master_set</span><br><span class="line">   <span class="comment">/**</span></span><br><span class="line"><span class="comment">    * 调用 select 函数，检测 master_rset 数组保存的文件描述符是否已有读事件就绪，</span></span><br><span class="line"><span class="comment">    * 返回就绪的文件描述符个数，我们只关心读事件，所以其它参数都设置为 null 了</span></span><br><span class="line"><span class="comment">    */</span></span><br><span class="line">   nready = select(max_fd+<span class="number">1</span>, &amp;working_set, <span class="literal">NULL</span>, <span class="literal">NULL</span>, <span class="literal">NULL</span>);</span><br><span class="line"> </span><br><span class="line">   <span class="comment">// 依次检查已连接套接字的文件描述符</span></span><br><span class="line">   <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; max_fd &amp;&amp; nready &gt; <span class="number">0</span>; i++) &#123;</span><br><span class="line">      <span class="comment">// 说明 fd = i 的事件已就绪</span></span><br><span class="line">      <span class="keyword">if</span> (FD_ISSET(i, &amp;working_set)) &#123;</span><br><span class="line">          nready -= <span class="number">1</span>;</span><br><span class="line">          <span class="comment">//调用 FD_ISSET 宏，在 working_set 数组中检测 listen_fd 对应的文件描述符是否就绪</span></span><br><span class="line">         <span class="keyword">if</span> (FD_ISSET(listen_fd, &amp;working_set)) &#123;</span><br><span class="line">             <span class="comment">//如果 listen_fd 已经就绪，表明已有客户端连接；调用 accept 函数建立连接</span></span><br><span class="line">             conn_fd = accept();</span><br><span class="line">             <span class="comment">//设置 master_rset 数组中 conn_fd 对应位置的文件描述符为 1，表示需要监听该文件描述符</span></span><br><span class="line">             FD_SET(conn_fd, &amp;master_rset);</span><br><span class="line">             <span class="keyword">if</span> (conn_fd &gt; max_fd) &#123;</span><br><span class="line">                max_fd = conn_fd;</span><br><span class="line">             &#125;</span><br><span class="line">         &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">//有数据可读，进行读数据处理</span></span><br><span class="line">           read(i, xxx)</span><br><span class="line">        &#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>看起来 select 很好，但在生产上用处依然不多，主要是因为 select 有以下劣势：</p>
+<ol>
+<li>每次调用 select，都需要把 fdset 从用户态拷贝到内核态，在高并发下是个巨大的性能开销（可优化为不拷贝）</li>
+<li>调用 select 阻塞后，用户进程虽然没有轮询，但在内核还是通过遍历的方式来检查 fd 的就绪状态（可通过异步 IO 唤醒的方式）</li>
+<li>select 只返回已就绪  fd 的数量，用户线程还得再遍历所有的 fd 查看哪些 fd 已准备好了事件（可优化为直接返回给用户进程数据已就绪的 fd 列表）</li>
+</ol>
+<p>正在由于 1，2 两个缺点，所以 select 限制了 maxfd 的大小为 1024，表示只能监听 1024 个 fd 的事件，这离 C10k 显然还是有距离的</p>
+<h4 id="poll"><a href="#poll" class="headerlink" title="poll"></a>poll</h4><p>poll 的机制其实和 select 一样，唯一比较大的区别其实是把 1024 这个限制给放开了，虽然通过放开限制可以使内核监听上万 socket，但由于以上说的两点劣势，它的性能依然不高，所以生产上也不怎么使用。</p>
+<h4 id="epoll"><a href="#epoll" class="headerlink" title="epoll"></a>epoll</h4><p>接下来我们再来介绍下生产上用得最多的 epoll，epoll 其实和 select，poll 这两个系统调用不一样，它本来其实是个内核的数据结构，这个数据结构允许进程监听多个 socket 的 事件，一般我们通过 epoll_create 来创建这个实例</p>
+<p><img src="https://images.ysfun.cn/mac-img/fbf130fd494fc5f3828b61c32a9a7447.png" alt="img"></p>
+<p>然后我们再调用 epoll_ctl 把 感兴趣的 fd 加入到 epoll 实例中的 interest_list，然后再调用 <strong>epoll_wait</strong> 即可将控制权交给内核，这样内核就会检测此 interest_list，如果发现 socket 已就绪就会把已就绪的 fd 加入到一个 ready_list（简称 rdlist） 中，然后再唤醒用户进程，之后用户进程只要遍历此 rdlist 即可</p>
+<p><img src="https://images.ysfun.cn/mac-img/9419830cb966496df151d55cb654ef5a.png" alt="img"></p>
+<p>为了方便快速对 fd 进行增删改查，必须设计好 interest list 的数据结构，经综合考虑，内核使用了红黑树，而 rdlist 则采用了链表的形式，这样一旦在红黑树上发现了就绪的 socket ，就会把它放到 rdlist 中</p>
+<p>epoll 的伪代码如下</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> sock_fd,conn_fd; <span class="comment">//监听套接字和已连接套接字的变量</span></span><br><span class="line">sock_fd = socket() <span class="comment">//创建套接字</span></span><br><span class="line">bind(sock_fd)   <span class="comment">//绑定套接字</span></span><br><span class="line">listen(sock_fd) <span class="comment">//在套接字上进行监听，将套接字转为监听套接字</span></span><br><span class="line">    </span><br><span class="line">epfd = epoll_create(); <span class="comment">//创建epoll实例，</span></span><br><span class="line"><span class="comment">//创建epoll_event结构体数组，保存套接字对应文件描述符和监听事件类型    </span></span><br><span class="line">ep_events = (epoll_event*)<span class="built_in">malloc</span>(<span class="keyword">sizeof</span>(epoll_event) * EPOLL_SIZE);</span><br><span class="line"></span><br><span class="line"><span class="comment">//创建epoll_event变量</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">epoll_event</span> <span class="title">ee</span></span></span><br><span class="line"><span class="class">//监听读事件</span></span><br><span class="line"><span class="class"><span class="title">ee</span>.<span class="title">events</span> =</span> EPOLLIN;</span><br><span class="line"><span class="comment">//监听的文件描述符是刚创建的监听套接字</span></span><br><span class="line">ee.data.fd = sock_fd;</span><br><span class="line"></span><br><span class="line"><span class="comment">//将监听套接字加入到监听列表中    </span></span><br><span class="line">epoll_ctl(epfd, EPOLL_CTL_ADD, sock_fd, &amp;ee); </span><br><span class="line">    </span><br><span class="line"><span class="keyword">while</span> (<span class="number">1</span>) &#123;</span><br><span class="line">   <span class="comment">//等待返回已经就绪的描述符 </span></span><br><span class="line">   n = epoll_wait(epfd, ep_events, EPOLL_SIZE, <span class="number">-1</span>); </span><br><span class="line">   <span class="comment">//遍历所有就绪的描述符     </span></span><br><span class="line">   <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>; i &lt; n; i++) &#123;</span><br><span class="line">       <span class="comment">//如果是监听套接字描述符就绪，表明有一个新客户端连接到来 </span></span><br><span class="line">       <span class="keyword">if</span> (ep_events[i].data.fd == sock_fd) &#123; </span><br><span class="line">          conn_fd = accept(sock_fd); <span class="comment">//调用accept()建立连接</span></span><br><span class="line">          ee.events = EPOLLIN;  </span><br><span class="line">          ee.data.fd = conn_fd;</span><br><span class="line">          <span class="comment">//添加对新创建的已连接套接字描述符的监听，监听后续在已连接套接字上的读事件      </span></span><br><span class="line">          epoll_ctl(epfd, EPOLL_CTL_ADD, conn_fd, &amp;ee); </span><br><span class="line">                </span><br><span class="line">       &#125; <span class="keyword">else</span> &#123; <span class="comment">//如果是已连接套接字描述符就绪，则可以读数据</span></span><br><span class="line">           ...<span class="comment">//读取数据并处理</span></span><br><span class="line">           read(ep_events[i].data.fd, ..)</span><br><span class="line">       &#125;</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br><span class="line">复制代码</span><br></pre></td></tr></table></figure>
+
+<p>epoll 的动图如下</p>
+<p><img src="https://images.ysfun.cn/mac-img/8242ab3425898732fbfa0f03ac6d78f5.gif" alt="epoll 图解，图片来自《低并发编程》"></p>
+<p>可以看到 epoll 很好地解决了 select 的痛点</p>
+<ol>
+<li>「每次调用 select 都把 fd 集合拷贝给内核」<strong>优化为</strong>「只有第一次调用 epoll_ctl 添加感兴趣的 fd 到内核的 epoll 实例中，之后只要调用 epoll_wait 即可，数据集合不再需要拷贝」</li>
+<li>「用户进程调用 select 阻塞后，内核会通过遍历的方式来同步检查 fd 的就绪状态」<strong>优化为</strong>「内核使用异步事件通知」</li>
+<li>「select 仅返回已就绪 fd 的数量，用户线程还得再遍历一下所有的 fd 来挨个检查哪个 fd 的事件已就绪了」<strong>优化为</strong>「内核直接返回已就绪的 fd 集合」</li>
+</ol>
+<h4 id="IO-多路复用-非阻塞"><a href="#IO-多路复用-非阻塞" class="headerlink" title="IO 多路复用+非阻塞"></a>IO 多路复用+非阻塞</h4><p>那么当 IO 多路程复用检查到数据就绪后（select()，poll()，epoll_wait() 返回后），该怎么处理呢，有人说直接 accept，read&#x2F;write 不就完了，话是没错，但之前我们也说了，这些操作其实默认是阻塞的，<strong>我们需要将其改成非阻塞</strong>，为什么呢，数据不是已经就绪了吗，说明 accept，read&#x2F;write 这些操作可以正常获取数据啊？</p>
+<p>其实数据就绪只是说在调用 select()，poll()，epoll_wait() 返回时的数据是就绪的，但当你再去调用 accept，read&#x2F;write 时可能就会变成未就绪了，举个例子：当某个 socket 接收缓冲区有新数据分节到达，然后 select 报告这个 socket 描述符可读，但随后，协议栈检查到这个新分节有错误，然后丢弃这个分节，这时候调用 read 则无数据可读，这样的话就会产生一个严重的后果：由于线程阻塞在了 read 上，便再也不能调用 select 来监听 socket 事件了，所以 <strong>IO 多路程复用一定要和非阻塞配合使用</strong>，也就是说要把 listenfd 和 connectfd 设置为非阻塞才行。</p>
+<h3 id="2-4-信号驱动IO"><a href="#2-4-信号驱动IO" class="headerlink" title="2.4 信号驱动IO"></a>2.4 信号驱动IO</h3><p>这种模式一般很少用，所以不重点说了，大概说一下，如图所示：</p>
+<img src="https://images.ysfun.cn/mac-img/image-20220919161200590.png" style="zoom:67%;" />
+
+<p>首先我们允许Socket进行信号驱动IO，并安装一个信号处理函数，进程继续运行并不阻塞。</p>
+<p>当数据准备好时，进程会收到一个SIGIO信号，可以在信号处理函数中调用I&#x2F;O操作函数处理数据。</p>
+<p><strong>流程如下：</strong></p>
+<ul>
+<li>开启套接字信号驱动IO功能</li>
+<li>系统调用Sigaction执行信号处理函数（非阻塞，立刻返回）</li>
+<li>数据就绪，生成Sigio信号，通过信号回调通知应用来读取数据</li>
+</ul>
+<p>此种IO方式存在的一个很大的问题：Linux中信号队列是有限制的，如果超过这个数字问题就无法读取数据</p>
+<h3 id="2-5-异步IO（Asynchronous-IO-AIO）"><a href="#2-5-异步IO（Asynchronous-IO-AIO）" class="headerlink" title="2.5 异步IO（Asynchronous IO, AIO）"></a>2.5 异步IO（Asynchronous IO, AIO）</h3><p>前面讲的BIO，NIO和信号驱动，在数据从内核复制到应用缓冲的时候，都是<strong>阻塞</strong>的，因此都不算是真正的异步。AIO实现了IO全流程的非阻塞，就是应用进程发出系统调用后，是立即返回的，但是<strong>立即返回的不是处理结果，而是表示提交成功类似的意思</strong>。等内核数据准备好，将数据拷贝到用户进程缓冲区，发送信号通知用户进程IO操作执行完毕。</p>
+<p>异步IO来自于POSIX AIO规范，它专门提供了能异步IO的读写类函数，如aio_read()，aio_write()等。</p>
+<p>使用异步IO函数时，要求指定IO完成时或IO出现错误时的通知方式，通知方式主要分两类：</p>
+<ul>
+<li>发送指定的信号来通知</li>
+<li>在另一个线程中执行指定的回调函数</li>
+</ul>
+<img src="https://images.ysfun.cn/mac-img/image-20220919161353390.png" style="zoom:67%;" />
+
+<p><strong>异步IO流程如下所示：</strong></p>
+<ul>
+<li>当用户线程调用了<code>aio_read</code>系统调用，立刻就可以开始去做其它的事，用户线程不阻塞</li>
+<li>内核就开始了IO的第一个阶段：准备数据。当内核一直等到数据准备好了，它就会将数据从内核内核缓冲区，拷贝到用户缓冲区</li>
+<li>内核会给用户线程发送一个信号，或者回调用户线程注册的回调接口，告诉用户线程Read操作完成了</li>
+<li>用户线程读取用户缓冲区的数据，完成后续的业务操作</li>
+</ul>
+<blockquote>
+<p>相对于同步IO，异步IO不是顺序执行。</p>
+</blockquote>
+<p>用户进程进行<code>aio_read</code>系统调用之后，无论内核数据是否准备好，都会直接返回给用户进程，然后用户态进程可以去做别的事情。</p>
+<p>等到数据准备好了，内核直接复制数据给进程，然后从内核向进程发送通知。</p>
+<p><strong>对比信号驱动IO，异步IO的主要区别在于：</strong></p>
+<ul>
+<li>信号驱动由内核告诉我们何时可以开始一个IO操作(数据在内核缓冲区中)，而异步IO则由内核通知IO操作何时已经完成(数据已经在用户空间中)。</li>
+</ul>
+<p>异步IO又叫做事件驱动IO，在Unix中，为异步方式访问文件定义了一套库函数，定义了AIO的一系列接口。</p>
+<ul>
+<li>使用<code>aio_read</code>或者<code>aio_write</code>发起异步IO操作，使用<code>aio_error</code>检查正在运行的IO操作的状态。</li>
+</ul>
+<p>目前Linux中AIO的内核实现只对文件IO有效，如果要实现真正的AIO，需要用户自己来实现。</p>
+<p>目前有很多开源的异步IO库，例如libevent、libev、libuv。</p>
+<h2 id="3-巨人的肩膀"><a href="#3-巨人的肩膀" class="headerlink" title="3. 巨人的肩膀"></a>3. 巨人的肩膀</h2><ul>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/YdIdoZ_yusVWza1PU7lWaw">你管这破玩意叫 IO 多路复用？</a></li>
+<li><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/0abYEBdCNVOfrF5sadrsJw">面试官最爱的网络IO模型，这次妥了</a></li>
+<li><a target="_blank" rel="noopener" href="https://juejin.cn/post/7076364933184618526#heading-23">Unix 网络 IO 模型</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+      
+
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>Ysfun
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://www.ysfun.cn/2022/08/28/%E7%BD%91%E7%BB%9CIO%E6%A8%A1%E5%9E%8B%E3%80%90NIO-BIO-AIO-IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E3%80%91/" title="IO模型【NIO, BIO, AIO, IO多路复用】">https://www.ysfun.cn/2022/08/28/网络IO模型【NIO-BIO-AIO-IO多路复用】/</a>
+  </li>
+  <li class="post-copyright-license">
+    <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/08/18/%E5%88%B7%E9%A2%98%E5%88%86%E4%BA%AB%EF%BC%9ALeetCode239-%E6%BB%91%E5%8A%A8%E7%AA%97%E5%8F%A3%E6%9C%80%E5%A4%A7%E5%80%BC%E3%80%90%E4%BC%98%E5%85%88%E9%98%9F%E5%88%97-%E5%8D%95%E8%B0%83%E9%98%9F%E5%88%97%E3%80%91/" rel="prev" title="刷题分享：LeetCode239.滑动窗口最大值【优先队列&单调队列】">
+                  <i class="fa fa-chevron-left"></i> 刷题分享：LeetCode239.滑动窗口最大值【优先队列&单调队列】
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="waline"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="beian"><a href="https://beian.miit.gov.cn/" rel="noopener" target="_blank">赣ICP备2022004917号 </a>
+  </div>
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Ysfun</span>
+</div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">130k</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/next-boot.js"></script>
+
+  
+<script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.0/search.js" integrity="sha256-vXZMYLEqsROAXkEw93GGIvaB2ab+QW6w3+1ahD9nXXA=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+
+<script class="next-config" data-name="waline" type="application/json">{"lang":"zh-cn","enable":true,"serverURL":"waline-server-repo-six.vercel.app","cssUrl":"https://unpkg.com/@waline/client@v2/dist/waline.css","commentCount":false,"pageview":false,"copyright":true,"allowUploadImage":true,"locale":{"placeholder":"本站支持免登陆评论(*￣︶￣)，请大家文明讨论~\n与文章无关的留言请前往本站留言板，谢谢配合"},"avatar":"mm","meta":["nick","mail","link"],"pageSize":10,"requiredMeta":["nick"],"libUrl":"//unpkg.com/@waline/client@v2/dist/waline.js","el":"#waline","comment":true,"path":"/2022/08/28/%E7%BD%91%E7%BB%9CIO%E6%A8%A1%E5%9E%8B%E3%80%90NIO-BIO-AIO-IO%E5%A4%9A%E8%B7%AF%E5%A4%8D%E7%94%A8%E3%80%91/","dark":"auto"}</script>
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v2/dist/waline.css">
+<script>
+document.addEventListener('page:loaded', () => {
+  if (!CONFIG.waline.allowUploadImage) {
+    CONFIG.waline.imageUploader = false;
+  }
+  else if (CONFIG.waline.qiniuDomain && CONFIG.waline.qiniuTokenUrl) {
+    CONFIG.waline.imageUploader = qiniuUploadImage;
+  } else {
+   CONFIG.waline.imageUploader = true;
+  }
+  NexT.utils.loadComments(CONFIG.waline.el).then(() =>
+    NexT.utils.getScript(CONFIG.waline.libUrl, { condition: window.Waline })
+  ).then(() => 
+    Waline.init(Object.assign({}, CONFIG.waline,{ el: document.querySelector(CONFIG.waline.el) }))
+  );
+});
+</script>
+
+</body>
+</html>

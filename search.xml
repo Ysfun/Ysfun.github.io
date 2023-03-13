@@ -1474,36 +1474,124 @@
       </tags>
   </entry>
   <entry>
-    <title>Git常用命令</title>
+    <title>Git教程</title>
     <url>/2022/05/10/Git%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<h2 id="Git基础命令"><a href="#Git基础命令" class="headerlink" title="Git基础命令"></a>Git基础命令</h2><ol>
-<li>克隆代码</li>
+    <content><![CDATA[<h2 id="Git基本理论"><a href="#Git基本理论" class="headerlink" title="Git基本理论"></a>Git基本理论</h2><h3 id="1-Git工作区域"><a href="#1-Git工作区域" class="headerlink" title="1. Git工作区域"></a>1. Git工作区域</h3><span id="more"></span>
+
+<blockquote>
+<p>不同工作区域文件交换的命令</p>
+</blockquote>
+<img src="https://images.ysfun.cn/mac-img/image-20230310164532246.png" style="zoom:40%;" /> 
+
+<ul>
+<li>Workspace：工作区，平时存放项目代码存放的区域。</li>
+<li>Index&#x2F;Stage：暂存区，用于临时存放代码的改动，实际为一个文件，保存即将提交到文件列表的信息。</li>
+<li>Repository：仓库（本地仓库），保存了所有提交版本的数据。其中HEAD指向最新放入仓库的版本。</li>
+<li>Remote：远程仓库，托管代码的服务器。</li>
+</ul>
+<img src="/Users/hyunmin/Library/Application Support/typora-user-images/image-20230310165836458.png" style="zoom: 40%;" /> 
+
+<h3 id="2-Git文件操作"><a href="#2-Git文件操作" class="headerlink" title="2. Git文件操作"></a>2. Git文件操作</h3><p><strong>文件的四种状态</strong></p>
+<ul>
+<li><strong>Untracked</strong>：未跟踪，此文件在文件夹中，但未加入到git库，不参与版本控制，通过命令<code>git add</code>将状态变为<code>staged</code></li>
+<li><strong>Unmodify</strong>：文件已入库，未修改，即版本库中的文件快照内容与文件夹中完全一致。这种类型的文件有两种去处，如果它被修改，则变为<code>Modified</code>；如果使用<code>git rm</code>则移出版本库，则成为<code>Untracked</code>文件。</li>
+<li><strong>Modified</strong>：文件已修改，仅仅是修改，并没有进行其他的操作。这个文件也有两个去处，通过<code>git add</code>可进入暂存<code>staged</code>状态，使用<code>git checkout</code>则丢弃修改，返回到<code>unmoidify</code>状态，其中<code>git checkout</code>即从库中取出文件，覆盖当前修改。</li>
+<li><strong>Staged</strong>：暂存状态。执行<code>git commit</code>则将修改同步到库中，这是库中的文件和本地文件一致，文件为<code>unmodify</code>状态。执行<code>git reset HEAD filename</code>取消暂存，文件状态变为<code>Modified</code>。</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看文件状态</span></span><br><span class="line">git status [filename]</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看所有文件状态</span></span><br><span class="line">git status</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>忽略文件</p>
+</blockquote>
+<p>在主目录下建立<code>.gitignore</code>文件，此文件规则如下：</p>
+<img src="https://images.ysfun.cn/mac-img/image-20230310173133615.png" style="zoom:40%;" /> 
+
+
+
+<h2 id="Git基础命令"><a href="#Git基础命令" class="headerlink" title="Git基础命令"></a>Git基础命令</h2><ol>
+<li><strong>克隆代码</strong></li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone xxx</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">克隆指定分支</span></span><br><span class="line">git clone -b branchName xxx</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git clone &lt;url&gt;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">克隆指定分支</span></span><br><span class="line">git clone -b branchName &lt;url&gt;</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">初始化git项目</span></span><br><span class="line">git init</span><br></pre></td></tr></table></figure>
 
 <ol start="2">
-<li>拉取（更新）代码</li>
+<li><strong>拉取（更新）代码</strong>，命令形式：<code>git pull &lt;远程主机名&gt; &lt;远程分支名&gt;:&lt;本地分支名&gt;</code></li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git pull origin</span><br><span class="line">git pull origin branchName</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">变基</span></span><br><span class="line">git pull --rebase origin branchName</span><br></pre></td></tr></table></figure>
-
-<span id="more"></span>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git pull origin</span><br><span class="line">git pull origin branchName</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">变基（避免出现merge commit记录）</span></span><br><span class="line">git pull --rebase origin branchName</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">存在代码冲突时，拉取代码步骤</span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">1. 拉取代码</span></span><br><span class="line">git pull --rebase   # 或者全局修改配置git config --global pull.rebase true</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">2. 处理冲突文件</span></span><br><span class="line">vim test.txt  # 例如冲突文件为test.txt</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">3. 添加修改文件到暂存区</span></span><br><span class="line">git add .</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">4. 继续变基</span></span><br><span class="line">git rebase --continue</span><br></pre></td></tr></table></figure>
 
 <ol start="3">
-<li>提交代码</li>
+<li><strong>提交代码</strong></li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit &quot;message&quot;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git add .</span><br><span class="line">git commit -m &quot;message&quot;</span><br></pre></td></tr></table></figure>
 
 <ol start="4">
-<li>推送远程分支</li>
+<li><strong>推送远程分支</strong>，命令形式：<code>git push &lt;远程主机名&gt; &lt;本地分支名&gt;:&lt;远程分支名&gt;</code></li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git push origin head:branchName</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">强制推送</span></span><br><span class="line">git push -f origin head:branchName</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git push origin head:branchName</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">强制推送</span></span><br><span class="line">git push -f origin head:branchName</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">合并分支</span></span><br><span class="line">git merge [branchName]</span><br></pre></td></tr></table></figure>
 
+<blockquote>
+<p><code>git pull</code>可以理解为<code>git fetch</code>+<code>git merge</code>，详细说明如下：</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git fetch origin master  # 从远程主机的master分支拉取最新内容</span><br><span class="line">git merge FETCH_HEAD     # 将拉取下来的最新内容合并到当前的分支中</span><br></pre></td></tr></table></figure>
+
+<p>在merge的时候，会将有冲突不能合并的内容进行提示。</p>
+</blockquote>
 <ol start="5">
-<li>合并提交记录</li>
+<li><strong>合并提交记录</strong></li>
 </ol>
-<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">合并近k条提交记录</span></span><br><span class="line">git rebase -i head~k</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">一般pick第一条，后面都squash</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">本次修改合并到上次提交</span></span><br><span class="line">git commit --amend   # 会通过core.editor指定编辑器进行编辑</span><br><span class="line">git commit --amend --no-edit  # 不打开命令行，直接提交</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">合并近k条提交记录</span></span><br><span class="line">git rebase -i head~k</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">一般pick第一条，后面都squash</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">从HEAD版本开始往过去数3个版本</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git rebase -i HEAD~3</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">合并指定版本号（不包含此版本）</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git rebase -i [commitid]</span></span><br></pre></td></tr></table></figure>
 
-<p><img src="https://images.ysfun.cn/mac-img/image-20220510193114486.png"></p>
+<blockquote>
+<p>说明：</p>
+<ul>
+<li><code>-i（--interactive）</code>：弹出交互式的界面进行编辑合并</li>
+<li><code>[commitid]</code>：要合并多个版本之前的版本号，注意：<code>[commitid]</code> 本身不参与合并</li>
+</ul>
+<p>指令解释（交互编辑时使用）：</p>
+<ul>
+<li>p, pick &#x3D; use commit</li>
+<li>r, reword &#x3D; use commit, but edit the commit message</li>
+<li>e, edit &#x3D; use commit, but stop for amending</li>
+<li>s, squash &#x3D; use commit, but meld into previous commit</li>
+<li>f, fixup &#x3D; like “squash”, but discard this commit’s log message</li>
+<li>x, exec &#x3D; run command (the rest of the line) using shell</li>
+<li>d, drop &#x3D; remove commit</li>
+</ul>
+</blockquote>
+<ol start="6">
+<li><strong>查看配置信息</strong></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config [&lt;options&gt;]</span><br><span class="line"><span class="comment"># list all</span></span><br><span class="line">git config -l</span><br><span class="line"><span class="comment"># 查看系统配置信息</span></span><br><span class="line">git config --system --list</span><br><span class="line"><span class="comment"># 查看个人配置信息</span></span><br><span class="line">git config --global --list</span><br><span class="line"></span><br><span class="line"><span class="comment"># 设置用户名</span></span><br><span class="line">git config --global user.name <span class="string">&quot;Ysfun&quot;</span></span><br><span class="line"><span class="comment"># 设置邮箱</span></span><br><span class="line">git config --global user.email <span class="string">&quot;&quot;</span></span><br></pre></td></tr></table></figure>
+
+<ol start="7">
+<li><strong>分支命令</strong></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看所有分支</span></span><br><span class="line">git branch -a</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看本地分支</span></span><br><span class="line">git branch  # &#x27;*&#x27;表示当前分支，并以绿色标识</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看远程分支</span></span><br><span class="line">git branch -r</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">查看所有分支详细信息</span></span><br><span class="line">git branch -vva</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">删除分支</span></span><br><span class="line">git branch -d [branchName]</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">切换分支</span></span><br><span class="line">git checkout &lt;branch&gt;</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">创建分支并切换到该分支</span></span><br><span class="line">git checkout -b &lt;branch&gt;</span><br></pre></td></tr></table></figure>
+
+<ol start="8">
+<li><strong>代码冲突</strong></li>
+</ol>
+<blockquote>
+<p>代码冲突的解决步骤：</p>
+<ol>
+<li>使用<code>git pull</code>拉取远程代码</li>
+<li>本地处理冲突文件</li>
+<li><code>add -&gt; commit -&gt; push</code>提交冲突，并推送至远程</li>
+</ol>
+</blockquote>
+<ol start="9">
+<li><strong>查看历史</strong></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">git log</span><br><span class="line">git log -2  # 显示最近两条日志</span><br><span class="line">git log --oneline  # 日志单行显示</span><br></pre></td></tr></table></figure>
+
+<ol start="10">
+<li><strong>版本回退</strong></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">语法格式</span></span><br><span class="line">git reset [--soft | --mixed | --hard] [HEAD]</span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">示例</span></span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git reset HEAD^            <span class="comment"># 回退所有内容到上一个版本</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git reset HEAD^ hello.php  <span class="comment"># 回退 hello.php 文件的版本到上一个版本</span></span>  </span><br><span class="line"><span class="meta prompt_">$ </span><span class="language-bash">git  reset  052e           <span class="comment"># 回退到指定版本</span></span></span><br></pre></td></tr></table></figure>
+
+<ol start="11">
+<li><strong>pull rebase</strong></li>
+</ol>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改配置</span></span><br><span class="line">git config pull.reabse true</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">修改全局配置</span></span><br><span class="line">git config --global pull.rebase true</span><br></pre></td></tr></table></figure>
+
 ]]></content>
       <categories>
         <category>教程</category>
@@ -3508,6 +3596,16 @@
 <li><a href="https://mp.weixin.qq.com/s/0abYEBdCNVOfrF5sadrsJw">面试官最爱的网络IO模型，这次妥了</a></li>
 <li><a href="https://juejin.cn/post/7076364933184618526#heading-23">Unix 网络 IO 模型</a></li>
 </ul>
+]]></content>
+  </entry>
+  <entry>
+    <title>本硕非科班转码斩获五家中大厂offer的秋招之旅</title>
+    <url>/2022/10/13/%E7%A7%8B%E6%8B%9B%E4%B9%8B%E6%97%85/</url>
+    <content><![CDATA[<h3 id="个人背景"><a href="#个人背景" class="headerlink" title="个人背景"></a>个人背景</h3><p>本科华中科技大学，硕士浙江大学，均力学专业，先前无软件开发经验，本科入门学过一点c++。</p>
+<h3 id="秋招Offer情况"><a href="#秋招Offer情况" class="headerlink" title="秋招Offer情况"></a>秋招Offer情况</h3><p>成功斩获Tplink、Oppo、蚂蚁、快手、华为五家公司的Offer，且均为sp offer，都是后端岗，除了Oppo在深圳，其他都在杭州。</p>
+<h3 id="温馨提醒"><a href="#温馨提醒" class="headerlink" title="温馨提醒"></a>温馨提醒</h3><p>不建议盲目转码，今年秋招形势大家都有目共睹，一方面互联网寒冬公司招人数急剧减少、另一方面近些年越来越多的人加入到转码大军来，导致软件相关岗位的就业竞争异常激烈。</p>
+<h3 id="转码契机"><a href="#转码契机" class="headerlink" title="转码契机"></a>转码契机</h3><p>我是在刚读研的时候，导师让我做机器学习和力学结合的工作，在机缘巧合之下发现了自己对敲代码非常有兴趣，并且结合自己未来的就业目标，最终下定决心转码的。</p>
+<h3 id="自学之旅"><a href="#自学之旅" class="headerlink" title="自学之旅"></a>自学之旅</h3><p>我从研一就开始做准备的，经过网上查各种资料、调研，最终选择学习Java。计算力学</p>
 ]]></content>
   </entry>
 </search>
